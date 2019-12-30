@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -8,10 +10,29 @@ namespace JiraEpicVisualizer
 {
     static class Extensions
     {
-        public static async Task<JsonDocument> Query(this HttpClient client, string query)
+        public static async Task<IReadOnlyList<JsonElement>> Query(this HttpClient client, string query)
         {
-            using var resp = await client.GetAsync(query);
-            return await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync());
+            query = Uri.EscapeDataString(query);
+            var elements = new List<JsonElement>();
+            int start = 0;
+            while (true)
+            {
+                using var resp = await client.GetAsync($"/rest/api/2/search?jql={query}&startAt={start}&maxResults=50");
+                var doc = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync());
+                var issues = doc.RootElement.GetProperty("issues");
+
+                foreach (var e in issues.EnumerateArray())
+                {
+                    elements.Add(e);
+                }
+                start = doc.RootElement.GetProperty("startAt").GetInt32();
+                var total = doc.RootElement.GetProperty("total").GetInt32();
+                var maxResults = doc.RootElement.GetProperty("maxResults").GetInt32();
+                start += maxResults;
+                if (start >= total)
+                    break;
+            }
+            return elements;
         }
 
         public static string ToJsonString(this JsonDocument jdoc)

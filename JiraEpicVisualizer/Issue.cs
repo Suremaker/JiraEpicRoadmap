@@ -8,5 +8,6 @@
         public string Status { get; set; }
         public string Summary { get; set; }
         public Link[] Links { get; set; }
+        public TicketStats Stats { get; set; }
     }
 }
