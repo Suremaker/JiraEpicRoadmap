@@ -7,7 +7,7 @@
 ## Node label with placeholders and HTML.
 ## Default is '%name_of_first_column%'.
 #
-# label: %project%<br><a href="%ticketUri%">%key% %summary%</a><br>%percentage% (done=%done%, in progress=%inprogress%, total=%total%)
+# label: %project%<br><a href="%ticketUri%">%key% %summary%</a><br>%percentage% (done:%done%, pending:%inprogress%, total:%total%)<br>Due: %duedate%
 #
 ## Node style (placeholders are replaced once).
 ## Default is the current style for nodes.

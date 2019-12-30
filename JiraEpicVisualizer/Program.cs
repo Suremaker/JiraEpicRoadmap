@@ -24,22 +24,22 @@ namespace JiraEpicVisualizer
             client.DefaultRequestHeaders.Add("ContentType", "application/json");
 
             var response = await client.Query("issuetype=Epic and status!=done");
-            var issues = ParseIssues(response);
+            var epics = ParseEpics(response);
             ShowProgress();
-            await Task.WhenAll(issues.Select(i => GetEpicProgress(client, i)));
+            await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
 
             var csv = new StringBuilder(GetCsvTemplate());
-            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,percentage");
+            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,percentage,duedate");
 
-            foreach (var issue in issues)
-                csv.AppendLine($"{issue.Id},{issue.Key},{issue.Project},{issue.Summary},\"{string.Join(',', issue.Links.Select(l => l.OutwardId))}\",{ToFill(issue.Stats)},{ToStroke(issue.Stats)},{cfg.JiraUri}/browse/{issue.Key},{issue.Stats.Total},{issue.Stats.InProgress},{issue.Stats.Done},{issue.Stats.Percentage}");
+            foreach (var epic in epics)
+                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.Stats.Percentage},{epic.DueDate?.ToString("d") ?? "none"}");
 
             File.WriteAllText($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}roadmap.txt", csv.ToString());
         }
 
         private static readonly SemaphoreSlim sem = new SemaphoreSlim(5);
 
-        private static async Task GetEpicProgress(HttpClient client, Issue issue)
+        private static async Task GetEpicProgress(HttpClient client, Epic issue)
         {
             await sem.WaitAsync();
             try
@@ -53,7 +53,7 @@ namespace JiraEpicVisualizer
                         stats.Done += grp.Count();
                     else if (grp.Key.Equals("in progress", StringComparison.OrdinalIgnoreCase))
                         stats.InProgress += grp.Count();
-                    else 
+                    else
                         stats.NotStarted += grp.Count();
                 }
                 issue.Stats = stats;
@@ -62,24 +62,32 @@ namespace JiraEpicVisualizer
             finally { sem.Release(); }
         }
 
-        private static Issue[] ParseIssues(IEnumerable<JsonElement> issues)
+        private static Epic[] ParseEpics(IEnumerable<JsonElement> elements)
         {
-            return issues.Select(issue => ParseIssue(issue)).ToArray();
+            return elements.Select(issue => ParseEpic(issue))
+                .OrderBy(e => e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue))
+                .ThenBy(e => e.Project)
+                .ThenBy(e => e.Key)
+                .ToArray();
         }
 
-        private static Issue ParseIssue(JsonElement issue)
+        private static Epic ParseEpic(JsonElement element)
         {
-            return new Issue
+            var epic = new Epic
             {
-                Id = issue.GetProperty("id").GetString(),
-                Key = issue.GetProperty("key").GetString(),
-                Project = issue.GetProperty("fields").GetProperty("project").GetProperty("name").GetString(),
-                Status = issue.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString().ToPlainText(),
-                Summary = issue.GetProperty("fields").GetProperty("summary").GetString().ToPlainText(),
-                Links = issue.GetProperty("fields").GetProperty("issuelinks").EnumerateArray()
-                            .Where(l => l.TryGetProperty("outwardIssue", out _))
-                            .Select(link => ParseLink(link)).ToArray()
+                Id = element.GetProperty("id").GetString(),
+                Key = element.GetProperty("key").GetString(),
+                Project = element.GetProperty("fields").GetProperty("project").GetProperty("name").GetString(),
+                Status = element.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString().ToPlainText(),
+                Summary = element.GetProperty("fields").GetProperty("summary").GetString().ToPlainText(),
+                Links = element.GetProperty("fields").GetProperty("issuelinks").EnumerateArray()
+                .Where(l => l.TryGetProperty("outwardIssue", out _))
+                .Select(link => ParseLink(link)).ToArray()
             };
+            var dueDateElement = element.GetProperty("fields").GetProperty("duedate");
+            if (dueDateElement.ValueKind != JsonValueKind.Null)
+                epic.DueDate = dueDateElement.GetDateTimeOffset();
+            return epic;
         }
 
         private static Link ParseLink(JsonElement link)
@@ -96,26 +104,34 @@ namespace JiraEpicVisualizer
             Console.Write('.');
         }
 
-        private static string ToFill(TicketStats stats)
+        private static string ToFill(Epic e)
         {
-            if (stats.Total == 0)
+            if (e.Stats.Total == 0)
                 return "#888888";
-            if (stats.Done == stats.Total)
+            
+            if (e.Stats.Done == e.Stats.Total)
                 return "#aaffaa";
-            if (stats.NotStarted < stats.Total)
+
+            if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
+                return "#ffaaaa";
+
+            if (e.Stats.NotStarted < e.Stats.Total)
                 return "#aaaaff";
             return "#aaaaaa";
         }
 
-        private static string ToStroke(TicketStats stats)
+        private static string ToStroke(Epic e)
         {
-            if (stats.Total == 0)
+            if (e.Stats.Total == 0)
                 return "#444444";
 
-            if (stats.Done == stats.Total)
+            if (e.Stats.Done == e.Stats.Total)
                 return "#66ff66";
 
-            if (stats.NotStarted < stats.Total)
+            if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
+                return "#ff0000";
+
+            if (e.Stats.NotStarted < e.Stats.Total)
                 return "#6666ff";
 
             return "#666666";
