@@ -15,11 +15,19 @@ namespace JiraEpicVisualizer
 
     class Program
     {
-        static async Task Main(string[] args)
-        {
-            var cfg = JsonSerializer.Deserialize<Config>(File.ReadAllText($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}config.json"));
+        private static readonly SemaphoreSlim Sem = new SemaphoreSlim(5);
 
-            using var client = new HttpClient() { BaseAddress = new Uri(cfg.JiraUri) };
+        static async Task<int> Main(string[] args)
+        {
+            var cfg = LoadConfig();
+            if (cfg?.AuthKey == null || cfg.JiraUri == null)
+            {
+                Console.Error.WriteLine("Please provide config.json with AuthKey and JiraUri");
+                return 1;
+            }
+            Console.WriteLine($"Using {cfg.JiraUri}");
+
+            using var client = new HttpClient { BaseAddress = new Uri(cfg.JiraUri) };
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cfg.AuthKey)));
             client.DefaultRequestHeaders.Add("ContentType", "application/json");
 
@@ -34,14 +42,28 @@ namespace JiraEpicVisualizer
             foreach (var epic in epics)
                 csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.Stats.Percentage},{epic.DueDate?.ToString("d") ?? "none"}");
 
-            File.WriteAllText($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}roadmap.txt", csv.ToString());
+            SaveRoadmap(csv);
+            return 0;
         }
 
-        private static readonly SemaphoreSlim sem = new SemaphoreSlim(5);
+        private static void SaveRoadmap(StringBuilder csv)
+        {
+            var path = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}roadmap.txt";
+            File.WriteAllText(path, csv.ToString());
+            Console.WriteLine($"Roadmap saved to: {path}");
+        }
+
+        private static Config LoadConfig()
+        {
+            var path = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}config.json";
+            return File.Exists(path)
+                ? JsonSerializer.Deserialize<Config>(File.ReadAllText(path))
+                : new Config();
+        }
 
         private static async Task GetEpicProgress(HttpClient client, Epic issue)
         {
-            await sem.WaitAsync();
+            await Sem.WaitAsync();
             try
             {
                 var result = await client.Query($"issuetype in standardIssueTypes() AND \"Epic Link\"={issue.Key}");
@@ -59,12 +81,12 @@ namespace JiraEpicVisualizer
                 issue.Stats = stats;
                 ShowProgress();
             }
-            finally { sem.Release(); }
+            finally { Sem.Release(); }
         }
 
         private static Epic[] ParseEpics(IEnumerable<JsonElement> elements)
         {
-            return elements.Select(issue => ParseEpic(issue))
+            return elements.Select(ParseEpic)
                 .OrderBy(e => e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue))
                 .ThenBy(e => e.Project)
                 .ThenBy(e => e.Key)
@@ -108,7 +130,7 @@ namespace JiraEpicVisualizer
         {
             if (e.Stats.Total == 0)
                 return "#888888";
-            
+
             if (e.Stats.Done == e.Stats.Total)
                 return "#aaffaa";
 
