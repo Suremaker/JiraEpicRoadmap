@@ -37,11 +37,12 @@ namespace JiraEpicVisualizer
             await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
 
             var csv = new StringBuilder(GetCsvTemplate());
-            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,percentage,duedate");
+            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,percentage,duedate,image");
 
             foreach (var epic in epics)
-                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.Stats.Percentage},{epic.DueDate?.ToString("d") ?? "none"}");
+                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.Stats.Percentage},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl}");
 
+            Console.WriteLine();
             SaveRoadmap(csv);
             return 0;
         }
@@ -100,6 +101,7 @@ namespace JiraEpicVisualizer
                 Id = element.GetProperty("id").GetString(),
                 Key = element.GetProperty("key").GetString(),
                 Project = element.GetProperty("fields").GetProperty("project").GetProperty("name").GetString(),
+                ImageUrl = element.GetProperty("fields").GetProperty("project").GetProperty("avatarUrls").GetProperty("32x32").GetString(),
                 Status = element.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString().ToPlainText(),
                 Summary = element.GetProperty("fields").GetProperty("summary").GetString().ToPlainText(),
                 Links = element.GetProperty("fields").GetProperty("issuelinks").EnumerateArray()

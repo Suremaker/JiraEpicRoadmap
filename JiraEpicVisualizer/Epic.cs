@@ -9,6 +9,7 @@ namespace JiraEpicVisualizer
         public string Project { get; set; }
         public string Status { get; set; }
         public string Summary { get; set; }
+        public string ImageUrl { get;set;}
         public Link[] Links { get; set; }
         public TicketStats Stats { get; set; }
         public DateTimeOffset? DueDate { get; set; }
