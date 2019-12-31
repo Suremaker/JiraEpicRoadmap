@@ -7,7 +7,7 @@
 ## Node label with placeholders and HTML.
 ## Default is '%name_of_first_column%'.
 #
-# label: %project%<br><a href="%ticketUri%">%key% %summary%</a><br>%percentage% (done:%done%, pending:%inprogress%, total:%total%)<br>Due: %duedate%
+# label: <div style="color: #333333;"><div>%project% <div style="float:right; margin-left: 10px">Due: <span style="color: #000000">%duedate%</span></div></div><div style="font-size: 1.2em; margin: 5px 0;color: #000000"><a href="%ticketUri%">%key% %summary%</a></div><span style="color: #000000">%percentage%</span> | done:<span style="color: #000000">%done%</span>, pending:<span style="color: #000000">%inprogress%</span>, total:<span style="color: #000000">%total%</span></div>
 #
 ## Node style (placeholders are replaced once).
 ## Default is the current style for nodes.
