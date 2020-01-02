@@ -131,10 +131,7 @@ namespace JiraEpicVisualizer
 
         private static string ToFill(Epic e)
         {
-            if (e.Stats.Total == 0)
-                return "#888888";
-
-            if (e.Stats.Done == e.Stats.Total)
+            if (e.Stats.Done == e.Stats.Total && e.Stats.Total > 0)
                 return "#aaffaa";
 
             if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
@@ -142,15 +139,16 @@ namespace JiraEpicVisualizer
 
             if (e.Stats.NotStarted < e.Stats.Total)
                 return "#aaaaff";
+
+            if (e.Stats.Total == 0)
+                return "#888888";
+
             return "#aaaaaa";
         }
 
         private static string ToStroke(Epic e)
         {
-            if (e.Stats.Total == 0)
-                return "#444444";
-
-            if (e.Stats.Done == e.Stats.Total)
+            if (e.Stats.Done == e.Stats.Total && e.Stats.Total > 0)
                 return "#66ff66";
 
             if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
@@ -158,6 +156,9 @@ namespace JiraEpicVisualizer
 
             if (e.Stats.NotStarted < e.Stats.Total)
                 return "#6666ff";
+
+            if (e.Stats.Total == 0)
+                return "#444444";
 
             return "#666666";
         }
