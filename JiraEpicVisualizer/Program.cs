@@ -32,7 +32,7 @@ namespace JiraEpicVisualizer
             client.DefaultRequestHeaders.Add("ContentType", "application/json");
 
             var response = await client.Query("issuetype=Epic and status!=done");
-            var epics = ParseEpics(response);
+            var epics = ParseEpics(response, cfg.ProjectFilters);
             ShowProgress();
             await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
 
@@ -85,9 +85,10 @@ namespace JiraEpicVisualizer
             finally { Sem.Release(); }
         }
 
-        private static Epic[] ParseEpics(IEnumerable<JsonElement> elements)
+        private static Epic[] ParseEpics(IReadOnlyList<JsonElement> elements, string[] projectFilters)
         {
             return elements.Select(ParseEpic)
+                .Where(e => projectFilters.Any(f => e.Project.StartsWith(f)))
                 .OrderBy(e => e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue))
                 .ThenBy(e => e.Project)
                 .ThenBy(e => e.Key)

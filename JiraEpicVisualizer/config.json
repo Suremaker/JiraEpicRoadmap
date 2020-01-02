@@ -1,4 +1,5 @@
 {
   "JiraUri": "",
-  "AuthKey": ""
+  "AuthKey": "",
+  "ProjectFilters": [""]
 }
