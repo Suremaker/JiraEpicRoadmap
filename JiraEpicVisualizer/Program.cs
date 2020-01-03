@@ -31,7 +31,7 @@ namespace JiraEpicVisualizer
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cfg.AuthKey)));
             client.DefaultRequestHeaders.Add("ContentType", "application/json");
 
-            var response = await client.Query("issuetype=Epic and status!=done");
+            var response = await client.Query("issuetype=Epic and statusCategory!=done");
             var epics = ParseEpics(response, cfg.ProjectFilters);
             ShowProgress();
             await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
