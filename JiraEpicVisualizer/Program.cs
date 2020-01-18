@@ -37,14 +37,23 @@ namespace JiraEpicVisualizer
             await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
 
             var csv = new StringBuilder(GetCsvTemplate());
-            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,percentage,duedate,image");
+            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,duedate,image,progressBar");
 
             foreach (var epic in epics)
-                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.Stats.Percentage},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl}");
+            {
+                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl},{GetProgressBar(epic.Stats)}");
+            }
 
             Console.WriteLine();
             SaveRoadmap(csv);
             return 0;
+        }
+
+        private static string GetProgressBar(TicketStats s)
+        {
+            int done = s.DonePercentage;
+            int progress = s.InProgressPercentage + s.DonePercentage;
+            return $"\"<div style=\\\"height:10px;background:linear-gradient(to right,#50ff50 0% {done}%, #5050ff {done}% {progress}%, #505050 {progress}% 100%);\\\"> </div>\"";
         }
 
         private static void SaveRoadmap(StringBuilder csv)
