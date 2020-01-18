@@ -21,9 +21,10 @@ namespace JiraEpicVisualizer
             AddFormatter("fill", e => e.GetSeverityColor().ToRgb());
             AddFormatter("stroke", e => e.GetSeverityColor().ToBorderColor().ToRgb());
             AddFormatter("ticketUri", e => $"{cfg.JiraUri}/browse/{e.Key}");
-            AddFormatter("total", e => $"{e.Stats.Total}");
-            AddFormatter("inprogress", e => $"{e.Stats.InProgress}");
-            AddFormatter("done", e => $"{e.Stats.Done}");
+            AddFormatter("ticketsTotal", e => $"{e.Stats.Total}");
+            AddFormatter("ticketsInProgress", e => $"{e.Stats.InProgress}");
+            AddFormatter("ticketsDone", e => $"{e.Stats.Done}");
+            AddFormatter("ticketsNotStarted", e => $"{e.Stats.NotStarted}");
             AddFormatter("duedate", e => e.DueDate?.ToString("d") ?? "none");
             AddFormatter("image", e => e.ImageUrl);
             AddFormatter("progressBar", e => GetProgressBar(e.Stats));
@@ -62,9 +63,26 @@ namespace JiraEpicVisualizer
 
         private static string GetProgressBar(TicketStats s)
         {
-            var done = s.DonePercentage;
-            var progress = s.InProgressPercentage + s.DonePercentage;
-            return $"\"<div style=\\\"height:10px;background:linear-gradient(to right,#50ff50 0% {done}%, #5050ff {done}% {progress}%, #505050 {progress}% 100%);\\\"> </div>\"";
+            var sb = new StringBuilder("\"<div style=\\\"height:10px;");
+            if (s.Total > 0)
+            {
+                sb.Append("background:linear-gradient(to right");
+                var done = s.DonePercentage;
+                var progress = s.InProgressPercentage + s.DonePercentage;
+
+                if (done > 0)
+                    sb.Append($", #50ff50 0% {done}%");
+
+                if (progress > done)
+                    sb.Append($", #5050ff {done}% {progress}%");
+
+                if (progress < 100)
+                    sb.Append($", #505050 {progress}% 100%");
+
+                sb.Append(");");
+            }
+            sb.Append("\\\"> </div>\"");
+            return sb.ToString();
         }
     }
 }
