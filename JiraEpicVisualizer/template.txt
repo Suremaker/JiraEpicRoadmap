@@ -56,7 +56,7 @@
 ## Comma-separated list of ignored columns for metadata. (These can be
 ## used for connections and styles but will not be added as metadata.)
 #
-# ignore: id,fill,stroke
+# ignore: id,fill,stroke,image,refs
 #
 ## Column to be renamed to link attribute (used as link).
 #

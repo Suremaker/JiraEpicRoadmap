@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -28,40 +26,36 @@ namespace JiraEpicVisualizer
             }
             Console.WriteLine($"Using {cfg.JiraUri}");
 
-            using var client = new HttpClient { BaseAddress = new Uri(cfg.JiraUri) };
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cfg.AuthKey)));
-            client.DefaultRequestHeaders.Add("ContentType", "application/json");
-
-            var response = await client.Query("issuetype=Epic and statusCategory!=done");
-            var epics = ParseEpics(response, cfg.ProjectFilters);
-            ShowProgress();
-            await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
-
-            var csv = new StringBuilder(GetCsvTemplate());
-            csv.AppendLine("id,key,project,summary,refs,fill,stroke,ticketUri,total,inprogress,done,duedate,image,progressBar");
-
-            foreach (var epic in epics)
-            {
-                var color = Extensions.GetSeverityColor(epic);
-                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{Extensions.ToRgb(color)},{Extensions.ToRgb(Extensions.ToBorder(color))},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl},{GetProgressBar(epic.Stats)}");
-            }
+            using var client = CreateHttpClient(cfg);
+            var epics = await QueryEpics(client, cfg);
+            var csv = new EpicCsvWriter(cfg).Write(epics);
 
             Console.WriteLine();
             SaveRoadmap(csv);
             return 0;
         }
 
-        private static string GetProgressBar(TicketStats s)
+        private static async Task<Epic[]> QueryEpics(HttpClient client, Config cfg)
         {
-            var done = s.DonePercentage;
-            var progress = s.InProgressPercentage + s.DonePercentage;
-            return $"\"<div style=\\\"height:10px;background:linear-gradient(to right,#50ff50 0% {done}%, #5050ff {done}% {progress}%, #505050 {progress}% 100%);\\\"> </div>\"";
+            var response = await client.Query("issuetype=Epic and statusCategory!=done");
+            var epics = ParseEpics(response, cfg.ProjectFilters);
+            ShowProgress();
+            await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
+            return epics;
         }
 
-        private static void SaveRoadmap(StringBuilder csv)
+        private static HttpClient CreateHttpClient(Config cfg)
+        {
+            var client = new HttpClient { BaseAddress = new Uri(cfg.JiraUri) };
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(cfg.AuthKey)));
+            client.DefaultRequestHeaders.Add("ContentType", "application/json");
+            return client;
+        }
+
+        private static void SaveRoadmap(string csv)
         {
             var path = $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}roadmap.txt";
-            File.WriteAllText(path, csv.ToString());
+            File.WriteAllText(path, csv);
             Console.WriteLine($"Roadmap saved to: {path}");
         }
 
@@ -118,7 +112,7 @@ namespace JiraEpicVisualizer
                 Summary = element.GetProperty("fields").GetProperty("summary").GetString().ToPlainText(),
                 Links = element.GetProperty("fields").GetProperty("issuelinks").EnumerateArray()
                 .Where(l => l.TryGetProperty("outwardIssue", out _))
-                .Select(link => ParseLink(link)).ToArray()
+                .Select(ParseLink).ToArray()
             };
             var dueDateElement = element.GetProperty("fields").GetProperty("duedate");
             if (dueDateElement.ValueKind != JsonValueKind.Null)
@@ -138,47 +132,6 @@ namespace JiraEpicVisualizer
         private static void ShowProgress()
         {
             Console.Write('.');
-        }
-
-        private static string ToFill(Epic e)
-        {
-            if (e.Stats.Done == e.Stats.Total && e.Stats.Total > 0)
-                return "#aaffaa";
-
-            if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
-                return "#ffaaaa";
-
-            if (e.Stats.NotStarted < e.Stats.Total)
-                return "#aaaaff";
-
-            if (e.Stats.Total == 0)
-                return "#888888";
-
-            return "#aaaaaa";
-        }
-
-        private static string ToStroke(Epic e)
-        {
-            if (e.Stats.Done == e.Stats.Total && e.Stats.Total > 0)
-                return "#66ff66";
-
-            if (e.DueDate.GetValueOrDefault(DateTimeOffset.MaxValue).Date < DateTimeOffset.UtcNow.Date)
-                return "#ff0000";
-
-            if (e.Stats.NotStarted < e.Stats.Total)
-                return "#6666ff";
-
-            if (e.Stats.Total == 0)
-                return "#444444";
-
-            return "#666666";
-        }
-
-        private static string GetCsvTemplate()
-        {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JiraEpicVisualizer.template.txt");
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

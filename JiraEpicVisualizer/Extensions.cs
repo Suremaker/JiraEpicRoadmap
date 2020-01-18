@@ -79,7 +79,7 @@ namespace JiraEpicVisualizer
             );
         }
 
-        public static Color ToBorder(this Color color) => Color.FromArgb((int)(color.R * 0.6), (int)(color.G * 0.6), (int)(color.B * 0.6));
+        public static Color ToBorderColor(this Color color) => Color.FromArgb((int)(color.R * 0.6), (int)(color.G * 0.6), (int)(color.B * 0.6));
         public static string ToRgb(this Color color) => $"#{color.R:x2}{color.G:x2}{color.B:x2}";
     }
 }

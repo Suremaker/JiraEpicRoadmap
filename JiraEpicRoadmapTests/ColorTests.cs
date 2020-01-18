@@ -37,9 +37,9 @@ namespace JiraEpicRoadmapTests
 
         [Theory]
         [InlineData(0xff8032,"#994c1e")]
-        public void ToBorder_should_darker_the_color(int rgb, string expected)
+        public void ToBorderColor_should_darker_the_color(int rgb, string expected)
         {
-            Color.FromArgb(rgb).ToBorder().ToRgb().ShouldBe(expected);
+            Color.FromArgb(rgb).ToBorderColor().ToRgb().ShouldBe(expected);
         }
     }
 }
