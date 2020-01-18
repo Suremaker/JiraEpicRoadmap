@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -41,7 +42,8 @@ namespace JiraEpicVisualizer
 
             foreach (var epic in epics)
             {
-                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{ToFill(epic)},{ToStroke(epic)},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl},{GetProgressBar(epic.Stats)}");
+                var color = Extensions.GetSeverityColor(epic);
+                csv.AppendLine($"{epic.Id},{epic.Key},{epic.Project},{epic.Summary},\"{string.Join(',', epic.Links.Select(l => l.OutwardId))}\",{Extensions.ToRgb(color)},{Extensions.ToRgb(Extensions.ToBorder(color))},{cfg.JiraUri}/browse/{epic.Key},{epic.Stats.Total},{epic.Stats.InProgress},{epic.Stats.Done},{epic.DueDate?.ToString("d") ?? "none"},{epic.ImageUrl},{GetProgressBar(epic.Stats)}");
             }
 
             Console.WriteLine();
@@ -51,8 +53,8 @@ namespace JiraEpicVisualizer
 
         private static string GetProgressBar(TicketStats s)
         {
-            int done = s.DonePercentage;
-            int progress = s.InProgressPercentage + s.DonePercentage;
+            var done = s.DonePercentage;
+            var progress = s.InProgressPercentage + s.DonePercentage;
             return $"\"<div style=\\\"height:10px;background:linear-gradient(to right,#50ff50 0% {done}%, #5050ff {done}% {progress}%, #505050 {progress}% 100%);\\\"> </div>\"";
         }
 
