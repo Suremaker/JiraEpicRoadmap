@@ -37,7 +37,11 @@ namespace JiraEpicVisualizer
 
         private static async Task<Epic[]> QueryEpics(HttpClient client, Config cfg)
         {
-            var response = await client.Query("issuetype=Epic and statusCategory!=done");
+            var query = "issuetype=Epic";
+            if(!string.IsNullOrWhiteSpace(cfg.EpicQueryFilter))
+                query+=$" AND ({cfg.EpicQueryFilter})";
+
+            var response = await client.Query(query);
             var epics = ParseEpics(response, cfg.ProjectFilters);
             ShowProgress();
             await Task.WhenAll(epics.Select(i => GetEpicProgress(client, i)));
