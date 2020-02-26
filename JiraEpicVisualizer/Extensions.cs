@@ -48,6 +48,9 @@ namespace JiraEpicVisualizer
 
         public static Color GetSeverityColor(this Epic e)
         {
+            if(string.Equals(e.Status,"Done",StringComparison.OrdinalIgnoreCase))
+                return Color.FromArgb(0xaaaaff);
+
             var ranges = new[]
             {
                 new {value = int.MaxValue, color = Color.FromArgb(0xaaaaaa)},
