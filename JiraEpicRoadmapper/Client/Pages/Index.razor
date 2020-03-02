@@ -1,0 +1,63 @@
+﻿@page "/"
+@using JiraEpicRoadmapper.Shared
+@inject HttpClient Http
+
+@if (_timeline == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <div class="canvas" style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.Rows* RowHeight)px">
+        @foreach (var d in _timeline.GetMonths())
+        {
+            <!--   <div class="month" style="left: @(d.index*DaySpan)px; height: @(_timeline.Rows*RowHeight)px;">@(d.day.ToString("MMM yyyy"))</div>-->
+        }
+        @foreach (var d in _timeline.GetToday())
+        {
+            <div class="today" style="left: @(d.index*DaySpan)px; height: @(_timeline.Rows*RowHeight)px;"><br />@(d.day.ToString("dd/MM")) (today)</div>
+        }
+        @foreach (var d in _timeline.GetMondays())
+        {
+            <div class="week" style="left: @(d.index*DaySpan)px; height: @(_timeline.Rows*RowHeight)px;">@(d.day.ToString("dd/MM"))</div>
+        }
+        @foreach (var e in _timeline.Epics)
+        {
+            <div class="epic" style="left: @(e.startIndex * DaySpan + CellMargin)px; width: @((e.endIndex - e.startIndex) * DaySpan - 2 * CellMargin)px; top: @(e.row * RowHeight + RowMargin)px; height: @(TicketHeight)px">
+                <a href="@(e.epic.Url)" target="_blank">@(e.epic.Summary)</a>
+            </div>
+        }
+        <svg style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.Rows* RowHeight)px">
+            @foreach (var e in _timeline.Epics)
+            {
+                foreach (var link in e.epic.Links)
+                {
+                    foreach (var eTo in _timeline.Epics)
+                    {
+                        if (eTo.epic.Id == link.OutwardId)
+                        {
+                            var color = eTo.startIndex >= e.endIndex ? "rgba(0,255,0,0.5)" : "rgba(255,0,0,0.5)";
+                            <line x1="@((e.endIndex) * DaySpan - CellMargin)" y1="@((e.row+0.5) * RowHeight)" x2="@(eTo.startIndex * DaySpan + CellMargin)" y2="@((eTo.row+0.5) * RowHeight)" style="stroke:@(color); stroke-width: 1" />
+                            break;
+                        }
+                    }
+                }
+            }
+        </svg>
+    </div>
+}
+
+@code {
+    private static readonly int DaySpan = 60;
+    private static readonly int CellMargin = 10;
+    private static readonly int TicketHeight = 40;
+    private static readonly int RowMargin = 10;
+    private static readonly int RowHeight = TicketHeight + 2 * RowMargin;
+    private Timeline _timeline;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _timeline = new Timeline(await Http.GetJsonAsync<Epic[]>("epics"));
+    }
+}

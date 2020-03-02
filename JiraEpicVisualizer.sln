@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicVisualizer", "JiraEpicVisualizer\JiraEpicVisualizer.csproj", "{9226DF96-E650-4C0D-B9C6-F144F2399149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server", "JiraEpicRoadmapper\Server\JiraEpicRoadmapper.Server.csproj", "{32C5CC52-044C-4C53-800F-05B1AD8FEA10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraEpicRoadmapTests", "JiraEpicRoadmapTests\JiraEpicRoadmapTests.csproj", "{C311723F-9C12-4A1D-BD6A-90BFCF158C68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Client", "JiraEpicRoadmapper\Client\JiraEpicRoadmapper.Client.csproj", "{0802176C-94A4-4343-81E9-0B9189A90E4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Shared", "JiraEpicRoadmapper\Shared\JiraEpicRoadmapper.Shared.csproj", "{B0244B15-3BE9-43EE-966B-B5C939569C17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9226DF96-E650-4C0D-B9C6-F144F2399149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9226DF96-E650-4C0D-B9C6-F144F2399149}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9226DF96-E650-4C0D-B9C6-F144F2399149}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9226DF96-E650-4C0D-B9C6-F144F2399149}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C311723F-9C12-4A1D-BD6A-90BFCF158C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C311723F-9C12-4A1D-BD6A-90BFCF158C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C311723F-9C12-4A1D-BD6A-90BFCF158C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C311723F-9C12-4A1D-BD6A-90BFCF158C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,57 @@
+﻿body {
+    font-family: Calibri, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+.week {
+    width: 1px;
+    height: 100%;
+    border-left: 1px dashed #666666;
+    color: #666666;
+    padding-left: 1px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.month {
+    height: 100%;
+    border-left: 1px solid #333388;
+    color: #333388;
+    margin-top: 1em;
+    padding-left: 1px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.today {
+    width: 30px;
+    height: 100%;
+    border-left: 1px solid #338833;
+    background-image: linear-gradient(to right, rgba(51,136,51,0.5), rgba(51,136,51,0));
+    padding-left: 1px;
+    position: absolute;
+    white-space: nowrap;
+    padding-left: 1px;
+}
+
+.canvas {
+    position: relative;
+}
+
+.project {
+    border-bottom: 1px solid #666666;
+}
+
+.epic {
+    border: 1px solid #222222;
+    background-color: #afefff;
+    padding: 1px;
+    border-radius: 10px;
+    position: absolute;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+}

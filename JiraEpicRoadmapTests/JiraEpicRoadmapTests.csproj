@@ -20,8 +20,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\JiraEpicVisualizer\JiraEpicVisualizer.csproj" />
-  </ItemGroup>
-
 </Project>
