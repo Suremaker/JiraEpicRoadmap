@@ -13,6 +13,7 @@ namespace JiraEpicRoadmapper.Client
         public int Rows { get; }
         public IReadOnlyList<(Epic epic, int startIndex, int endIndex, int row)> Epics { get; }
         public int MaxIndex { get; }
+        public int FirstRowIndex { get; } = 1;
 
         public Timeline(Epic[] epics)
         {
@@ -39,26 +40,30 @@ namespace JiraEpicRoadmapper.Client
 
         private IReadOnlyList<IReadOnlyList<Epic>> LayoutEpics(IEnumerable<Epic> epics)
         {
-            var remaining = epics.ToDictionary(e=>e.Id,e=>new EpicTree(e));
-            foreach(var e in remaining.Values)
+            var remaining = epics.ToDictionary(e => e.Id, e => new EpicTree(e));
+            foreach (var e in remaining.Values)
+            {
                 e.CalculateDepth(remaining);
+                e.ProcessReferences(remaining);
+            }
 
             var lanes = new List<LinkedList<Epic>>();
 
-            while(remaining.Count>0){
-                var epic = remaining.Values.OrderByDescending(r=>r.Depth).First();
+            while (remaining.Count > 0)
+            {
+                var epic = remaining.Values.OrderBy(r => r.InboundRefs).ThenBy(r => r.Epic.CalculatedStartDate).ThenByDescending(r => r.Depth).First();
                 Allocate(epic.Epic);
             }
 
             void Allocate(Epic e)
             {
-                if(!remaining.Remove(e.Id))
-                return;
+                if (!remaining.Remove(e.Id))
+                    return;
 
-                bool added=false;
+                bool added = false;
                 foreach (var lane in lanes)
                 {
-                    if(added)break;
+                    if (added) break;
                     var node = lane.First;
                     bool overlaps = false;
                     while (node != null)
@@ -67,26 +72,27 @@ namespace JiraEpicRoadmapper.Client
                             break;
                         if (node.Value.CalculatedStartDate >= e.CalculatedDueDate)
                         {
-                            overlaps=true;
+                            overlaps = true;
                             break;
                         }
 
                         node = node.Next;
                     }
 
-                    if (!overlaps&&!added && e.DependsOn(lane.Last.Value))
+                    if (!overlaps && !added && (e.DependsOn(lane.Last.Value) || !lane.Last.Value.Links.Any()))
                     {
                         lane.AddLast(e);
-                        added=true;
+                        added = true;
                         break;
                     }
                 }
-if(!added){
-                lanes.Add(new LinkedList<Epic>());
-                lanes.Last().AddLast(e);
-}
-                var subEpics = EpicTree.GetSubEpics(e,remaining).OrderByDescending(r=>r.Depth).ToArray();
-                foreach(var se in subEpics)
+                if (!added)
+                {
+                    lanes.Add(new LinkedList<Epic>());
+                    lanes.Last().AddLast(e);
+                }
+                var subEpics = EpicTree.GetSubEpics(e, remaining).OrderByDescending(r => r.Depth).ToArray();
+                foreach (var se in subEpics)
                     Allocate(se.Epic);
             }
 
@@ -105,15 +111,13 @@ if(!added){
             }
         }
 
-        public IEnumerable<(DateTimeOffset day, int index)> GetMonths()
+        public IEnumerable<(string project, int row)> GetProjectRows()
         {
-            var day = Start;
-            if (day.Day != 1)
-                day = day.AddMonths(1).GetFirstOfMonth();
-            while (day < End)
+            int row = FirstRowIndex;
+            foreach (var p in Projects)
             {
-                yield return GetDayWithIndex(day);
-                day = day.AddMonths(1);
+                yield return (p.Name, row);
+                row += p.Epics.Count + 1;
             }
         }
 
@@ -126,9 +130,10 @@ if(!added){
 
         private IEnumerable<(Epic epic, int startIndex, int endIndex, int row)> GetEpics()
         {
-            int row = 1;
+            int row = FirstRowIndex;
             foreach (var p in Projects)
             {
+                ++row;
                 foreach (var epicRow in p.Epics)
                 {
                     foreach (var epic in epicRow)
@@ -146,27 +151,37 @@ if(!added){
         }
     }
 
-    class EpicTree{
-            public Epic Epic{get;}
-            public int Depth{get;private set;}=-1;
-            public EpicTree(Epic e){Epic = e;}
-
-            public EpicTree CalculateDepth(IReadOnlyDictionary<string,EpicTree> epics)
+    class EpicTree
+    {
+        public Epic Epic { get; }
+        public int Depth { get; private set; } = -1;
+        public int InboundRefs { get; private set; } = 0;
+        public EpicTree(Epic e) { Epic = e; }
+        public void IncrementInboundRef() => InboundRefs++;
+        public EpicTree CalculateDepth(IReadOnlyDictionary<string, EpicTree> epics)
+        {
+            if (Depth < 0)
             {
-                if(Depth<0){
-                    Depth = GetSubEpics(Epic,epics)
-                    .Select(e=>(int?)e.CalculateDepth(epics).Depth)
-                    .OrderByDescending(x=>x)
-                    .FirstOrDefault()
-                    .GetValueOrDefault(-1)+1;
-                }
-return this;
+                Depth = GetSubEpics(Epic, epics)
+                .Select(e => (int?)e.CalculateDepth(epics).Depth)
+                .OrderByDescending(x => x)
+                .FirstOrDefault()
+                .GetValueOrDefault(-1) + 1;
             }
-
-            public static IEnumerable<EpicTree> GetSubEpics(Epic e, IReadOnlyDictionary<string,EpicTree> epics){
-                return e.Links
-                    .Select(l=>epics.TryGetValue(l.OutwardId, out var e)?e:null)
-                    .Where(e=>e!=null);
-            }
+            return this;
         }
+
+        public static IEnumerable<EpicTree> GetSubEpics(Epic e, IReadOnlyDictionary<string, EpicTree> epics)
+        {
+            return e.Links
+                .Select(l => epics.TryGetValue(l.OutwardId, out var e) ? e : null)
+                .Where(e => e != null);
+        }
+
+        public void ProcessReferences(Dictionary<string, EpicTree> epics)
+        {
+            foreach (var e in GetSubEpics(Epic, epics))
+                e.IncrementInboundRef();
+        }
+    }
 }

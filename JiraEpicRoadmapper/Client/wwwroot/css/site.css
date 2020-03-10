@@ -15,16 +15,6 @@
     white-space: nowrap;
 }
 
-.month {
-    height: 100%;
-    border-left: 1px solid #333388;
-    color: #333388;
-    margin-top: 1em;
-    padding-left: 1px;
-    position: absolute;
-    white-space: nowrap;
-}
-
 .today {
     width: 30px;
     height: 100%;
@@ -41,12 +31,14 @@
 }
 
 .project {
-    border-bottom: 1px solid #666666;
+    padding-left: 2px;
+    color: #666666;
+    position: absolute;
+    font-size: 14px;
 }
 
 .epic {
     border: 1px solid #222222;
-    background-color: #afefff;
     padding: 1px;
     border-radius: 10px;
     position: absolute;
