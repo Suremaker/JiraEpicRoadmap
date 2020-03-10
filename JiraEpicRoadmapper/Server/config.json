@@ -2,5 +2,5 @@
   "JiraUri": "",
   "AuthKey": "",
   "ProjectFilters": [ "" ],
-  "EpicQueryFilter": ""
+  "EpicQueryFilter": "statusCategory!=Done OR Due>=-30d"
 }
