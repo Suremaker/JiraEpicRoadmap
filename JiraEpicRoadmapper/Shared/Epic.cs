@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace JiraEpicRoadmapper.Shared
 {
@@ -19,5 +20,6 @@ namespace JiraEpicRoadmapper.Shared
         public string Url { get; set; }
 
         public bool Overlaps(Epic e) => !(CalculatedDueDate <= e.CalculatedStartDate || e.CalculatedDueDate <= CalculatedStartDate);
+        public bool DependsOn(Epic e)=>e.Links.Any(l=>l.OutwardId==Id);
     }
 }

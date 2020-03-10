@@ -39,12 +39,26 @@ namespace JiraEpicRoadmapper.Client
 
         private IReadOnlyList<IReadOnlyList<Epic>> LayoutEpics(IEnumerable<Epic> epics)
         {
+            var remaining = epics.ToDictionary(e=>e.Id,e=>new EpicTree(e));
+            foreach(var e in remaining.Values)
+                e.CalculateDepth(remaining);
+
             var lanes = new List<LinkedList<Epic>>();
 
-            bool Allocate(Epic e)
+            while(remaining.Count>0){
+                var epic = remaining.Values.OrderByDescending(r=>r.Depth).First();
+                Allocate(epic.Epic);
+            }
+
+            void Allocate(Epic e)
             {
+                if(!remaining.Remove(e.Id))
+                return;
+
+                bool added=false;
                 foreach (var lane in lanes)
                 {
+                    if(added)break;
                     var node = lane.First;
                     bool overlaps = false;
                     while (node != null)
@@ -53,29 +67,27 @@ namespace JiraEpicRoadmapper.Client
                             break;
                         if (node.Value.CalculatedStartDate >= e.CalculatedDueDate)
                         {
-                            lane.AddBefore(node, e);
-                            return true;
+                            overlaps=true;
+                            break;
                         }
 
                         node = node.Next;
                     }
 
-                    if (!overlaps)
+                    if (!overlaps&&!added && e.DependsOn(lane.Last.Value))
                     {
                         lane.AddLast(e);
-                        return true;
+                        added=true;
+                        break;
                     }
                 }
-
-                return false;
-            }
-
-            foreach (var epic in epics)
-            {
-                if (Allocate(epic))
-                    continue;
+if(!added){
                 lanes.Add(new LinkedList<Epic>());
-                lanes.Last().AddLast(epic);
+                lanes.Last().AddLast(e);
+}
+                var subEpics = EpicTree.GetSubEpics(e,remaining).OrderByDescending(r=>r.Depth).ToArray();
+                foreach(var se in subEpics)
+                    Allocate(se.Epic);
             }
 
             return lanes.Select(l => l.ToArray()).ToArray();
@@ -107,7 +119,7 @@ namespace JiraEpicRoadmapper.Client
 
         public IEnumerable<(DateTimeOffset day, int index)> GetToday()
         {
-            var today = DateTimeOffset.UtcNow.Date.AddDays(1);
+            var today = DateTimeOffset.UtcNow.Date;
             if (today >= Start && today <= End)
                 yield return GetDayWithIndex(today);
         }
@@ -133,4 +145,28 @@ namespace JiraEpicRoadmapper.Client
             return (int)(day - Start).TotalDays;
         }
     }
+
+    class EpicTree{
+            public Epic Epic{get;}
+            public int Depth{get;private set;}=-1;
+            public EpicTree(Epic e){Epic = e;}
+
+            public EpicTree CalculateDepth(IReadOnlyDictionary<string,EpicTree> epics)
+            {
+                if(Depth<0){
+                    Depth = GetSubEpics(Epic,epics)
+                    .Select(e=>(int?)e.CalculateDepth(epics).Depth)
+                    .OrderByDescending(x=>x)
+                    .FirstOrDefault()
+                    .GetValueOrDefault(-1)+1;
+                }
+return this;
+            }
+
+            public static IEnumerable<EpicTree> GetSubEpics(Epic e, IReadOnlyDictionary<string,EpicTree> epics){
+                return e.Links
+                    .Select(l=>epics.TryGetValue(l.OutwardId, out var e)?e:null)
+                    .Where(e=>e!=null);
+            }
+        }
 }
