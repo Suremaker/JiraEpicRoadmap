@@ -50,8 +50,8 @@ namespace JiraEpicRoadmapper.Server.Controllers
             {
                 epic.CalculatedStartDate = epic.StartDate.GetValueOrDefault(epic.DueDate.GetValueOrDefault(today.AddDays(1)).AddDays(-1));
                 epic.CalculatedDueDate = epic.DueDate.GetValueOrDefault(epic.StartDate.GetValueOrDefault(today).AddDays(1));
-                if (epic.CalculatedStartDate >= epic.CalculatedDueDate)
-                    epic.CalculatedDueDate = epic.CalculatedStartDate.AddDays(1);
+                if (epic.CalculatedStartDate >= epic.CalculatedDueDate.AddDays(-2))
+                    epic.CalculatedDueDate = epic.CalculatedStartDate.AddDays(3);
             }
 
             return epics;

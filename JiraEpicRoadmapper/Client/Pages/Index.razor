@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Text
 @using JiraEpicRoadmapper.Shared
 @inject HttpClient Http
 
@@ -26,9 +27,9 @@ else
         }
         @foreach (var e in _timeline.Epics)
         {
-            <div class="epic" style="left: @(e.startIndex * DaySpan + CellMargin)px; width: @((e.endIndex - e.startIndex) * DaySpan - 2 * CellMargin)px; top: @(e.row * RowHeight + RowMargin)px; height: @(TicketHeight)px; background-color: @(GetColor(e.epic.Project))">
-                <a href="@(e.epic.Url)" target="_blank">@(e.epic.Summary)</a>
-            </div>
+            <a href="@(e.epic.Url)" target="_blank" class="epic" style="left: @(e.startIndex * DaySpan + CellMargin)px; width: @((e.endIndex - e.startIndex) * DaySpan - 2 * CellMargin)px; top: @(e.row * RowHeight + RowMargin)px; height: @(TicketHeight)px;">
+                <div class="epic-card" style="background-color: @(GetColor(e.epic.Project))"><p>@(MapStatus(e.epic))@(e.epic.Summary)</p></div>
+            </a>
         }
         <svg style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.Rows* RowHeight)px">
             @foreach (var e in _timeline.Epics)
@@ -79,6 +80,21 @@ else
     private string GetColor(string project)
     {
         return _projectColorMap.TryGetValue(project, out var color) ? color : "#afefff";
+    }
+
+    private string MapStatus(Epic e)
+    {
+        var builder = new StringBuilder();
+        if (string.Equals(e.Status, "done", StringComparison.OrdinalIgnoreCase))
+            builder.Append("✔️");
+        else if (string.Equals(e.Status, "in progress", StringComparison.OrdinalIgnoreCase))
+            builder.Append("⚙️");
+        else if (string.Equals(e.Status, "to do", StringComparison.OrdinalIgnoreCase))
+            builder.Append("❔");
+
+        if (e.CalculatedDueDate < DateTimeOffset.Now.Date)
+            builder.Append("⚠️");
+        return builder.ToString();
     }
 
 }

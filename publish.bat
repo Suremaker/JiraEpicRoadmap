@@ -1,1 +1,4 @@
-dotnet publish JiraEpicVisualizer\JiraEpicVisualizer.csproj -r win-x64 -c Release --self-contained=true /p:PublishTrimmed=true /p:PublishSingleFile=true -o out
+rd /S /Q out
+mkdir out
+xcopy /E /Y bin out
+dotnet publish JiraEpicRoadmapper\Server\JiraEpicRoadmapper.Server.csproj -o out\server

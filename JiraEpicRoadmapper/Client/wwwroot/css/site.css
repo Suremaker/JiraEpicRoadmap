@@ -37,13 +37,29 @@
     font-size: 14px;
 }
 
-.epic {
+.epic, .epic:hover, .epic:visited {
+    position: absolute;
+    display: block;
+    color: #111111;
+    text-decoration: none;
+}
+
+.epic-card {
     border: 1px solid #222222;
     padding: 1px;
     border-radius: 10px;
-    position: absolute;
-    text-overflow: ellipsis;
     overflow: hidden;
-    text-align: center;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.epic-card p {
+    margin: 0;
+    padding: 3px;
+    box-sizing: border-box;
+    max-height: 40px;
+    display: block;
+    overflow: hidden;
 }
