@@ -39,8 +39,8 @@ else
                     {
                         if (eTo.epic.Id == link.OutwardId)
                         {
-                            var color = eTo.startIndex >= e.endIndex ? "rgba(0,255,0,0.5)" : "rgba(255,0,0,0.5)";
-                            <line x1="@((e.endIndex) * DaySpan - CellMargin)" y1="@((e.row+0.5) * RowHeight)" x2="@(eTo.startIndex * DaySpan + CellMargin)" y2="@((eTo.row+0.5) * RowHeight)" style="stroke:@(color); stroke-width: 1" />
+                            var color = eTo.startIndex >= e.endIndex ? "rgba(0,180,0,0.9)" : "rgba(180,0,0,0.9)";
+                            <line x1="@((e.endIndex) * DaySpan - CellMargin)" y1="@((e.row+0.5) * RowHeight)" x2="@(eTo.startIndex * DaySpan + CellMargin)" y2="@((eTo.row+0.5) * RowHeight)" style="stroke:@(color); stroke-width: 1; stroke-dasharray:5,5" />
                             break;
                         }
                     }
@@ -58,12 +58,12 @@ else
     private static readonly int RowHeight = TicketHeight + 2 * RowMargin;
     private static readonly string[] ProjectColors = new[]
     {
+        "#9999ff",
         "#ff9999",
         "#99ff99",
         "#ffff99",
         "#ff99ff",
-        "#99ffff",
-        "#9999ff"
+        "#99ffff"
     };
     private IReadOnlyDictionary<string, string> _projectColorMap = new Dictionary<string, string>();
     private Timeline _timeline;

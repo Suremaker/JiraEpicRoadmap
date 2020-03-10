@@ -18,8 +18,8 @@
 .today {
     width: 30px;
     height: 100%;
-    border-left: 1px solid #338833;
-    background-image: linear-gradient(to right, rgba(51,136,51,0.5), rgba(51,136,51,0));
+    border-left: 1px solid #0066ff;
+    background-image: linear-gradient(to right, rgba(0,102,255,0.5), rgba(0,102,255,0));
     padding-left: 1px;
     position: absolute;
     white-space: nowrap;
