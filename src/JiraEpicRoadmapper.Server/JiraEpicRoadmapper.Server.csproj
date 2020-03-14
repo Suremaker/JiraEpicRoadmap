@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\JiraEpicRoadmapper.Client.csproj" />
+    <ProjectReference Include="..\JiraEpicRoadmapper.Client\JiraEpicRoadmapper.Client.csproj" />
   </ItemGroup>
 
 </Project>

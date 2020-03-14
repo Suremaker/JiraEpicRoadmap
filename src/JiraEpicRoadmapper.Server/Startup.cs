@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using JiraEpicRoadmapper.Server.Clients;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -32,7 +33,9 @@ namespace JiraEpicRoadmapper.Server
                     new[] { "application/octet-stream" });
             });
             services.Configure<Config>(_configuration);
-            services.AddHttpClient("jira", ConfigureJiraClient);
+            services.AddHttpClient(nameof(IJiraClient), ConfigureJiraClient);
+            services.AddSingleton<IJiraClient, JiraClient>();
+            services.AddTransient<JiraMapper>();
         }
 
         private static void ConfigureJiraClient(IServiceProvider sp, HttpClient client)

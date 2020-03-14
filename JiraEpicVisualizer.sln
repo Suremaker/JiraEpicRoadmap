@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server", "JiraEpicRoadmapper\Server\JiraEpicRoadmapper.Server.csproj", "{32C5CC52-044C-4C53-800F-05B1AD8FEA10}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6EA25A89-595B-43AB-B692-0C050817B22E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Client", "JiraEpicRoadmapper\Client\JiraEpicRoadmapper.Client.csproj", "{0802176C-94A4-4343-81E9-0B9189A90E4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Models", "src\JiraEpicRoadmapper.Models\JiraEpicRoadmapper.Models.csproj", "{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Shared", "JiraEpicRoadmapper\Shared\JiraEpicRoadmapper.Shared.csproj", "{B0244B15-3BE9-43EE-966B-B5C939569C17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Client", "src\JiraEpicRoadmapper.Client\JiraEpicRoadmapper.Client.csproj", "{C3FEF300-5974-4CAD-BD50-1178B07DEECA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server", "src\JiraEpicRoadmapper.Server\JiraEpicRoadmapper.Server.csproj", "{46878A21-FAA5-4D0A-BEBC-DB96933E1955}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0CCCBBEB-CF14-447B-A37B-CCD68B87E44F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,21 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32C5CC52-044C-4C53-800F-05B1AD8FEA10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0802176C-94A4-4343-81E9-0B9189A90E4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0244B15-3BE9-43EE-966B-B5C939569C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3FEF300-5974-4CAD-BD50-1178B07DEECA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3FEF300-5974-4CAD-BD50-1178B07DEECA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3FEF300-5974-4CAD-BD50-1178B07DEECA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3FEF300-5974-4CAD-BD50-1178B07DEECA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46878A21-FAA5-4D0A-BEBC-DB96933E1955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46878A21-FAA5-4D0A-BEBC-DB96933E1955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46878A21-FAA5-4D0A-BEBC-DB96933E1955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46878A21-FAA5-4D0A-BEBC-DB96933E1955}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D9F9C8A6-2AB2-40E0-ACDE-93C7A14D2BFC} = {6EA25A89-595B-43AB-B692-0C050817B22E}
+		{C3FEF300-5974-4CAD-BD50-1178B07DEECA} = {6EA25A89-595B-43AB-B692-0C050817B22E}
+		{46878A21-FAA5-4D0A-BEBC-DB96933E1955} = {6EA25A89-595B-43AB-B692-0C050817B22E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6FF564-67F6-407E-A90A-524F5AE1FFFF}

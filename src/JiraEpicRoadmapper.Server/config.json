@@ -1,0 +1,5 @@
+{
+  "JiraUri": "",
+  "AuthKey": "",
+  "EpicQueryFilter": "(statusCategory!=Done OR Due>=-30d)"
+}

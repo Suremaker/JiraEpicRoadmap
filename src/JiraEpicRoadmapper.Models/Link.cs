@@ -1,4 +1,4 @@
-﻿namespace JiraEpicRoadmapper.Shared
+﻿namespace JiraEpicRoadmapper.Models
 {
     public class Link
     {

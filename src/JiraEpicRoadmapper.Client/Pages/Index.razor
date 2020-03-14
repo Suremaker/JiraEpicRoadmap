@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using System.Text
-@using JiraEpicRoadmapper.Shared
+@using JiraEpicRoadmapper.Client.Model
+@using JiraEpicRoadmapper.Models
 @inject HttpClient Http
 
 @if (_timeline == null)
@@ -9,42 +10,35 @@
 }
 else
 {
-    <div class="canvas" style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.Rows* RowHeight)px">
+    <div class="canvas" style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.TotalRows* RowHeight)px">
         @foreach (var d in _timeline.GetToday())
         {
-            <div class="today" style="left: @(d.index*DaySpan)px; height: @(_timeline.Rows*RowHeight)px;"><br />@(d.day.ToString("dd/MM")) (today)</div>
+            <div class="today" style="left: @(d.index*DaySpan)px; height: @(_timeline.TotalRows*RowHeight)px;"><br />@(d.day.ToString("dd/MM")) (today)</div>
         }
         @foreach (var d in _timeline.GetMondays())
         {
-            <div class="week" style="left: @(d.index * DaySpan)px; height: @(_timeline.Rows * RowHeight)px;">@(d.day.ToString("dd/MM"))</div>
+            <div class="week" style="left: @(d.index * DaySpan)px; height: @(_timeline.TotalRows * RowHeight)px;">@(d.day.ToString("dd/MM"))</div>
             @if (d.day.Day < 8)
             {
-                @foreach (var p in _timeline.GetProjectRows())
+                @foreach (var p in _timeline.Projects)
                 {
-                    <div class="project" style="left: @(d.index * DaySpan)px; top: @(p.row * RowHeight)px;">@(p.project)</div>
+                    <div class="project" style="left: @(d.index * DaySpan)px; top: @(p.ProjectRowIndex * RowHeight)px;">@(p.Name)</div>
                 }
             }
         }
-        @foreach (var e in _timeline.Epics)
+        @foreach (var e in _timeline.EpicMap.Epics)
         {
-            <a href="@(e.epic.Url)" target="_blank" class="epic" style="left: @(e.startIndex * DaySpan + CellMargin)px; width: @((e.endIndex - e.startIndex) * DaySpan - 2 * CellMargin)px; top: @(e.row * RowHeight + RowMargin)px; height: @(TicketHeight)px;">
-                <div class="epic-card" style="background-color: @(GetColor(e.epic.Project))"><p>@(MapStatus(e.epic))@(e.epic.Summary)</p></div>
+            <a href="@(e.Epic.Url)" target="_blank" class="epic" style="left: @(e.StartIndex * DaySpan + CellMargin)px; width: @((e.EndIndex - e.StartIndex) * DaySpan - 2 * CellMargin)px; top: @(e.Row * RowHeight + RowMargin)px; height: @(TicketHeight)px;">
+                <div class="epic-card" style="background-color: @(GetColor(e.Epic.Project))"><p>@(MapStatus(e.Epic))@(e.Epic.Summary)</p></div>
             </a>
         }
-        <svg style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.Rows* RowHeight)px">
-            @foreach (var e in _timeline.Epics)
+        <svg style="width: @(_timeline.MaxIndex* DaySpan)px;height:@(_timeline.TotalRows* RowHeight)px">
+            @foreach (var e in _timeline.EpicMap.Epics)
             {
-                foreach (var link in e.epic.Links)
+                @foreach (var eTo in e.Dependents)
                 {
-                    foreach (var eTo in _timeline.Epics)
-                    {
-                        if (eTo.epic.Id == link.OutwardId)
-                        {
-                            var color = eTo.startIndex >= e.endIndex ? "rgba(0,180,0,0.9)" : "rgba(180,0,0,0.9)";
-                            <line x1="@((e.endIndex) * DaySpan - CellMargin)" y1="@((e.row+0.5) * RowHeight)" x2="@(eTo.startIndex * DaySpan + CellMargin)" y2="@((eTo.row+0.5) * RowHeight)" style="stroke:@(color); stroke-width: 1; stroke-dasharray:5,5" />
-                            break;
-                        }
-                    }
+                    var color = eTo.StartIndex >= e.EndIndex ? "rgba(0,180,0,0.9)" : "rgba(180,0,0,0.9)";
+                    <line x1="@((e.EndIndex) * DaySpan - CellMargin)" y1="@((e.Row+0.5) * RowHeight)" x2="@(eTo.StartIndex * DaySpan + CellMargin)" y2="@((eTo.Row+0.5) * RowHeight)" style="stroke:@(color); stroke-width: 1; stroke-dasharray:5,5" />
                 }
             }
         </svg>
@@ -92,7 +86,7 @@ else
         else if (string.Equals(e.Status, "to do", StringComparison.OrdinalIgnoreCase))
             builder.Append("❔");
 
-        if (e.CalculatedDueDate < DateTimeOffset.Now.Date)
+        if (!e.DueDate.HasValue || !e.StartDate.HasValue || e.StartDate > e.DueDate)
             builder.Append("⚠️");
         return builder.ToString();
     }
