@@ -1,0 +1,75 @@
+﻿@using System.Text
+@using JiraEpicRoadmapper.Client.Model
+@using JiraEpicRoadmapper.Models
+@inject HttpClient Http
+
+<div class="epic epic-card" style="background-color: @(CardColor); border-color:@(Selected?"red":"#222222"); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.Row * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.TicketHeight)px;" @onclick="@(()=>OnBlockSelect.InvokeAsync(Block))">
+    <div class="content">
+        <div class="summary">@(Block.Epic.Summary)</div>
+        <div class="status">
+            @foreach (var s in MapStatus(Block))
+            {
+                @s<br />
+            }
+        </div>
+    </div>
+    <div class="progressBar @(Block.Stats==null?"loading":"")" style="@(GetProgressBar(Block.Stats))">&nbsp;</div>
+</div>
+
+@code {
+    [Parameter]
+    public EpicBlock Block { get; set; }
+    [Parameter]
+    public string CardColor { get; set; }
+    [Parameter]
+    public bool Selected { get; set; }
+    [Parameter]
+    public EventCallback<EpicBlock> OnBlockSelect { get; set; }
+
+    private IReadOnlyList<string> MapStatus(EpicBlock block)
+    {
+        var status = new List<string>();
+
+        var epicStatus = block.Epic.Status;
+        if (string.Equals(epicStatus, "done", StringComparison.OrdinalIgnoreCase))
+            status.Add("✔️");
+        else if (string.Equals(epicStatus, "in progress", StringComparison.OrdinalIgnoreCase))
+            status.Add("⚙️");
+        else if (string.Equals(epicStatus, "to do", StringComparison.OrdinalIgnoreCase))
+            status.Add("❔");
+
+        if (block.Warnings.Any())
+            status.Add("⚠️");
+        return status;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Block.Stats = await Http.GetJsonAsync<EpicStats>($"epics/{Block.Epic.Key}/stats");
+    }
+
+    private string GetProgressBar(EpicStats s)
+    {
+        if (s == null)
+            return "";
+        if (s.Total <= 0)
+            return "background-color: #f0f0f0";
+
+        var sb = new StringBuilder();
+        sb.Append("background:linear-gradient(to right");
+        var done = s.DonePercentage;
+        var progress = s.InProgressPercentage + s.DonePercentage;
+
+        if (done > 0)
+            sb.Append($", #50ff50 0% {done}%");
+
+        if (progress > done)
+            sb.Append($", #5050ff {done}% {progress}%");
+
+        if (progress < 100)
+            sb.Append($", #505050 {progress}% 100%");
+
+        sb.Append(");");
+        return sb.ToString();
+    }
+}

@@ -1,0 +1,52 @@
+﻿@using JiraEpicRoadmapper.Client.Model
+@using JiraEpicRoadmapper.Models
+    <table style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"table")">
+        <tr><td>Project</td><td>@(Block.Epic.Project)</td></tr>
+        <tr><td>Key</td><td><a href="@(Block.Epic.Url)" target="_blank">@(Block.Epic.Key)</a></td></tr>
+        <tr><td>Summary</td><td><a href="@(Block.Epic.Url)" target="_blank">@(Block.Epic.Summary)</a></td></tr>
+        <tr><td>Status</td><td>@(Block.Epic.Status)</td></tr>
+        <tr><td>Start</td><td>@(Block.Epic.StartDate?.ToString("yyyy-MM-dd"))</td></tr>
+        <tr><td>Due</td><td>@(Block.Epic.DueDate?.ToString("yyyy-MM-dd"))</td></tr>
+        <tr>
+            <td>Tickets</td>
+            <td>
+                @foreach (var s in GetTicketDetails(Block.Stats))
+                {
+                    <div>@s</div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Warnings</td>
+            <td>
+                @foreach (var s in Block.Warnings)
+                {
+                    <div>@s</div>
+                }
+            </td>
+        </tr>
+    </table>
+
+@code {
+    [Parameter]
+    public EpicBlock Block { get; set; }
+    [Parameter]
+    public bool Collapsed { get; set; }
+
+    private IEnumerable<string> GetTicketDetails(EpicStats stats)
+    {
+        if (stats == null)
+        {
+            yield return "data not available";
+            yield break;
+        }
+        if (stats.Total == 0)
+            yield return "no tickets are present";
+        if (stats.Done > 0)
+            yield return $"{stats.Done} done";
+        if (stats.InProgress > 0)
+            yield return $"{stats.InProgress} in progress";
+        if (stats.NotStarted > 0)
+            yield return $"{stats.NotStarted} not started";
+    }
+}

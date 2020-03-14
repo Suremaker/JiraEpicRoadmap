@@ -40,22 +40,21 @@
     font-weight: bold;
 }
 
+a, a:hover, a:visited {
+    color: #111166;
+    text-decoration: none;
+}
+
 .epic, .epic:hover, .epic:visited {
     position: absolute;
     display: block;
-    color: #111111;
-    text-decoration: none;
 }
 
 .epic-card {
     border: 1px solid #222222;
     border-radius: 10px;
     overflow: hidden;
-    vertical-align: middle;
-    display: flex;
-    align-items: center;
     height: 100%;
-    flex-direction: column;
 }
 
     .epic-card .content {
@@ -131,10 +130,27 @@
     }
 
 .controls {
-    margin: 0 0 1px 1px;
-    padding: 1px;
+    max-width: 600px;
+    margin: 0 1px 1px 0;
     position: fixed;
     border: 1px solid #222222;
     z-index: 1;
-    background-color: white;
+    background-color: #aaaaaa;
+}
+
+.controls table {
+    width: 600px;
+    padding: 0.5em;
+    border-top: 1px solid #222222;
+}
+
+.controls tr td:first-child {
+    text-align: right;
+    vertical-align: top;
+    width: 110px;
+}
+
+.controls tr td:last-child {
+    font-weight: bolder;
+    vertical-align: top;
 }

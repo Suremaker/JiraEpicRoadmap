@@ -15,8 +15,12 @@ else
         <div>
             <ToggleButton CheckedText="|&lt;" UncheckedText="|>" OnClick="TogglePanel" Checked="@PanelVisibility" />
             <Button Text="Refresh" Collapsed="@(!PanelVisibility)" OnClick="Refresh" />
-            <ToggleButton CheckedText="Compact view" UncheckedText="Show dependencies" OnClick="ToggleView" Checked="@ShowDependencies" Collapsed="@(!PanelVisibility)"/>
+            <ToggleButton CheckedText="Compact view" UncheckedText="Show dependencies" OnClick="ToggleView" Checked="@ShowDependencies" Collapsed="@(!PanelVisibility)" />
         </div>
+        @if (SelectedBlock != null)
+        {
+            <EpicDetailsView Block="@SelectedBlock" Collapsed="@(!PanelVisibility)" />
+        }
     </div>
     <div class="canvas" style="width: @(_timeline.MaxIndex* LayoutSettings.DaySpan)px;height:@(_timeline.TotalRows* LayoutSettings.RowHeight)px">
         @foreach (var d in _timeline.GetToday())
@@ -36,9 +40,9 @@ else
         }
         @foreach (var e in _timeline.EpicMap.Epics)
         {
-            <EpicBlockComponent CardColor="@GetColor(e.Epic.Project)" Block="e" />
+            <EpicBlockView CardColor="@GetColor(e.Epic.Project)" Block="e" OnBlockSelect="SelectBlock" Selected="@(e==SelectedBlock)" />
         }
-        <svg style="width: @(_timeline.MaxIndex * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px">
+        <svg style="width: @(_timeline.MaxIndex * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(()=>SelectBlock(null))">
             @if (ShowDependencies)
             {
                 @foreach (var e in _timeline.EpicMap.Epics)
@@ -46,7 +50,7 @@ else
                     @foreach (var eTo in e.Dependents)
                     {
                         var color = eTo.StartIndex >= e.EndIndex ? "rgba(0,180,0,0.9)" : "rgba(180,0,0,0.9)";
-                        <line x1="@((e.EndIndex) * LayoutSettings.DaySpan - LayoutSettings.CellMargin)" y1="@((e.Row + 0.5) * LayoutSettings.RowHeight)" x2="@(eTo.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin)" y2="@((eTo.Row + 0.5) * LayoutSettings.RowHeight)" style="stroke: @(color); stroke-width: 1; stroke-dasharray: 5, 5"/>
+                        <line x1="@((e.EndIndex) * LayoutSettings.DaySpan - LayoutSettings.CellMargin)" y1="@((e.Row + 0.5) * LayoutSettings.RowHeight)" x2="@(eTo.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin)" y2="@((eTo.Row + 0.5) * LayoutSettings.RowHeight)" style="stroke: @(color); stroke-width: 1; stroke-dasharray: 5, 5" />
                     }
                 }
             }
@@ -67,8 +71,8 @@ else
     private IReadOnlyDictionary<string, string> _projectColorMap = new Dictionary<string, string>();
     private Timeline _timeline;
     private bool PanelVisibility { get; set; }
-    public bool ShowDependencies { get; set; } = true;
-
+    private bool ShowDependencies { get; set; } = true;
+    private EpicBlock SelectedBlock { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,7 +82,8 @@ else
     private async Task Refresh()
     {
         _timeline = null;
-        _timeline = new Timeline(await Http.GetJsonAsync<Epic[]>("epics"),ShowDependencies);
+        SelectedBlock = null;
+        _timeline = new Timeline(await Http.GetJsonAsync<Epic[]>("epics"), ShowDependencies);
         _projectColorMap = _timeline.Projects
             .Select((p, i) => (p.Name, color: ProjectColors[i % ProjectColors.Length]))
             .ToDictionary(x => x.Name, x => x.color);
@@ -90,10 +95,18 @@ else
     }
 
     private void TogglePanel(bool visible) => PanelVisibility = visible;
+
     private void ToggleView(bool showDependencies)
     {
         ShowDependencies = showDependencies;
         _timeline.UpdateLayout(ShowDependencies);
+    }
+
+    private void SelectBlock(EpicBlock selectedBlock)
+    {
+        SelectedBlock = selectedBlock;
+        if (selectedBlock != null)
+            TogglePanel(true);
     }
 
 }

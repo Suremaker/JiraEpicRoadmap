@@ -8,7 +8,8 @@ namespace JiraEpicRoadmapper.Client.Model
     public class EpicBlock
     {
         private EpicBlock[] _dependents;
-        private readonly List<EpicBlock> _inbounds=new List<EpicBlock>();
+        private readonly List<EpicBlock> _inbounds = new List<EpicBlock>();
+        private readonly List<string> _warnings = new List<string>();
         public Epic Epic { get; }
         public EpicStats Stats { get; set; }
         public int Row { get; set; } = -1;
@@ -20,6 +21,8 @@ namespace JiraEpicRoadmapper.Client.Model
         public IReadOnlyList<EpicBlock> Inbounds => _inbounds;
         public int NotLayoutParents => Inbounds.Count(p => p.Row < 0);
         public string Id => Epic.Id;
+        public IReadOnlyList<string> Warnings => _warnings;
+
 
         public EpicBlock(Epic epic, int startIndex, int endIndex)
         {
@@ -33,6 +36,17 @@ namespace JiraEpicRoadmapper.Client.Model
             CalculateDepth(map);
             foreach (var e in GetDependents(map))
                 e._inbounds.Add(this);
+            CalculateWarnings();
+        }
+
+        private void CalculateWarnings()
+        {
+            if (!Epic.StartDate.HasValue)
+                _warnings.Add("No Start Date");
+            if (!Epic.DueDate.HasValue)
+                _warnings.Add("No Due Date");
+            if (Epic.StartDate > Epic.DueDate)
+                _warnings.Add("Start Date greater than Due Date");
         }
 
         private EpicBlock CalculateDepth(EpicMap map)
@@ -58,9 +72,11 @@ namespace JiraEpicRoadmapper.Client.Model
                 .Where(e => e != null)
                 .ToArray();
         }
+
         public bool Overlaps(EpicBlock e) => !(EndIndex <= e.StartIndex || e.EndIndex <= StartIndex);
 
         public bool DependsOn(EpicBlock e) => e.Dependents.Contains(this);
+
 
         public EpicBlock ResetRow()
         {
