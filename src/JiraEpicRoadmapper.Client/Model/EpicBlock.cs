@@ -5,16 +5,12 @@ using JiraEpicRoadmapper.Models;
 
 namespace JiraEpicRoadmapper.Client.Model
 {
-    public static class LayoutSettings
-    {
-        public const int MinBlockLength = 3;
-    }
     public class EpicBlock
     {
         private EpicBlock[] _dependents;
         private readonly List<EpicBlock> _inbounds=new List<EpicBlock>();
         public Epic Epic { get; }
-        public TicketStats Stats { get; set; }
+        public EpicStats Stats { get; set; }
         public int Row { get; set; } = -1;
         public int StartIndex { get; }
         public int EndIndex { get; }

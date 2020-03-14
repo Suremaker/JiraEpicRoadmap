@@ -46,20 +46,47 @@
 
 .epic-card {
     border: 1px solid #222222;
-    padding: 1px;
     border-radius: 10px;
     overflow: hidden;
     vertical-align: middle;
     display: flex;
     align-items: center;
     height: 100%;
+    flex-direction: column;
 }
 
 .epic-card p {
     margin: 0;
     padding: 3px;
     box-sizing: border-box;
-    max-height: 40px;
+    height: 40px;
     display: block;
     overflow: hidden;
+}
+
+.progressBar {
+    box-sizing: border-box;
+    border-top: 1px solid #222222;
+    height: 10px;
+    width: 100%;
+}
+
+.loading {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: loading 3s ease infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }

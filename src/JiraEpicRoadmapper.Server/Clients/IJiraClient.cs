@@ -6,6 +6,6 @@ namespace JiraEpicRoadmapper.Server.Clients
     public interface IJiraClient
     {
         Task<Epic[]> GetEpics();
-        Task<TicketStats> GetEpicStats(string epicKey);
+        Task<EpicStats> GetEpicStats(string epicKey);
     }
 }

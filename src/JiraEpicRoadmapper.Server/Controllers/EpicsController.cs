@@ -29,7 +29,7 @@ namespace JiraEpicRoadmapper.Server.Controllers
         }
 
         [HttpGet("{epicKey}/stats")]
-        public async Task<TicketStats> Get(string epicKey)
+        public async Task<EpicStats> Get(string epicKey)
         {
             return await _jiraClient.GetEpicStats(epicKey);
         }

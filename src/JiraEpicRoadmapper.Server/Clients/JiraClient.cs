@@ -40,7 +40,7 @@ namespace JiraEpicRoadmapper.Server.Clients
             return _mapper.ParseEpics(response, fields);
         }
 
-        public async Task<TicketStats> GetEpicStats(string epicKey)
+        public async Task<EpicStats> GetEpicStats(string epicKey)
         {
             var client = _clientFactory.CreateClient(nameof(IJiraClient));
             var result = await Query(client,$"\"Epic Link\"={epicKey}");
@@ -48,7 +48,7 @@ namespace JiraEpicRoadmapper.Server.Clients
                 .Select(t => t.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString())
                 .GroupBy(x => x);
 
-            var stats = new TicketStats();
+            var stats = new EpicStats();
             foreach (var grp in statuses)
             {
                 if (grp.Key.Equals("done", StringComparison.OrdinalIgnoreCase))
