@@ -11,7 +11,7 @@ namespace JiraEpicRoadmapper.Client.Model
 
         public EpicMap(IEnumerable<Epic> epics, Func<DateTimeOffset?, int> dateToIndexMapper)
         {
-            _epics = epics.ToDictionary(e => e.Id, e => new EpicBlock(e, dateToIndexMapper(e.StartDate ?? e.DueDate), dateToIndexMapper(e.DueDate ?? e.StartDate)));
+            _epics = epics.ToDictionary(e => e.Id, e => new EpicBlock(e, dateToIndexMapper(e.StartDate ?? (e.DueDate-TimeSpan.FromDays(LayoutSettings.MinBlockLength))), dateToIndexMapper(e.DueDate ?? (e.StartDate + TimeSpan.FromDays(LayoutSettings.MinBlockLength)))));
 
             foreach (var e in _epics.Values)
                 e.Initialize(this);

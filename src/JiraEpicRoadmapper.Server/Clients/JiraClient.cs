@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using JiraEpicRoadmapper.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
 
 namespace JiraEpicRoadmapper.Server.Clients
 {
@@ -43,7 +46,7 @@ namespace JiraEpicRoadmapper.Server.Clients
         public async Task<EpicStats> GetEpicStats(string epicKey)
         {
             var client = _clientFactory.CreateClient(nameof(IJiraClient));
-            var result = await Query(client,$"\"Epic Link\"={epicKey}");
+            var result = await Query(client, $"\"Epic Link\"={epicKey}");
             var statuses = result
                 .Select(t => t.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString())
                 .GroupBy(x => x);
@@ -60,6 +63,31 @@ namespace JiraEpicRoadmapper.Server.Clients
             }
 
             return stats;
+        }
+
+        class FieldsRequest
+        {
+            public IDictionary<string, string> Fields { get; set; }
+        }
+
+        public async Task UpdateEpic(string epicKey, EpicMeta meta)
+        {
+            var client = _clientFactory.CreateClient(nameof(IJiraClient));
+            var map = await GetFieldMaps(client);
+            var fields = new FieldsRequest
+            {
+                Fields = new Dictionary<string, string>
+                {
+                    {"duedate", meta.DueDate?.ToString("yyyy-MM-dd")}
+                }
+            };
+
+            var startDateField = map.TryGetValue("Start date", out var values) ? values.FirstOrDefault() : null;
+            if (startDateField != null) fields.Fields.Add(startDateField, meta.StartDate?.ToString("yyyy-MM-dd"));
+
+            var content = JsonSerializer.Serialize(fields, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var response = await client.PutAsync($"rest/api/2/issue/{epicKey}", new StringContent(content, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task<IReadOnlyDictionary<string, string[]>> GetFieldMaps(HttpClient client)

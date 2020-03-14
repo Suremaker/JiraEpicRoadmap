@@ -1,12 +1,15 @@
 ﻿@using JiraEpicRoadmapper.Client.Model
 @using JiraEpicRoadmapper.Models
+@inject HttpClient Http
+
+<EditForm Model="this">
     <table style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"table")">
         <tr><td>Project</td><td>@(Block.Epic.Project)</td></tr>
         <tr><td>Key</td><td><a href="@(Block.Epic.Url)" target="_blank">@(Block.Epic.Key)</a></td></tr>
         <tr><td>Summary</td><td><a href="@(Block.Epic.Url)" target="_blank">@(Block.Epic.Summary)</a></td></tr>
         <tr><td>Status</td><td>@(Block.Epic.Status)</td></tr>
-        <tr><td>Start</td><td>@(Block.Epic.StartDate?.ToString("yyyy-MM-dd"))</td></tr>
-        <tr><td>Due</td><td>@(Block.Epic.DueDate?.ToString("yyyy-MM-dd"))</td></tr>
+        <tr><td>Start</td><td><input type="date" @bind="this.StartDate" @bind:format="yyyy-MM-dd"/></td></tr>
+        <tr><td>Due</td><td><input type="date" @bind="this.DueDate" @bind:format="yyyy-MM-dd"/></td></tr>
         <tr>
             <td>Tickets</td>
             <td>
@@ -26,12 +29,50 @@
             </td>
         </tr>
     </table>
-
+    <Button Text="Update epic" OnClick="@(async()=>await UpdateEpic(Block))" Collapsed="@(!EpicChanged)" />
+</EditForm>
 @code {
+
     [Parameter]
-    public EpicBlock Block { get; set; }
+    public EpicBlock Block
+    {
+        get => _block;
+        set
+        {
+            _block = value;
+            StartDate = value.Epic.StartDate;
+            DueDate = value.Epic.DueDate;
+            EpicChanged = false;
+        }
+    }
+
     [Parameter]
     public bool Collapsed { get; set; }
+    private bool EpicChanged { get; set; }
+
+    private DateTimeOffset? _startDate;
+    private DateTimeOffset? _dueDate;
+    private EpicBlock _block;
+
+    public DateTimeOffset? StartDate
+    {
+        get => _startDate;
+        set
+        {
+            _startDate = value;
+            EpicChanged = true;
+        }
+    }
+
+    public DateTimeOffset? DueDate
+    {
+        get => _dueDate;
+        set
+        {
+            _dueDate = value;
+            EpicChanged = true;
+        }
+    }
 
     private IEnumerable<string> GetTicketDetails(EpicStats stats)
     {
@@ -49,4 +90,10 @@
         if (stats.NotStarted > 0)
             yield return $"{stats.NotStarted} not started";
     }
+
+    private async Task UpdateEpic(EpicBlock block)
+    {
+        var epic = await Http.PostJsonAsync<Epic>($"epics/{Block.Epic.Key}/meta", new { startDate = StartDate, dueDate = DueDate });
+    }
+
 }

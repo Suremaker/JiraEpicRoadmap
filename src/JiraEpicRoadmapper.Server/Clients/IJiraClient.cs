@@ -7,5 +7,6 @@ namespace JiraEpicRoadmapper.Server.Clients
     {
         Task<Epic[]> GetEpics();
         Task<EpicStats> GetEpicStats(string epicKey);
+        Task UpdateEpic(string epicKey, EpicMeta meta);
     }
 }
