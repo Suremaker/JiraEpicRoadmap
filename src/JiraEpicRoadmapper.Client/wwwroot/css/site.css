@@ -58,13 +58,24 @@
     flex-direction: column;
 }
 
-    .epic-card p {
+    .epic-card .content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        height: 50px;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .epic-card .status {
         margin: 0;
         padding: 3px;
-        box-sizing: border-box;
-        height: 50px;
-        display: block;
-        overflow: hidden;
+        text-align: center;
+    }
+
+    .epic-card .summary {
+        margin: auto;
+        padding: 3px;
         text-align: center;
     }
 

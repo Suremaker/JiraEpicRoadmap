@@ -5,8 +5,16 @@
 
 <a href="@(Block.Epic.Url)" target="_blank" class="epic" style="left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.Row * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.TicketHeight)px;">
     <div class="epic-card" style="background-color: @(CardColor)">
-        <p>@(MapStatus(Block.Epic))@(Block.Epic.Summary)</p>
-        <div class="progressBar @(_stats==null?"loading":"")" style="@(GetProgressBar(_stats))">&nbsp;</div>
+        <div class="content">
+            <div class="summary">@(Block.Epic.Summary)</div>
+            <div class="status">
+                @foreach (var s in MapStatus(Block.Epic))
+                {
+                    @s<br />
+                }
+            </div>
+        </div>
+        <div class="progressBar @(Stats==null?"loading":"")" style="@(GetProgressBar(Stats))">&nbsp;</div>
     </div>
 </a>
 
@@ -16,26 +24,27 @@
     [Parameter]
     public string CardColor { get; set; }
 
-    public EpicStats _stats { get; set; }
+    private EpicStats Stats { get; set; }
 
-    private string MapStatus(Epic e)
+    private IReadOnlyList<string> MapStatus(Epic e)
     {
-        var builder = new StringBuilder();
+        var status = new List<string>();
+
         if (string.Equals(e.Status, "done", StringComparison.OrdinalIgnoreCase))
-            builder.Append("✔️");
+            status.Add("✔️");
         else if (string.Equals(e.Status, "in progress", StringComparison.OrdinalIgnoreCase))
-            builder.Append("⚙️");
+            status.Add("⚙️");
         else if (string.Equals(e.Status, "to do", StringComparison.OrdinalIgnoreCase))
-            builder.Append("❔");
+            status.Add("❔");
 
         if (!e.DueDate.HasValue || !e.StartDate.HasValue || e.StartDate > e.DueDate)
-            builder.Append("⚠️");
-        return builder.ToString();
+            status.Add("⚠️");
+        return status;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _stats = await Http.GetJsonAsync<EpicStats>($"epics/{Block.Epic.Key}/stats");
+        Stats = await Http.GetJsonAsync<EpicStats>($"epics/{Block.Epic.Key}/stats");
     }
 
     private string GetProgressBar(EpicStats s)
