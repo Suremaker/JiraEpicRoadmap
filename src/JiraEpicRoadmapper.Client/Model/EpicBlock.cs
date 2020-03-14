@@ -61,5 +61,11 @@ namespace JiraEpicRoadmapper.Client.Model
         public bool Overlaps(EpicBlock e) => !(EndIndex <= e.StartIndex || e.EndIndex <= StartIndex);
 
         public bool DependsOn(EpicBlock e) => e.Dependents.Contains(this);
+
+        public EpicBlock ResetRow()
+        {
+            Row = -1;
+            return this;
+        }
     }
 }

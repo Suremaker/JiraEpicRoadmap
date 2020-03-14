@@ -10,33 +10,19 @@ namespace JiraEpicRoadmapper.Client.Model
         public DateTimeOffset Start { get; }
         public DateTimeOffset End { get; }
         public EpicMap EpicMap { get; }
-        public IReadOnlyList<ProjectLayout> Projects { get; }
-        public int TotalRows { get; }
+        public IReadOnlyList<ProjectLayout> Projects { get; private set; }
+        public int TotalRows => (Projects.LastOrDefault()?.LastRowIndex ?? 0) + 1;
         public int MaxIndex { get; }
         public DateTimeOffset Today { get; } = DateTimeOffset.Now.Date;
 
-        public Timeline(Epic[] epics)
+        public Timeline(Epic[] epics, bool showDependencies)
         {
             Start = epics.Select(e => e.StartDate.GetValueOrDefault(Today)).DefaultIfEmpty(Today).Min().AddDays(-7);
             End = epics.Select(e => e.DueDate.GetValueOrDefault(Today)).DefaultIfEmpty(Today).Max().AddMonths(1).GetFirstOfMonth();
             MaxIndex = GetDayIndex(End);
             EpicMap = new EpicMap(epics, GetDayIndex);
 
-            Projects = LayoutProjects();
-            TotalRows = Projects.Last().LastRowIndex + 1;
-        }
-
-        private IReadOnlyList<ProjectLayout> LayoutProjects()
-        {
-            var row = 1;
-            var projects = new List<ProjectLayout>();
-            foreach (var group in EpicMap.Epics.GroupBy(e => e.Epic.Project).OrderBy(e => e.Key))
-            {
-                var project = new ProjectLayout(group.Key, row + 1, group);
-                projects.Add(project);
-                row = project.LastRowIndex;
-            }
-            return projects;
+            UpdateLayout(showDependencies);
         }
 
         public IEnumerable<(DateTimeOffset day, int index)> GetMondays()
@@ -60,5 +46,19 @@ namespace JiraEpicRoadmapper.Client.Model
         private (DateTimeOffset day, int index) GetDayWithIndex(in DateTimeOffset day) => (day, GetDayIndex(day));
         private int GetDayIndex(DateTimeOffset? day) => GetDayIndex(day.GetValueOrDefault(Today));
         private int GetDayIndex(DateTimeOffset day) => (int)(day - Start).TotalDays;
+
+        public void UpdateLayout(bool showDependencies)
+        {
+            var row = 1;
+            var projects = new List<ProjectLayout>();
+            foreach (var group in EpicMap.Epics.GroupBy(e => e.Epic.Project).OrderBy(e => e.Key))
+            {
+                var project = new ProjectLayout(group.Key, row + 1, group, showDependencies);
+                projects.Add(project);
+                row = project.LastRowIndex;
+            }
+
+            Projects = projects;
+        }
     }
 }

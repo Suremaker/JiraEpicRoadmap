@@ -58,14 +58,15 @@
     flex-direction: column;
 }
 
-.epic-card p {
-    margin: 0;
-    padding: 3px;
-    box-sizing: border-box;
-    height: 50px;
-    display: block;
-    overflow: hidden;
-}
+    .epic-card p {
+        margin: 0;
+        padding: 3px;
+        box-sizing: border-box;
+        height: 50px;
+        display: block;
+        overflow: hidden;
+        text-align: center;
+    }
 
 .progressBar {
     box-sizing: border-box;
@@ -101,4 +102,28 @@
     font-size: larger;
     font-weight: bolder;
     text-align: center;
+}
+
+.button {
+    font-size: smaller;
+    margin: 2px;
+    padding: 0.5em;
+    border: 1px solid #222222;
+    border-radius: 5px;
+    background-color: #afcfff;
+    display: inline-block;
+}
+
+    .button:hover {
+        cursor: pointer;
+        background-color: #cfefff;
+    }
+
+.controls {
+    margin: 0 0 1px 1px;
+    padding: 1px;
+    position: fixed;
+    border: 1px solid #222222;
+    z-index: 1;
+    background-color: white;
 }
