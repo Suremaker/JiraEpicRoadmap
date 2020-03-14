@@ -93,3 +93,12 @@
         background-position: 0% 50%;
     }
 }
+
+.banner {
+    margin: 2em;
+    border: 1px solid #222222;
+    padding: 1em;
+    font-size: larger;
+    font-weight: bolder;
+    text-align: center;
+}
