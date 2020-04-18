@@ -22,6 +22,7 @@ namespace JiraEpicRoadmapper.Client.Model
         public int NotLayoutParents => Inbounds.Count(p => p.Row < 0);
         public string Id => Epic.Id;
         public IReadOnlyList<string> Warnings => _warnings;
+        public bool IsVisible { get; set; }
 
 
         public EpicBlock(Epic epic, int startIndex, int endIndex)

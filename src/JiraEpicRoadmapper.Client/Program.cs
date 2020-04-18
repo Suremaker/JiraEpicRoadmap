@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using JiraEpicRoadmapper.Client.Model;
 using Microsoft.AspNetCore.Blazor.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JiraEpicRoadmapper.Client
 {
@@ -9,6 +11,7 @@ namespace JiraEpicRoadmapper.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
+            builder.Services.AddScoped<ViewOptions>();
 
             await builder.Build().RunAsync();
         }
