@@ -46,13 +46,13 @@ namespace JiraEpicRoadmapper.Client.Model
         private int GetDayIndex(DateTimeOffset? day) => GetDayIndex(day.GetValueOrDefault(Today));
         private int GetDayIndex(DateTimeOffset day) => (int)(day - Start).TotalDays;
 
-        public void UpdateLayout(bool showDependencies, bool hideClosedEpics)
+        public void UpdateLayout(IViewOptions options)
         {
             var row = 1;
             var projects = new List<ProjectLayout>();
-            foreach (var group in EpicMap.Epics.Where(e => FilterEpic(e, hideClosedEpics)).GroupBy(e => e.Epic.Project).OrderBy(e => e.Key))
+            foreach (var group in EpicMap.Epics.Where(e => FilterEpic(e, options)).GroupBy(e => e.Epic.Project).OrderBy(e => e.Key))
             {
-                var project = new ProjectLayout(group.Key, row + 1, group, showDependencies);
+                var project = new ProjectLayout(group.Key, row + 1, group, options.CompactView);
                 projects.Add(project);
                 row = project.LastRowIndex;
             }
@@ -60,9 +60,10 @@ namespace JiraEpicRoadmapper.Client.Model
             Projects = projects;
         }
 
-        private bool FilterEpic(EpicBlock epic, in bool hideClosedEpics)
+        private bool FilterEpic(EpicBlock epic, in IViewOptions options)
         {
-            var visible = !hideClosedEpics || !string.Equals(epic.Epic.Status, "done", StringComparison.OrdinalIgnoreCase);
+            var visible = !options.HideClosedEpics || !string.Equals(epic.Epic.Status, "done", StringComparison.OrdinalIgnoreCase);
+            visible &= !options.HideUnplannedEpics || epic.Epic.DueDate.HasValue;
             epic.IsVisible = visible;
             return visible;
         }

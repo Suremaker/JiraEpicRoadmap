@@ -5,6 +5,7 @@
 @using JiraEpicRoadmapper.Models
 @inject HttpClient Http
 @inject ViewOptions ViewOptions
+@inject IJSRuntime JSRuntime
 
 @if (_timeline == null)
 {
@@ -18,16 +19,21 @@ else
             <Button Text="Refresh" Collapsed="@(!PanelVisibility)" OnClick="Refresh" />
             <ToggleButton CheckedText="Show dependencies" UncheckedText="Compact view" OnClick="@ToggleDependenciesView" Checked="@ViewOptions.CompactView" Collapsed="@(!PanelVisibility)" />
             <ToggleButton CheckedText="Show closed" UncheckedText="Hide closed" OnClick="@ToggleClosedView" Checked="@ViewOptions.HideClosedEpics" Collapsed="@(!PanelVisibility)" />
+            <ToggleButton CheckedText="Show unplanned" UncheckedText="Hide unplanned" OnClick="@ToggleUnplannedView" Checked="@ViewOptions.HideUnplannedEpics" Collapsed="@(!PanelVisibility)" />
+            <ToggleButton CheckedText="Show today" UncheckedText="Hide today" OnClick="@ToggleTodayIndicator" Checked="@ViewOptions.HideTodayIndicator" Collapsed="@(!PanelVisibility)" />
         </div>
         @if (SelectedBlock != null)
         {
             <EpicDetailsView Block="@SelectedBlock" Collapsed="@(!PanelVisibility)" />
         }
     </div>
-    <div class="canvas" style="width: @(_timeline.MaxIndex* LayoutSettings.DaySpan)px;height:@(_timeline.TotalRows* LayoutSettings.RowHeight)px">
-        @foreach (var d in _timeline.GetToday())
+    <div class="canvas" style="width: @(_timeline.MaxIndex * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px">
+        @if (!ViewOptions.HideTodayIndicator)
         {
-            <div class="today" style="left: @(d.index*LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows*LayoutSettings.RowHeight)px;"><br />@(d.day.ToString("dd/MM")) (today)</div>
+            @foreach (var d in _timeline.GetToday())
+            {
+                <div id="today" class="today" style="left: @(d.index * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px;"><br />@(d.day.ToString("dd/MM")) (today)</div>
+            }
         }
         @foreach (var d in _timeline.GetMondays())
         {
@@ -42,9 +48,9 @@ else
         }
         @foreach (var e in _timeline.Epics)
         {
-            <EpicBlockView CardColor="@GetColor(e.Epic.Project)" Block="e" OnBlockSelect="SelectBlock" Selected="@(e==SelectedBlock)" />
+            <EpicBlockView CardColor="@GetColor(e.Epic.Project)" Block="e" OnBlockSelect="SelectBlock" Selected="@(e == SelectedBlock)" />
         }
-        <svg style="width: @(_timeline.MaxIndex * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(()=>SelectBlock(null))">
+        <svg style="width: @(_timeline.MaxIndex * LayoutSettings.DaySpan)px; height: @(_timeline.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => SelectBlock(null))">
             @if (!ViewOptions.CompactView)
             {
                 @foreach (var e in _timeline.Epics)
@@ -74,15 +80,26 @@ else
     private Timeline _timeline;
     private bool PanelVisibility { get; set; }
     private EpicBlock SelectedBlock { get; set; }
-    private ViewOptions _viewOptions;
+    private bool _scroll;
 
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_timeline == null || !_scroll)
+            return;
+
+        var today = _timeline.GetToday().Select(x => x.index).FirstOrDefault();
+        await JSRuntime.InvokeVoidAsync("scroll", today * LayoutSettings.DaySpan, 0);
+        _scroll = false;
+    }
+
     private async Task Refresh()
     {
+        _scroll = true;
         _timeline = null;
         SelectedBlock = null;
         _timeline = new Timeline(await Http.GetJsonAsync<Epic[]>("epics"));
@@ -111,9 +128,21 @@ else
         UpdateTimeline();
     }
 
+    private void ToggleUnplannedView()
+    {
+        ViewOptions.ToggleUnplannedEpics();
+        UpdateTimeline();
+    }
+
+    private void ToggleTodayIndicator()
+    {
+        ViewOptions.ToggleTodayIndicator();
+        UpdateTimeline();
+    }
+
     private void UpdateTimeline()
     {
-        _timeline.UpdateLayout(!ViewOptions.CompactView, ViewOptions.HideClosedEpics);
+        _timeline.UpdateLayout(ViewOptions);
     }
 
     private void SelectBlock(EpicBlock selectedBlock)
