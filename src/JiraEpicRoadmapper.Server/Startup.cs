@@ -1,8 +1,16 @@
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using JiraEpicRoadmapper.Server.Clients;
+using JiraEpicRoadmapper.Server.Mappers;
+using JiraEpicRoadmapper.Server.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace JiraEpicRoadmapper.Server
@@ -24,6 +32,12 @@ namespace JiraEpicRoadmapper.Server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "JiraEpicRoadmapper API", Version = "v1" });
             });
+
+            services.Configure<Config>(Configuration.GetSection("Config"));
+            services.AddHttpClient(nameof(IJiraClient), ConfigureJiraClient);
+            services.AddSingleton<IJiraClient, JiraClient>();
+            services.AddSingleton<IEpicProvider, EpicProvider>();
+            services.AddSingleton<IEpicMapper, EpicMapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +65,15 @@ namespace JiraEpicRoadmapper.Server
             });
 
 
+        }
+
+        private static void ConfigureJiraClient(IServiceProvider sp, HttpClient client)
+        {
+            var cfg = sp.GetService<IOptions<Config>>().Value;
+            client.BaseAddress = new Uri(cfg.JiraUri);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                Convert.ToBase64String(Encoding.ASCII.GetBytes(cfg.AuthKey)));
+            client.DefaultRequestHeaders.Add("ContentType", "application/json");
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.Server.Providers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JiraEpicRoadmapper.Server.Controllers
@@ -7,10 +10,17 @@ namespace JiraEpicRoadmapper.Server.Controllers
     [Route("api/[controller]")]
     public class EpicsController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IEpicProvider _epicProvider;
+
+        public EpicsController(IEpicProvider epicProvider)
         {
-            yield return "ok";
+            _epicProvider = epicProvider;
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<Epic>> Get()
+        {
+            return await _epicProvider.GetEpics();
         }
     }
 }
