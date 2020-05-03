@@ -4,7 +4,7 @@
     "JiraEpicRoadmapper.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/epics",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
