@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace JiraEpicRoadmapper.Server.Clients
             jqlQuery = Uri.EscapeDataString(jqlQuery);
             var elements = new List<JsonElement>();
             var start = 0;
-            var client = _clientFactory.CreateClient(nameof(IJiraClient));
+            var client = GetClient();
 
             while (true)
             {
@@ -41,6 +42,21 @@ namespace JiraEpicRoadmapper.Server.Clients
             }
             return elements;
         }
+
+        public async Task<IReadOnlyDictionary<string, string[]>> QueryFieldNameToKeysMap()
+        {
+            var doc = await GetDocument(GetClient(), "/rest/api/2/field");
+
+            return doc.RootElement.EnumerateArray().Select(e =>
+                (
+                    name: e.GetProperty("name").GetString(), key:
+                    e.GetProperty("key").GetString()
+                ))
+                .GroupBy(x => x.name)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.key).ToArray());
+        }
+
+        private HttpClient GetClient() => _clientFactory.CreateClient(nameof(IJiraClient));
 
         private async Task<JsonDocument> GetDocument(HttpClient client, string query)
         {

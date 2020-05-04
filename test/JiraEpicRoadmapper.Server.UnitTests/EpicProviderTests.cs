@@ -43,6 +43,17 @@ namespace JiraEpicRoadmapper.Server.UnitTests
         }
 
         [Fact]
+        public async Task GetEpics_should_query_for_fields_once()
+        {
+            _client.Setup(x => x.QueryFieldNameToKeysMap()).ReturnsAsync(new Dictionary<string, string[]>());
+
+            await _provider.GetEpics();
+            await _provider.GetEpics();
+
+            _client.Verify(c => c.QueryFieldNameToKeysMap(), Times.Once);
+        }
+
+        [Fact]
         public async Task GetEpics_should_query_and_map_epics()
         {
             var elements = new[]
@@ -59,10 +70,24 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             results.ShouldBe(expectedEpics);
         }
 
+        [Fact]
+        public async Task GetEpics_should_map_epics_using_fetched_fields_map()
+        {
+            var element = CreateJsonElement();
+            SetupClient(element);
+
+            var fieldsMap = new Dictionary<string, string[]>();
+            _client.Setup(x => x.QueryFieldNameToKeysMap()).ReturnsAsync(fieldsMap);
+
+            var _ = (await _provider.GetEpics()).ToArray();
+
+            _mapper.Verify(x => x.MapEpic(element, fieldsMap));
+        }
+
         private Epic SetupEpicMapping(JsonElement element)
         {
             var epic = new Epic();
-            _mapper.Setup(x => x.MapEpic(element)).Returns(epic);
+            _mapper.Setup(x => x.MapEpic(element, It.IsAny<IReadOnlyDictionary<string, string[]>>())).Returns(epic);
             return epic;
         }
 

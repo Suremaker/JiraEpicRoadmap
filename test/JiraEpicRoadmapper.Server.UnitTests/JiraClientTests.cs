@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -33,7 +34,7 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             SetupJqlBatches();
             var jqlQuery = "project=foo";
             await _client.QueryJql(jqlQuery);
-            _handler.Verify(h => h.OnSendAsync(It.Is<HttpRequestMessage>(m => m.RequestUri.ToString().Equals($"{BaseUri}/rest/api/2/search?jql={Uri.EscapeDataString(jqlQuery)}&startAt=0&maxResults=50"))));
+            _handler.Verify(h => h.OnSendAsync(It.Is<HttpRequestMessage>(m => m.RequestUri.PathAndQuery.Equals($"/rest/api/2/search?jql={Uri.EscapeDataString(jqlQuery)}&startAt=0&maxResults=50"))));
         }
 
         [Fact]
@@ -43,6 +44,38 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             var items = await _client.QueryJql("project=bar");
 
             items.Select(i => i.GetProperty("id").GetGuid()).ShouldBe(guids);
+        }
+
+        [Fact]
+        public async Task QueryFieldNameToKeysMap_should_return_field_name_to_key_associations()
+        {
+            var fieldsBody = new[]
+            {
+                new
+                {
+                    key = "customfield_10015",
+                    name = "Start date"
+                },
+                new
+                {
+                    key = "customfield_10016",
+                    name = "Start date"
+                },
+                new
+                {
+                    key = "customfield_10017",
+                    name = "Change risk"
+                }
+            };
+            SetupHttpClientResponse(
+                x => x.OnSendAsync(It.Is<HttpRequestMessage>(m => m.RequestUri.PathAndQuery.Equals("/rest/api/2/field"))),
+                fieldsBody);
+
+            var map = await _client.QueryFieldNameToKeysMap();
+            map.Count.ShouldBe(2);
+            map.Keys.ShouldBe(new[] { "Start date", "Change risk" }, true);
+            map["Start date"].ShouldBe(new[] { "customfield_10015", "customfield_10016" }, true);
+            map["Change risk"].ShouldBe(new[] { "customfield_10017" });
         }
 
         private class MockableMessageHandler : HttpMessageHandler
@@ -74,12 +107,16 @@ namespace JiraEpicRoadmapper.Server.UnitTests
                 total = total,
                 issues = issues
             };
+            SetupHttpClientResponse(
+                x => x.OnSendAsync(It.Is<HttpRequestMessage>(m => m.RequestUri.Query.Contains($"startAt={startAt}&"))),
+                json);
+        }
 
-            var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(json)) };
+        private void SetupHttpClientResponse(Expression<Func<IMockableMessageHandler, Task<HttpResponseMessage>>> expression, object responseBody)
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(responseBody)) };
 
-            _handler
-                .Setup(x => x.OnSendAsync(It.Is<HttpRequestMessage>(m => m.RequestUri.Query.Contains($"startAt={startAt}&"))))
-                .ReturnsAsync(response);
+            _handler.Setup(expression).ReturnsAsync(response);
         }
     }
 }

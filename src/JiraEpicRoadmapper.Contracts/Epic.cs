@@ -1,4 +1,6 @@
-﻿namespace JiraEpicRoadmapper.Contracts
+﻿using System;
+
+namespace JiraEpicRoadmapper.Contracts
 {
     public class Epic
     {
@@ -9,5 +11,7 @@
         public string Summary { get; set; }
         public string Url { get; set; }
         public string StatusCategory { get; set; }
+        public DateTimeOffset? StartDate { get; set; }
+        public DateTimeOffset? DueDate { get; set; }
     }
 }

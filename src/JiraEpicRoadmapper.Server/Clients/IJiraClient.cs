@@ -7,5 +7,6 @@ namespace JiraEpicRoadmapper.Server.Clients
     public interface IJiraClient
     {
         Task<IReadOnlyList<JsonElement>> QueryJql(string jqlQuery);
+        Task<IReadOnlyDictionary<string, string[]>> QueryFieldNameToKeysMap();
     }
 }
