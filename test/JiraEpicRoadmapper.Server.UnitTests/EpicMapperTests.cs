@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using JiraEpicRoadmapper.Server.Mappers;
 using Microsoft.Extensions.Options;
@@ -41,7 +42,8 @@ namespace JiraEpicRoadmapper.Server.UnitTests
                 ""name"": ""{statusCategory}""
             }}
         }},
-        ""summary"": ""{summary}""
+        ""summary"": ""{summary}"",
+        ""issuelinks"": []
     }}
 }}";
             var epic = _mapper.MapEpic(ToJsonElement(epicJson), new Dictionary<string, string[]>());
@@ -75,15 +77,66 @@ namespace JiraEpicRoadmapper.Server.UnitTests
         },
         ""summary"": ""My epic name"",
         ""duedate"": ""2020-04-21"",
-        ""field_0001"": ""2020-04-18""
+        ""field_0001"": ""2020-04-18"",
+        ""issuelinks"": []
     }
 }";
             var fieldsNameToKeyMap = new Dictionary<string, string[]> { { "Start date", new[] { "field_0001" } } };
 
             var epic = _mapper.MapEpic(ToJsonElement(epicJson), fieldsNameToKeyMap);
 
-            epic.StartDate.ShouldBe(new DateTimeOffset(new DateTime(2020,04,18,0,0,0)));
-            epic.DueDate.ShouldBe(new DateTimeOffset(new DateTime(2020,04,21,0,0,0)));
+            epic.StartDate.ShouldBe(new DateTimeOffset(new DateTime(2020, 04, 18, 0, 0, 0)));
+            epic.DueDate.ShouldBe(new DateTimeOffset(new DateTime(2020, 04, 21, 0, 0, 0)));
+        }
+
+        [Fact]
+        public void MapEpic_should_map_outward_links()
+        {
+            var epicJson = @"{
+    ""id"": ""123"",
+    ""key"": ""ABC-11"",
+    ""fields"": {
+        ""project"": {
+            ""name"": ""Project Name""
+        },
+        ""status"": {
+            ""name"": ""Todo"",
+            ""statusCategory"": {
+                ""name"": ""To Do""
+            }
+        },
+        ""summary"": ""My epic name"",
+        ""issuelinks"": [
+            {
+                ""type"": {
+                    ""outward"": ""realizes""
+                },
+                ""outwardIssue"": {
+                    ""id"": ""13611""
+                }
+            },
+            {
+                ""type"": {
+                    ""inward"": ""relates to""
+                },
+                ""inwardIssue"": {
+                    ""id"": ""13610""
+                }
+            },
+            {
+                ""type"": {
+                    ""outward"": ""blocks""
+                },
+                ""outwardIssue"": {
+                    ""id"": ""13609""
+                }
+            }
+        ]
+    }
+}";
+            var epic = _mapper.MapEpic(ToJsonElement(epicJson), new Dictionary<string, string[]>());
+
+            epic.Links.Select(l => $"{l.Type}|{l.OutwardId}").ShouldBe(new[] { "realizes|13611", "blocks|13609" });
         }
 
         private JsonElement ToJsonElement(string json) => JsonDocument.Parse(json).RootElement;

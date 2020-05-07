@@ -27,13 +27,25 @@ namespace JiraEpicRoadmapper.Server.Mappers
                 Project = fields.GetProperty("project").GetProperty("name").GetString(),
                 Status = status.GetProperty("name").GetString(),
                 StatusCategory = status.GetProperty("statusCategory").GetProperty("name").GetString(),
-                Summary = fields.GetProperty("summary").GetString()
+                Summary = fields.GetProperty("summary").GetString(),
+                Links = fields.GetProperty("issuelinks").EnumerateArray()
+                    .Where(l => l.TryGetProperty("outwardIssue", out _))
+                    .Select(ParseLink).ToArray()
             };
             epic.Url = $"{_config.Value.JiraUri}/browse/{epic.Key}";
 
             epic.DueDate = GetDateTimeOffsetIfSet(fields, "duedate");
             epic.StartDate = GetFirstNotNullCustomFieldDateTimeOffset(fields, fieldsNameToKeyMap, "Start date");
             return epic;
+        }
+
+        private static Link ParseLink(JsonElement link)
+        {
+            return new Link
+            {
+                OutwardId = link.GetProperty("outwardIssue").GetProperty("id").GetString(),
+                Type = link.GetProperty("type").GetProperty("outward").GetString()
+            };
         }
 
         private DateTimeOffset? GetFirstNotNullCustomFieldDateTimeOffset(in JsonElement fields, IReadOnlyDictionary<string, string[]> fieldsNameToKeyMap, string propName)
