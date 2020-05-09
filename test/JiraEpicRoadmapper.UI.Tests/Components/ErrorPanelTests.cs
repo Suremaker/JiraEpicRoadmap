@@ -7,17 +7,17 @@ using LightBDD.XUnit2;
 
 namespace JiraEpicRoadmapper.UI.Tests.Components
 {
-    public class LoadingBarTests : FeatureFixture
+    public class ErrorPanelTests : FeatureFixture
     {
         [Scenario]
         public async Task Bar_with_no_label()
         {
             await Runner
-                .WithContext<LoadingBarFixture>()
+                .WithContext<ErrorPanelFixture>()
                 .AddSteps(
-                    x => x.Given_a_loading_bar(),
+                    x => x.Given_a_error_panel(),
                     x => x.When_I_render_it(),
-                    x => x.I_should_see_content("<div class=\"loading-bar\"></div>"))
+                    x => x.I_should_see_content("<div class=\"error-panel\"></div>"))
                 .RunAsync();
         }
 
@@ -25,20 +25,20 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public async Task Bar_with_label()
         {
             await Runner
-                .WithContext<LoadingBarFixture>()
+                .WithContext<ErrorPanelFixture>()
                 .AddSteps(
-                    x => x.Given_a_loading_bar(),
-                    x => x.Given_it_has_parameter_value(nameof(LoadingBar.Label), "test"),
+                    x => x.Given_a_error_panel(),
+                    x => x.Given_it_has_parameter_value(nameof(ErrorPanel.Errors), "boom"),
                     x => x.When_I_render_it(),
-                    x => x.I_should_see_content("<div class=\"loading-bar\">test</div>"))
+                    x => x.I_should_see_content("<div class=\"error-panel\">boom</div>"))
                 .RunAsync();
         }
 
 
 
-        public class LoadingBarFixture : ComponentFixture<LoadingBar>
+        public class ErrorPanelFixture : ComponentFixture<ErrorPanel>
         {
-            public void Given_a_loading_bar()
+            public void Given_a_error_panel()
             {
             }
 
