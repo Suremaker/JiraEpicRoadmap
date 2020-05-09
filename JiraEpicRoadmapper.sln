@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server.UnitTests", "test\JiraEpicRoadmapper.Server.UnitTests\JiraEpicRoadmapper.Server.UnitTests.csproj", "{2DE1C40F-9884-453A-AF49-926F234829C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Server.ServiceTests", "test\JiraEpicRoadmapper.Server.ServiceTests\JiraEpicRoadmapper.Server.ServiceTests.csproj", "{D9D67087-094A-466E-85AA-9386E0F48FAB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.Contracts", "src\JiraEpicRoadmapper.Contracts\JiraEpicRoadmapper.Contracts.csproj", "{6CE260B2-5AB9-4D36-A346-753F3BBE644F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.UI", "src\JiraEpicRoadmapper.UI\JiraEpicRoadmapper.UI.csproj", "{01558FE5-EDE8-454E-A1DC-36111E1ABA81}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.UI.Tests", "test\JiraEpicRoadmapper.UI.Tests\JiraEpicRoadmapper.UI.Tests.csproj", "{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,6 @@ Global
 		{2DE1C40F-9884-453A-AF49-926F234829C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DE1C40F-9884-453A-AF49-926F234829C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DE1C40F-9884-453A-AF49-926F234829C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9D67087-094A-466E-85AA-9386E0F48FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9D67087-094A-466E-85AA-9386E0F48FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9D67087-094A-466E-85AA-9386E0F48FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9D67087-094A-466E-85AA-9386E0F48FAB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6CE260B2-5AB9-4D36-A346-753F3BBE644F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6CE260B2-5AB9-4D36-A346-753F3BBE644F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CE260B2-5AB9-4D36-A346-753F3BBE644F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,6 +39,10 @@ Global
 		{01558FE5-EDE8-454E-A1DC-36111E1ABA81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01558FE5-EDE8-454E-A1DC-36111E1ABA81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01558FE5-EDE8-454E-A1DC-36111E1ABA81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,9 +50,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D4ED8AAB-CC88-48E1-A547-1070A11A6D35} = {BF12312F-13E4-472B-9A69-5D0A49CACCA5}
 		{2DE1C40F-9884-453A-AF49-926F234829C0} = {649E23B0-1CF4-4682-A4B7-82B227DA2344}
-		{D9D67087-094A-466E-85AA-9386E0F48FAB} = {649E23B0-1CF4-4682-A4B7-82B227DA2344}
 		{6CE260B2-5AB9-4D36-A346-753F3BBE644F} = {BF12312F-13E4-472B-9A69-5D0A49CACCA5}
 		{01558FE5-EDE8-454E-A1DC-36111E1ABA81} = {BF12312F-13E4-472B-9A69-5D0A49CACCA5}
+		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6} = {649E23B0-1CF4-4682-A4B7-82B227DA2344}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6FF564-67F6-407E-A90A-524F5AE1FFFF}

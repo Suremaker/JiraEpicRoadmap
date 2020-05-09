@@ -4,3 +4,29 @@
     margin: 0;
     padding: 0;
 }
+
+.loading-bar {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: loading-bar 3s ease infinite;
+    margin: 2em;
+    border: 1px solid #222222;
+    padding: 1em;
+    font-size: larger;
+    font-weight: bolder;
+    text-align: center;
+}
+
+@keyframes loading-bar {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
