@@ -1,13 +1,20 @@
 ﻿@using JiraEpicRoadmapper.Contracts
 @using JiraEpicRoadmapper.UI.Models
 <div class="epics-panel" style="width: @(EpicsTimeline.TotalDays * LayoutSettings.DaySpan)px; height: @(EpicsTimeline.TotalRows * LayoutSettings.RowHeight)px">
-
+    @foreach (var m in EpicsTimeline.Timeline.GetMondays())
+    {
+        <DayIndicator Day="@m" />
+    }
+    <TodayIndicator Day="@EpicsTimeline.Timeline.Today" />
 </div>
 
 @code
 {
     private IReadOnlyList<Epic> _epics;
     public EpicsTimeline EpicsTimeline { get; private set; }
+
+    [Parameter]
+    public DateTimeOffset? Today { get; set; }
 
     [Parameter]
     public IReadOnlyList<Epic> Epics
@@ -25,7 +32,7 @@
 
     private void OnEpicUpdate()
     {
-        EpicsTimeline = new EpicsTimeline(Epics);
+        EpicsTimeline = new EpicsTimeline(Epics, Today);
     }
 
 }

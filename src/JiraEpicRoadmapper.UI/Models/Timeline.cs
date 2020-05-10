@@ -7,10 +7,11 @@ namespace JiraEpicRoadmapper.UI.Models
 {
     public class Timeline
     {
-        public DateTimeOffset Today { get; }
+        public const int WeekDays = 7;
         public DateTimeOffset Start { get; }
         public DateTimeOffset End { get; }
         public int TotalDays { get; }
+        public IndexedDay Today { get; }
 
         public Timeline(DateTimeOffset start, DateTimeOffset end, DateTimeOffset today)
         {
@@ -21,20 +22,20 @@ namespace JiraEpicRoadmapper.UI.Models
 
             Start = start;
             End = end;
-            Today = today;
+            Today = GetDayWithIndex(today);
             TotalDays = GetDayIndex(End);
         }
 
         public static Timeline FromEpics(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
         {
             var todayDate = today ?? DateTimeOffset.Now.Date;
-            var start = epics.Select(e => e.StartDate.GetValueOrDefault(e.DueDate.GetValueOrDefault(todayDate))).Append(todayDate).Min().AddDays(-7);
-            var end = epics.Select(e => e.DueDate.GetValueOrDefault(e.StartDate.GetValueOrDefault(todayDate))).Append(todayDate).Max().AddDays(7);
+            var start = epics.Select(e => e.StartDate.GetValueOrDefault(e.DueDate.GetValueOrDefault(todayDate))).Append(todayDate).Min().AddDays(-WeekDays);
+            var end = epics.Select(e => e.DueDate.GetValueOrDefault(e.StartDate.GetValueOrDefault(todayDate))).Append(todayDate).Max().AddDays(WeekDays);
 
             return new Timeline(start, end, todayDate);
         }
 
-        public IEnumerable<(DateTimeOffset day, int index)> GetMondays()
+        public IEnumerable<IndexedDay> GetMondays()
         {
             var day = Start;
             while (day.DayOfWeek != DayOfWeek.Monday)
@@ -42,11 +43,11 @@ namespace JiraEpicRoadmapper.UI.Models
             while (day < End)
             {
                 yield return GetDayWithIndex(day);
-                day = day.AddDays(7);
+                day = day.AddDays(WeekDays);
             }
         }
 
         private int GetDayIndex(DateTimeOffset day) => (int)(day - Start).TotalDays;
-        private (DateTimeOffset day, int index) GetDayWithIndex(in DateTimeOffset day) => (day, GetDayIndex(day));
+        private IndexedDay GetDayWithIndex(in DateTimeOffset day) => new IndexedDay(day, GetDayIndex(day));
     }
 }

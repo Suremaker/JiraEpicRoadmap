@@ -47,8 +47,8 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             var today = DateTimeOffset.Now.Date;
             var someDay = today.AddDays(-5);
 
-            Timeline.FromEpics(new Epic[] { }, someDay).Today.ShouldBe(someDay);
-            Timeline.FromEpics(new Epic[] { }).Today.ShouldBe(today);
+            Timeline.FromEpics(new Epic[] { }, someDay).Today.ShouldBe(new IndexedDay(someDay, Timeline.WeekDays));
+            Timeline.FromEpics(new Epic[] { }).Today.ShouldBe(new IndexedDay(today, Timeline.WeekDays));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             var startDate = ToDateTime(start);
             var endDate = ToDateTime(end);
             var timeline = new Timeline(startDate, endDate, endDate);
-            timeline.GetMondays().Select(x => $"{x.day:yyyy-MM-dd}|{x.index}").ShouldBe(expected);
+            timeline.GetMondays().Select(x => $"{x.Date:yyyy-MM-dd}|{x.Index}").ShouldBe(expected);
         }
 
         private static DateTimeOffset? ToNullableDateTime(string date)

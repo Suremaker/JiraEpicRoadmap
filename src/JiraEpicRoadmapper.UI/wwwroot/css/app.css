@@ -43,4 +43,28 @@
 }
 
 .epics-panel {
+    position: relative;
+}
+
+.day-indicator {
+    width: 1px;
+    height: 100%;
+    border-left: 1px dashed #666666;
+    color: #666666;
+    padding-left: 1px;
+    position: absolute;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.today-indicator {
+    width: 30px;
+    height: 100%;
+    border-left: 1px solid #0066ff;
+    background-image: linear-gradient(to right, rgba(0,102,255,0.5), rgba(0,102,255,0));
+    padding-left: 1px;
+    position: absolute;
+    white-space: nowrap;
+    padding-left: 1px;
+    font-weight: bold;
 }

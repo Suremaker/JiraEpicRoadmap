@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
 using Bunit;
@@ -7,6 +9,7 @@ using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Formatting;
+using LightBDD.Framework.Parameters;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
 using Shouldly;
@@ -28,6 +31,23 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .RunAsync();
         }
 
+        [Scenario]
+        public async Task Panel_should_display_the_timeline()
+        {
+            await Runner
+                .WithContext<EpicsPanelFixture>()
+                .AddSteps(
+                    x => x.Given_a_epics_panel(),
+                    x => x.Given_a_epics_covering_time_from_to("2020-03-04", "2020-03-25"),
+                    x => x.Given_today_is_DATE("2020-03-15"),
+                    x => x.When_I_render_it(),
+                    x => x.Then_I_should_see_the_day_indicators(x.EpicsTimeline.Timeline.GetMondays()
+                        .ToVerifiableDataTable(t => t.WithKey(c => c.Date).WithInferredColumns())),
+                    x => x.Then_I_should_see_the_today_indicator(x.EpicsTimeline.Timeline.Today)
+                )
+                .RunAsync();
+        }
+
         public class EpicsPanelFixture : ComponentFixture<EpicsPanel>
         {
             private readonly List<Epic> _epics = new List<Epic>();
@@ -37,6 +57,11 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             public void Given_a_epics_panel()
             {
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
+            }
+
+            public void Given_today_is_DATE(string date)
+            {
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Today), DateTimeOffset.Parse(date)));
             }
 
             public void Then_it_should_have_specified_timeline()
@@ -49,6 +74,21 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 var css = Component.Find("div.epics-panel").GetStyle();
                 css.GetPropertyValue("width").ShouldBe($"{width}px");
                 css.GetPropertyValue("height").ShouldBe($"{height}px");
+            }
+
+            public void Given_a_epics_covering_time_from_to(string from, string to)
+            {
+                _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to) });
+            }
+
+            public void Then_I_should_see_the_day_indicators(VerifiableDataTable<IndexedDay> indicators)
+            {
+                indicators.SetActual(Component.FindComponents<DayIndicator>().Select(x => x.Instance.Day));
+            }
+
+            public void Then_I_should_see_the_today_indicator(IndexedDay indicator)
+            {
+                Component.FindComponent<TodayIndicator>().Instance.Day.ShouldBe(indicator);
             }
         }
     }
