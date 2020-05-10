@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Pages;
 using JiraEpicRoadmapper.UI.Repositories;
@@ -73,7 +75,7 @@ namespace JiraEpicRoadmapper.UI.Tests
 
             public void Then_I_should_see_loading_bar_with_text(string text)
             {
-                Component.FindComponent<LoadingBar>().Instance.Label.ShouldBe(text);
+                Component.FindComponents<LoadingBar>().Single(x => x.Instance.Id == "mainLoadingBar").Instance.Label.ShouldBe(text);
             }
 
             public void Then_page_should_query_for_epics()
@@ -107,7 +109,7 @@ namespace JiraEpicRoadmapper.UI.Tests
 
             public void Then_loading_bar_should_not_be_visible()
             {
-                Component.FindComponents<LoadingBar>().ShouldBeEmpty();
+                Component.FindComponents<LoadingBar>().Where(x => x.Instance.Id == "mainLoadingBar").ShouldBeEmpty();
             }
 
             public void Then_error_panel_should_not_be_visible()

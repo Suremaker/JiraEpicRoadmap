@@ -9,13 +9,16 @@
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     background-size: 400% 400%;
     animation: loading-bar 3s ease infinite;
-    margin: 2em;
-    border: 1px solid #222222;
-    padding: 1em;
-    font-size: larger;
-    font-weight: bolder;
     text-align: center;
 }
+
+    .loading-bar.panel {
+        margin: 2em;
+        border: 1px solid #222222;
+        padding: 1em;
+        font-size: larger;
+        font-weight: bolder;
+    }
 
 @keyframes loading-bar {
     0% {
@@ -76,3 +79,37 @@
     font-size: 17px;
     font-weight: bold;
 }
+
+.epic-card {
+    border: 1px solid #222222;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+    position: absolute;
+    display: block;
+}
+
+    .epic-card .content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        height: 50px;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .epic-card .status {
+        margin: 0;
+        padding: 3px;
+        text-align: center;
+    }
+
+    .epic-card .summary {
+        margin: auto;
+        padding: 3px;
+        text-align: center;
+    }
+
+    .epic-card .loading-bar {
+        height: 10px;
+    }

@@ -66,11 +66,30 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .RunAsync();
         }
 
+        [Scenario]
+        public async Task Panel_should_display_epics()
+        {
+            await Runner
+                .WithContext<EpicsPanelFixture>()
+                .AddSteps(
+                    x => x.Given_a_epics_panel(),
+                    x => x.Given_epics(Table.For(
+                        new Epic { Id = "EP-1", Project = "EP", Summary = "Hello world" },
+                        new Epic { Id = "EP-2", Project = "EP", Summary = "Something done" },
+                        new Epic { Id = "EP-3", Project = "EP", Summary = "Something to do" })),
+                    x => x.Given_today_is_DATE("2020-03-15"),
+                    x => x.When_I_render_it(),
+                    x => x.Then_I_should_see_the_specified_epics(x.Epics.ToVerifiableDataTable())
+                )
+                .RunAsync();
+        }
+
         public class EpicsPanelFixture : ComponentFixture<EpicsPanel>
         {
             private readonly List<Epic> _epics = new List<Epic>();
             private DateTimeOffset _today;
 
+            public IReadOnlyList<Epic> Epics => _epics;
             public EpicsRoadmap EpicsRoadmap => Component.Instance.Roadmap;
 
             public void Given_a_epics_panel()
@@ -123,6 +142,20 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             {
                 header.SetActual(Component.FindComponents<ProjectHeader>().Select(h =>
                     new ExpectedProjectHeader(h.Instance.Name, h.Instance.RowIndex, h.Instance.DayIndex)));
+            }
+
+            public void Given_epics(InputTable<Epic> epics)
+            {
+                _epics.AddRange(epics);
+            }
+
+            public void Then_I_should_see_the_specified_epics(VerifiableDataTable<Epic> epics)
+            {
+                var actual = Component
+                    .FindComponents<EpicCardView>()
+                    .Select(v => v.Instance.Block.Meta.Epic)
+                    .ToDictionary(x => x.Id);
+                epics.SetActual(input => actual.TryGetValue(input.Id, out var r) ? r : null);
             }
         }
 

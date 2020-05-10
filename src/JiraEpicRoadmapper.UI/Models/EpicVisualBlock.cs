@@ -9,6 +9,8 @@
             Meta = meta;
         }
 
+        public int StartIndex => Meta.Start.Index;
+        public int EndIndex => Meta.End.Index;
         public int RowIndex { get; }
         public EpicMetadata Meta { get; }
     }

@@ -1,0 +1,37 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+<div class="epic-card" style="background-color: @(CardColor); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;">
+    <div class="content">
+        <div class="summary">[TEST ME!] @(Block.Meta.Epic.Summary)</div>
+        <div class="status">
+            @foreach (var s in MapStatus(Block))
+            {
+                @s<br />
+            }
+        </div>
+    </div>
+    <LoadingBar Label="&nbsp;" Inline="true"/>
+</div>
+
+@code {
+    [Parameter]
+    public EpicVisualBlock Block { get; set; }
+
+    [Parameter]
+    public string CardColor { get; set; } = "white";
+
+
+    private IReadOnlyList<string> MapStatus(EpicVisualBlock block)
+    {
+        var status = new List<string>();
+
+        var epicStatus = block.Meta.Epic.StatusCategory;
+        if (string.Equals(epicStatus, "done", StringComparison.OrdinalIgnoreCase))
+            status.Add("✔️");
+        else if (string.Equals(epicStatus, "in progress", StringComparison.OrdinalIgnoreCase))
+            status.Add("⚙️");
+        else if (string.Equals(epicStatus, "to do", StringComparison.OrdinalIgnoreCase))
+            status.Add("❔");
+
+        return status;
+    }
+}

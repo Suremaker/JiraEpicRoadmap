@@ -13,6 +13,10 @@
         }
     }
     <TodayIndicator Day="@Roadmap.Timeline.Today" />
+    @foreach (var e in Roadmap.EpicBlocks)
+    {
+        <EpicCardView Block="@e" />
+    }
 </div>
 
 @code

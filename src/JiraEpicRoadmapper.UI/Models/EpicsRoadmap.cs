@@ -12,6 +12,7 @@ namespace JiraEpicRoadmapper.UI.Models
         public int TotalDays => Timeline.TotalDays;
         public int TotalRows => Projects.LastOrDefault()?.LastRowIndex + 1 ?? 1;
         public IReadOnlyList<ProjectLayout> Projects { get; private set; } = Array.Empty<ProjectLayout>();
+        public IEnumerable<EpicVisualBlock> EpicBlocks => Projects.SelectMany(p => p.Epics);
 
         public EpicsRoadmap(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
         {
