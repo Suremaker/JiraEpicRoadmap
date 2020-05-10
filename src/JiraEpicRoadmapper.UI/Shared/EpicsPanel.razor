@@ -1,13 +1,13 @@
 ﻿@using JiraEpicRoadmapper.Contracts
 @using JiraEpicRoadmapper.UI.Models
-<div class="epics-panel" style="width: @(Timeline.TotalDays * LayoutSettings.DaySpan)px; height: @(Timeline.TotalRows * LayoutSettings.RowHeight)px">
+<div class="epics-panel" style="width: @(EpicsTimeline.TotalDays * LayoutSettings.DaySpan)px; height: @(EpicsTimeline.TotalRows * LayoutSettings.RowHeight)px">
 
 </div>
 
 @code
 {
     private IReadOnlyList<Epic> _epics;
-    public Timeline Timeline { get; private set; }
+    public EpicsTimeline EpicsTimeline { get; private set; }
 
     [Parameter]
     public IReadOnlyList<Epic> Epics
@@ -25,7 +25,7 @@
 
     private void OnEpicUpdate()
     {
-        Timeline = new Timeline(Epics);
+        EpicsTimeline = new EpicsTimeline(Epics);
     }
 
 }

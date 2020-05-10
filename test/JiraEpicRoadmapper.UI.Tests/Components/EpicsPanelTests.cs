@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
 using Bunit;
-using Castle.Components.DictionaryAdapter;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Shared;
@@ -25,7 +24,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_a_epics_panel(),
                     x => x.When_I_render_it(),
                     x => x.Then_it_should_have_specified_timeline(),
-                    x => x.Then_it_should_have_width_and_height(x.Timeline.TotalDays * LayoutSettings.DaySpan, x.Timeline.TotalRows * LayoutSettings.RowHeight))
+                    x => x.Then_it_should_have_width_and_height(x.EpicsTimeline.TotalDays * LayoutSettings.DaySpan, x.EpicsTimeline.TotalRows * LayoutSettings.RowHeight))
                 .RunAsync();
         }
 
@@ -33,7 +32,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         {
             private readonly List<Epic> _epics = new List<Epic>();
 
-            public Timeline Timeline => Component.Instance.Timeline;
+            public EpicsTimeline EpicsTimeline => Component.Instance.EpicsTimeline;
 
             public void Given_a_epics_panel()
             {
@@ -42,7 +41,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Then_it_should_have_specified_timeline()
             {
-                Component.Instance.Timeline.ShouldNotBeNull();
+                Component.Instance.EpicsTimeline.ShouldNotBeNull();
             }
 
             public void Then_it_should_have_width_and_height([Format("{0}px")]int width, [Format("{0}px")]int height)
