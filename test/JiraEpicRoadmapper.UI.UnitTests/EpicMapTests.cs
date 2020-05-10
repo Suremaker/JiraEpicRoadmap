@@ -25,7 +25,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
                 StartDate = Utils.ToNullableDateTime(start),
                 DueDate = Utils.ToNullableDateTime(end),
             };
-            var map = new EpicMap(new[] { epic }, _timeline);
+            var map = EpicMap.Create(new[] { epic }, _timeline);
             var meta = map.Epics.Single();
 
             meta.Start.ToString().ShouldBe(expectedStart);
@@ -37,7 +37,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var foo = new Epic { Id = "foo" };
             var bar = new Epic { Id = "bar" };
-            var map = new EpicMap(new[] { foo, bar }, _timeline);
+            var map = EpicMap.Create(new[] { foo, bar }, _timeline);
             map.TryGetById("foo").Epic.ShouldBeSameAs(foo);
             map.TryGetById("bar").Epic.ShouldBeSameAs(bar);
             map.TryGetById("baz").ShouldBeNull();
@@ -46,7 +46,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void It_should_initialize_metadata_with_known_inbounds_and_dependants()
         {
-            var map = new EpicMap(new[]
+            var map = EpicMap.Create(new[]
             {
                 new Epic {Id = "foo", Links = new[] {new Link {OutwardId = "bar"}, new Link {OutwardId = "baz"}}},
                 new Epic {Id = "bar", Links = new[] {new Link {OutwardId = "baz"}}},

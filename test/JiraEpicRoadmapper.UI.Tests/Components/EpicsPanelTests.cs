@@ -27,7 +27,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_a_epics_panel(),
                     x => x.When_I_render_it(),
                     x => x.Then_it_should_have_specified_timeline(),
-                    x => x.Then_it_should_have_width_and_height(x.EpicsTimeline.TotalDays * LayoutSettings.DaySpan, x.EpicsTimeline.TotalRows * LayoutSettings.RowHeight))
+                    x => x.Then_it_should_have_width_and_height(x.EpicsRoadmap.TotalDays * LayoutSettings.DaySpan, x.EpicsRoadmap.TotalRows * LayoutSettings.RowHeight))
                 .RunAsync();
         }
 
@@ -41,7 +41,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_a_epics_covering_time_from_to("2020-03-04", "2020-03-25"),
                     x => x.Given_today_is_DATE("2020-03-15"),
                     x => x.When_I_render_it(),
-                    x => x.Then_I_should_see_the_day_indicators(x.EpicsTimeline.Timeline.GetMondays()
+                    x => x.Then_I_should_see_the_day_indicators(x.EpicsRoadmap.Timeline.GetMondays()
                         .ToVerifiableDataTable(t => t.WithKey(c => c.Date).WithInferredColumns())),
                     x => x.Then_I_should_see_the_today_indicator_with_valid_date()
                 )
@@ -53,7 +53,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             private readonly List<Epic> _epics = new List<Epic>();
             private DateTimeOffset _today;
 
-            public EpicsTimeline EpicsTimeline => Component.Instance.EpicsTimeline;
+            public EpicsRoadmap EpicsRoadmap => Component.Instance.Roadmap;
 
             public void Given_a_epics_panel()
             {
@@ -68,7 +68,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Then_it_should_have_specified_timeline()
             {
-                Component.Instance.EpicsTimeline.ShouldNotBeNull();
+                Component.Instance.Roadmap.ShouldNotBeNull();
             }
 
             public void Then_it_should_have_width_and_height([Format("{0}px")]int width, [Format("{0}px")]int height)
@@ -80,7 +80,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_a_epics_covering_time_from_to(string from, string to)
             {
-                _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to) });
+                _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to), Id = "foo" });
             }
 
             public void Then_I_should_see_the_day_indicators(VerifiableDataTable<IndexedDay> indicators)

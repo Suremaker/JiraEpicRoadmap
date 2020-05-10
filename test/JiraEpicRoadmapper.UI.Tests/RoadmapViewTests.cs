@@ -88,7 +88,7 @@ namespace JiraEpicRoadmapper.UI.Tests
 
             public void Given_api_successfully_returns_epics()
             {
-                _repository.Setup(r => r.FetchEpics()).ReturnsAsync(new[] { new Epic() });
+                _repository.Setup(r => r.FetchEpics()).ReturnsAsync(new[] { new Epic { Id = "foo" } });
             }
 
             public void Given_api_takes_a_while_to_load()
