@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.UI", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraEpicRoadmapper.UI.Tests", "test\JiraEpicRoadmapper.UI.Tests\JiraEpicRoadmapper.UI.Tests.csproj", "{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraEpicRoadmapper.UI.UnitTests", "test\JiraEpicRoadmapper.UI.UnitTests\JiraEpicRoadmapper.UI.UnitTests.csproj", "{E0E13E62-CF06-41ED-A447-96DCA195867A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E13E62-CF06-41ED-A447-96DCA195867A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E13E62-CF06-41ED-A447-96DCA195867A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E13E62-CF06-41ED-A447-96DCA195867A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E13E62-CF06-41ED-A447-96DCA195867A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{6CE260B2-5AB9-4D36-A346-753F3BBE644F} = {BF12312F-13E4-472B-9A69-5D0A49CACCA5}
 		{01558FE5-EDE8-454E-A1DC-36111E1ABA81} = {BF12312F-13E4-472B-9A69-5D0A49CACCA5}
 		{9DBF1A3B-90BF-4F85-AAD5-D2006655DDB6} = {649E23B0-1CF4-4682-A4B7-82B227DA2344}
+		{E0E13E62-CF06-41ED-A447-96DCA195867A} = {649E23B0-1CF4-4682-A4B7-82B227DA2344}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6FF564-67F6-407E-A90A-524F5AE1FFFF}

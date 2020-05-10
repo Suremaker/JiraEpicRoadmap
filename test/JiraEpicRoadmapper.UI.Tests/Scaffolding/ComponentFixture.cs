@@ -27,5 +27,10 @@ namespace JiraEpicRoadmapper.UI.Tests.Scaffolding
         }
 
         protected void WithComponentParameter(ComponentParameter parameter) => _parameters[parameter.Name ?? Guid.NewGuid().ToString()] = parameter;
+
+        public void Then_I_should_see_content(string content)
+        {
+            Component.MarkupMatches(content);
+        }
     }
 }

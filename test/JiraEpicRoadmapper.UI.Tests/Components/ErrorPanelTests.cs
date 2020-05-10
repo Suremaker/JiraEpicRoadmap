@@ -17,7 +17,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .AddSteps(
                     x => x.Given_a_error_panel(),
                     x => x.When_I_render_it(),
-                    x => x.I_should_see_content("<div class=\"error-panel\"></div>"))
+                    x => x.Then_I_should_see_content("<div class=\"error-panel\"></div>"))
                 .RunAsync();
         }
 
@@ -30,21 +30,14 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_a_error_panel(),
                     x => x.Given_it_has_parameter_value(nameof(ErrorPanel.Errors), "boom"),
                     x => x.When_I_render_it(),
-                    x => x.I_should_see_content("<div class=\"error-panel\">boom</div>"))
+                    x => x.Then_I_should_see_content("<div class=\"error-panel\">boom</div>"))
                 .RunAsync();
         }
-
-
 
         public class ErrorPanelFixture : ComponentFixture<ErrorPanel>
         {
             public void Given_a_error_panel()
             {
-            }
-
-            public void I_should_see_content(string content)
-            {
-                Component.MarkupMatches(content);
             }
         }
     }
