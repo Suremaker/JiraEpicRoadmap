@@ -6,5 +6,6 @@
         public static readonly int TicketHeight = 60;
         public static readonly int RowMargin = 10;
         public static readonly int RowHeight = TicketHeight + 2 * RowMargin;
+        public const int MinEpicBlockLength = 4;
     }
 }

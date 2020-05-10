@@ -47,7 +47,7 @@ namespace JiraEpicRoadmapper.UI.Models
             }
         }
 
+        public IndexedDay GetDayWithIndex(in DateTimeOffset day) => new IndexedDay(day, GetDayIndex(day));
         private int GetDayIndex(DateTimeOffset day) => (int)(day - Start).TotalDays;
-        private IndexedDay GetDayWithIndex(in DateTimeOffset day) => new IndexedDay(day, GetDayIndex(day));
     }
 }

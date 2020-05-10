@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.MemoryMappedFiles;
 
 namespace JiraEpicRoadmapper.UI.Models
 {

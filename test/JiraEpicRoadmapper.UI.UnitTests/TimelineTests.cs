@@ -23,12 +23,12 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var timeline = Timeline.FromEpics(new[]
             {
-                new Epic{StartDate = ToNullableDateTime(start1),DueDate = ToNullableDateTime(end1)},
-                new Epic{StartDate = ToNullableDateTime(start2),DueDate = ToNullableDateTime(end2)}
-            }, ToNullableDateTime(today));
+                new Epic{StartDate = Utils.ToNullableDateTime(start1),DueDate = Utils.ToNullableDateTime(end1)},
+                new Epic{StartDate = Utils.ToNullableDateTime(start2),DueDate = Utils.ToNullableDateTime(end2)}
+            }, Utils.ToNullableDateTime(today));
 
-            timeline.Start.ShouldBe(ToDateTime(expectedStart));
-            timeline.End.ShouldBe(ToDateTime(expectedEnd));
+            timeline.Start.ShouldBe(DateTimeOffset.Parse(expectedStart));
+            timeline.End.ShouldBe(DateTimeOffset.Parse(expectedEnd));
             timeline.TotalDays.ShouldBe(expectedTotalDays);
         }
 
@@ -60,23 +60,28 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         }
 
         [Theory]
-        [InlineData("2020-05-04", "2020-05-25", "2020-05-04|0", "2020-05-11|7", "2020-05-18|14")]
-        [InlineData("2020-05-03", "2020-05-26", "2020-05-04|1", "2020-05-11|8", "2020-05-18|15", "2020-05-25|22")]
+        [InlineData("2020-05-04", "2020-05-25", "0:2020-05-04", "7:2020-05-11", "14:2020-05-18")]
+        [InlineData("2020-05-03", "2020-05-26", "1:2020-05-04", "8:2020-05-11", "15:2020-05-18", "22:2020-05-25")]
         public void GetMondays_returns_all_Mondays_with_index_within_the_Start_End_range(string start, string end, params string[] expected)
         {
-            var startDate = ToDateTime(start);
-            var endDate = ToDateTime(end);
+            var startDate = DateTimeOffset.Parse(start);
+            var endDate = DateTimeOffset.Parse(end);
             var timeline = new Timeline(startDate, endDate, endDate);
-            timeline.GetMondays().Select(x => $"{x.Date:yyyy-MM-dd}|{x.Index}").ShouldBe(expected);
+            timeline.GetMondays().Select(x => x.ToString()).ShouldBe(expected);
         }
 
-        private static DateTimeOffset? ToNullableDateTime(string date)
+        [Fact]
+        public void GetDayWithIndex_should_return_indexed_day()
         {
-            return DateTimeOffset.TryParse(date, out var result)
-                ? (DateTimeOffset?)result
-                : null;
-        }
+            var today = DateTimeOffset.Now.Date;
+            var timeline = Timeline.FromEpics(new Epic[0], today);
+            var date = timeline.Start;
+            for (int i = 0; i < 14; ++i)
+            {
+                timeline.GetDayWithIndex(date).ShouldBe(new IndexedDay(date, i));
+                date = date.AddDays(1);
+            }
 
-        private static DateTimeOffset ToDateTime(string date) => DateTimeOffset.Parse(date);
+        }
     }
 }

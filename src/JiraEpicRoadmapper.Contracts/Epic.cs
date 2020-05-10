@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JiraEpicRoadmapper.Contracts
 {
@@ -13,6 +14,6 @@ namespace JiraEpicRoadmapper.Contracts
         public string StatusCategory { get; set; }
         public DateTimeOffset? StartDate { get; set; }
         public DateTimeOffset? DueDate { get; set; }
-        public Link[] Links { get; set; }
+        public IReadOnlyList<Link> Links { get; set; } = Array.Empty<Link>();
     }
 }
