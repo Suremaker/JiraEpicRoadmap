@@ -43,7 +43,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_the_day_indicators(x.EpicsTimeline.Timeline.GetMondays()
                         .ToVerifiableDataTable(t => t.WithKey(c => c.Date).WithInferredColumns())),
-                    x => x.Then_I_should_see_the_today_indicator(x.EpicsTimeline.Timeline.Today)
+                    x => x.Then_I_should_see_the_today_indicator_with_valid_date()
                 )
                 .RunAsync();
         }
@@ -51,6 +51,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public class EpicsPanelFixture : ComponentFixture<EpicsPanel>
         {
             private readonly List<Epic> _epics = new List<Epic>();
+            private DateTimeOffset _today;
 
             public EpicsTimeline EpicsTimeline => Component.Instance.EpicsTimeline;
 
@@ -61,7 +62,8 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_today_is_DATE(string date)
             {
-                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Today), DateTimeOffset.Parse(date)));
+                _today = DateTimeOffset.Parse(date);
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Today), _today));
             }
 
             public void Then_it_should_have_specified_timeline()
@@ -86,9 +88,9 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 indicators.SetActual(Component.FindComponents<DayIndicator>().Select(x => x.Instance.Day));
             }
 
-            public void Then_I_should_see_the_today_indicator(IndexedDay indicator)
+            public void Then_I_should_see_the_today_indicator_with_valid_date()
             {
-                Component.FindComponent<TodayIndicator>().Instance.Day.ShouldBe(indicator);
+                Component.FindComponent<TodayIndicator>().Instance.Day.Date.ShouldBe(_today);
             }
         }
     }

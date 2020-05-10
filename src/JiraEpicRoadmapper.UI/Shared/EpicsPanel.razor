@@ -11,10 +11,19 @@
 @code
 {
     private IReadOnlyList<Epic> _epics;
+    private DateTimeOffset? _today;
     public EpicsTimeline EpicsTimeline { get; private set; }
 
     [Parameter]
-    public DateTimeOffset? Today { get; set; }
+    public DateTimeOffset? Today
+    {
+        get => _today;
+        set
+        {
+            _today = value;
+            EpicsTimeline = null;
+        }
+    }
 
     [Parameter]
     public IReadOnlyList<Epic> Epics
@@ -25,9 +34,16 @@
             if (_epics != value)
             {
                 _epics = value;
-                OnEpicUpdate();
+                EpicsTimeline = null;
             }
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (EpicsTimeline == null)
+            OnEpicUpdate();
+        ;
     }
 
     private void OnEpicUpdate()
