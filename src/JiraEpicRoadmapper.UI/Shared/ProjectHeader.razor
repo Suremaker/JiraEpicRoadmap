@@ -1,0 +1,12 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+<div class="project-header" style="left: @(DayIndex * LayoutSettings.DaySpan)px; top: @(RowIndex * LayoutSettings.RowHeight)px;">@(Name)</div>
+
+@code
+{
+    [Parameter]
+    public int DayIndex { get; set; }
+    [Parameter]
+    public int RowIndex { get; set; }
+    [Parameter]
+    public string Name { get; set; }
+}

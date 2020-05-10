@@ -38,12 +38,30 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .WithContext<EpicsPanelFixture>()
                 .AddSteps(
                     x => x.Given_a_epics_panel(),
-                    x => x.Given_a_epics_covering_time_from_to("2020-03-04", "2020-03-25"),
+                    x => x.Given_epics_covering_time_from_to("2020-03-04", "2020-03-25"),
                     x => x.Given_today_is_DATE("2020-03-15"),
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_the_day_indicators(x.EpicsRoadmap.Timeline.GetMondays()
                         .ToVerifiableDataTable(t => t.WithKey(c => c.Date).WithInferredColumns())),
                     x => x.Then_I_should_see_the_today_indicator_with_valid_date()
+                )
+                .RunAsync();
+        }
+
+        [Scenario]
+        public async Task Panel_should_display_project_names()
+        {
+            await Runner
+                .WithContext<EpicsPanelFixture>()
+                .AddSteps(
+                    x => x.Given_a_epics_panel(),
+                    x => x.Given_epics_covering_time_from_to_for_projects("2020-03-04", "2020-03-25", "Project X", "Project Y", "Project Z"),
+                    x => x.Given_today_is_DATE("2020-03-15"),
+                    x => x.When_I_render_it(),
+                    x => x.Then_I_should_see_the_project_headers(Table.ExpectData(
+                        new ExpectedProjectHeader("Project X", 2, 5),
+                        new ExpectedProjectHeader("Project Y", 4, 5),
+                        new ExpectedProjectHeader("Project Z", 6, 5)))
                 )
                 .RunAsync();
         }
@@ -78,9 +96,17 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 css.GetPropertyValue("height").ShouldBe($"{height}px");
             }
 
-            public void Given_a_epics_covering_time_from_to(string from, string to)
+            public void Given_epics_covering_time_from_to(string from, string to)
             {
                 _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to), Id = "foo" });
+            }
+
+            public void Given_epics_covering_time_from_to_for_projects(string from, string to, params string[] projects)
+            {
+                foreach (var project in projects)
+                {
+                    _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to), Id = $"{project}-1", Project = project });
+                }
             }
 
             public void Then_I_should_see_the_day_indicators(VerifiableDataTable<IndexedDay> indicators)
@@ -92,6 +118,26 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             {
                 Component.FindComponent<TodayIndicator>().Instance.Day.Date.ShouldBe(_today);
             }
+
+            public void Then_I_should_see_the_project_headers(VerifiableDataTable<ExpectedProjectHeader> header)
+            {
+                header.SetActual(Component.FindComponents<ProjectHeader>().Select(h =>
+                    new ExpectedProjectHeader(h.Instance.Name, h.Instance.RowIndex, h.Instance.DayIndex)));
+            }
+        }
+
+        public class ExpectedProjectHeader
+        {
+            public ExpectedProjectHeader(string name, int rowIndex, int dayIndex)
+            {
+                Name = name;
+                RowIndex = rowIndex;
+                DayIndex = dayIndex;
+            }
+
+            public string Name { get; }
+            public int RowIndex { get; }
+            public int DayIndex { get; }
         }
     }
 }

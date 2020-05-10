@@ -68,3 +68,11 @@
     padding-left: 1px;
     font-weight: bold;
 }
+
+.project-header {
+    padding-left: 2px;
+    color: #666666;
+    position: absolute;
+    font-size: 17px;
+    font-weight: bold;
+}

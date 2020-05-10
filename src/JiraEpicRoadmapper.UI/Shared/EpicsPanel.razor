@@ -4,6 +4,13 @@
     @foreach (var m in Roadmap.Timeline.GetMondays())
     {
         <DayIndicator Day="@m" />
+        @if (m.Date.Day < 8)
+        {
+            @foreach (var p in Roadmap.Projects)
+            {
+                <ProjectHeader DayIndex="@m.Index" RowIndex="@p.ProjectRowIndex" Name="@p.Name" />
+            }
+        }
     }
     <TodayIndicator Day="@Roadmap.Timeline.Today" />
 </div>
