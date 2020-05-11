@@ -14,8 +14,10 @@ namespace JiraEpicRoadmapper.UI.Tests.Scaffolding
 
         public void When_I_render_it()
         {
-            Component = RenderComponent<T>(_parameters.Values.ToArray());
+            Component = RenderedComponentWithParameters();
         }
+
+        protected IRenderedComponent<T> RenderedComponentWithParameters() => RenderComponent<T>(_parameters.Values.ToArray());
 
         public void Given_it_has_parameter_value(string parameter, object value) => WithComponentParameter(ComponentParameter.CreateParameter(parameter, value));
 

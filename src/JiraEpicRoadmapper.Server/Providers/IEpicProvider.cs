@@ -7,5 +7,6 @@ namespace JiraEpicRoadmapper.Server.Providers
     public interface IEpicProvider
     {
         Task<IEnumerable<Epic>> GetEpics();
+        Task<EpicStats> GetEpicStats(string epicKey);
     }
 }

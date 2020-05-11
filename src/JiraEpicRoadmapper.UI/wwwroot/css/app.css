@@ -20,6 +20,10 @@
         font-weight: bolder;
     }
 
+.epic-progress-bar {
+    height: 10px;
+}
+
 @keyframes loading-bar {
     0% {
         background-position: 0% 50%;
@@ -108,8 +112,4 @@
         margin: auto;
         padding: 3px;
         text-align: center;
-    }
-
-    .epic-card .loading-bar {
-        height: 10px;
     }

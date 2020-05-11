@@ -6,6 +6,7 @@ using AngleSharp.Css.Dom;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Repositories;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Formatting;
@@ -13,6 +14,7 @@ using LightBDD.Framework.Parameters;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Shouldly;
 
 namespace JiraEpicRoadmapper.UI.Tests.Components
@@ -97,6 +99,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
+                Services.AddSingleton<IEpicsRepository>(Mock.Of<IEpicsRepository>());
 
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
             }

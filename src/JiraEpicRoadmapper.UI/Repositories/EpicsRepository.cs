@@ -18,5 +18,10 @@ namespace JiraEpicRoadmapper.UI.Repositories
         {
             return _client.GetFromJsonAsync<Epic[]>("/api/epics");
         }
+
+        public Task<EpicStats> FetchEpicStats(string epicKey)
+        {
+            return _client.GetFromJsonAsync<EpicStats>($"/api/epics/{epicKey}/stats");
+        }
     }
 }

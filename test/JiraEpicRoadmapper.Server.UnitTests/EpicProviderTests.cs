@@ -84,6 +84,31 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             _mapper.Verify(x => x.MapEpic(element, fieldsMap));
         }
 
+        [Fact]
+        public async Task GetEpicStats_should_query_for_tickets_belonging_to_the_epic()
+        {
+            await _provider.GetEpicStats("foo");
+            _client.Verify(x => x.QueryJql("\"Epic Link\"=foo"));
+        }
+
+        [Fact]
+        public async Task GetEpicStats_should_aggregate_tickets_on_status_category()
+        {
+            SetupClient(
+                CreateTicketWithStatusCategoryJsonElement("done"),
+                CreateTicketWithStatusCategoryJsonElement("done"),
+                CreateTicketWithStatusCategoryJsonElement("done"),
+                CreateTicketWithStatusCategoryJsonElement("in progress"),
+                CreateTicketWithStatusCategoryJsonElement("in progress"),
+                CreateTicketWithStatusCategoryJsonElement("to do")
+                );
+            var result = await _provider.GetEpicStats("foo");
+            result.Done.ShouldBe(3);
+            result.InProgress.ShouldBe(2);
+            result.NotStarted.ShouldBe(1);
+            result.Total.ShouldBe(6);
+        }
+
         private Epic SetupEpicMapping(JsonElement element)
         {
             var epic = new Epic();
@@ -92,6 +117,17 @@ namespace JiraEpicRoadmapper.Server.UnitTests
         }
 
         private JsonElement CreateJsonElement() => JsonDocument.Parse($"{{\"id\":\"{Guid.NewGuid()}\"}}").RootElement;
+
+        private JsonElement CreateTicketWithStatusCategoryJsonElement(string statusCategory) => JsonDocument.Parse($@"{{
+    ""fields"": {{
+        ""status"": {{
+            ""statusCategory"": {{
+                ""name"": ""{statusCategory}""
+            }}
+        }}
+    }}
+}}").RootElement;
+
 
         private void SetupClient(params JsonElement[] epics)
         {

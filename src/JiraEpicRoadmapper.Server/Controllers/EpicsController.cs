@@ -22,5 +22,11 @@ namespace JiraEpicRoadmapper.Server.Controllers
         {
             return await _epicProvider.GetEpics();
         }
+
+        [HttpGet("{epicKey}/stats")]
+        public async Task<EpicStats> Get(string epicKey)
+        {
+            return await _epicProvider.GetEpicStats(epicKey);
+        }
     }
 }

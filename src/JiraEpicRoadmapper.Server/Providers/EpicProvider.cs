@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -32,6 +33,27 @@ namespace JiraEpicRoadmapper.Server.Providers
             var epics = await _client.QueryJql(jql);
 
             return epics.Select(e => MapEpic(e, fields));
+        }
+
+        public async Task<EpicStats> GetEpicStats(string epicKey)
+        {
+            var result = await _client.QueryJql($"\"Epic Link\"={epicKey}");
+            var statuses = result
+                .Select(t => t.GetProperty("fields").GetProperty("status").GetProperty("statusCategory").GetProperty("name").GetString())
+                .GroupBy(x => x);
+
+            var stats = new EpicStats();
+            foreach (var grp in statuses)
+            {
+                if (grp.Key.Equals("done", StringComparison.OrdinalIgnoreCase))
+                    stats.Done += grp.Count();
+                else if (grp.Key.Equals("in progress", StringComparison.OrdinalIgnoreCase))
+                    stats.InProgress += grp.Count();
+                else
+                    stats.NotStarted += grp.Count();
+            }
+
+            return stats;
         }
 
         private async Task<IReadOnlyDictionary<string, string[]>> GetFields()

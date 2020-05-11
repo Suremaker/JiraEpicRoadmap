@@ -14,6 +14,7 @@ namespace JiraEpicRoadmapper.UI.Models
         public IndexedDay End { get; }
         public IReadOnlyList<EpicMetadata> Dependants => _dependants ?? Array.Empty<EpicMetadata>();
         public IReadOnlyList<EpicMetadata> Inbounds => _inbounds;
+        public EpicStats Stats { get; set; }
 
         public EpicMetadata(Epic epic, IndexedDay start, IndexedDay end)
         {

@@ -6,5 +6,6 @@ namespace JiraEpicRoadmapper.UI.Repositories
     public interface IEpicsRepository
     {
         Task<Epic[]> FetchEpics();
+        Task<EpicStats> FetchEpicStats(string epicKey);
     }
 }

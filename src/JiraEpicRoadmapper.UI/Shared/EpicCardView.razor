@@ -1,6 +1,8 @@
 ﻿@using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.UI.Repositories
 @inject IStatusVisualizer StatusVisualizer;
 @inject IEpicCardPainter CardPainter;
+@inject IEpicsRepository Repository;
 
 <div class="epic-card" style="background-color: @(CardPainter.GetColor(Block)); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;">
     <div class="content">
@@ -12,10 +14,15 @@
             }
         </div>
     </div>
-    <LoadingBar Label="&nbsp;" Inline="true" />
+    <EpicProgressBar Stats="@Block.Meta.Stats" />
 </div>
 
 @code {
     [Parameter]
     public EpicVisualBlock Block { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Block.Meta.Stats ??= await Repository.FetchEpicStats(Block.Meta.Epic.Key);
+    }
 }
