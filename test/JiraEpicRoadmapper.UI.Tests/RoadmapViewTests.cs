@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Pages;
@@ -72,6 +71,7 @@ namespace JiraEpicRoadmapper.UI.Tests
             public void Given_a_freshly_opened_page()
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
+                Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
                 Services.AddSingleton<IEpicsRepository>(_repository.Object);
             }
 

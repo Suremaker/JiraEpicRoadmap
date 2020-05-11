@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using JiraEpicRoadmapper.Contracts;
+﻿using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
 using Shouldly;
 using Xunit;
@@ -14,7 +11,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 
         [Theory]
         [InlineData("Done", "✔️")]
-        [InlineData("In Progress", "🛠️")]
+        [InlineData("In Progress", "⚙️")]
         [InlineData("To Do", "❔")]
         [InlineData("Something", "❔")]
         public void It_should_visualize_status_category(string statusCategory, string expected)

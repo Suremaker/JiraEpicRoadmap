@@ -16,6 +16,7 @@ namespace JiraEpicRoadmapper.UI
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddSingleton<IStatusVisualizer, StatusVisualizer>();
+            builder.Services.AddSingleton<IEpicCardPainter, EpicCardPainter>();
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddTransient<IEpicsRepository, EpicsRepository>();
 

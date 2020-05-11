@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace JiraEpicRoadmapper.UI.Models
 {
@@ -15,7 +13,7 @@ namespace JiraEpicRoadmapper.UI.Models
             if (string.Equals(epicStatus, "done", StringComparison.OrdinalIgnoreCase))
                 status.Add("✔️");
             else if (string.Equals(epicStatus, "in progress", StringComparison.OrdinalIgnoreCase))
-                status.Add("🛠️");
+                status.Add("⚙️");
             else
                 status.Add("❔");
 

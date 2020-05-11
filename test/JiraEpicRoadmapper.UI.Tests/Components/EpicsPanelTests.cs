@@ -96,6 +96,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             public void Given_a_epics_panel()
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
+                Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
 
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
             }
