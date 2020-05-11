@@ -4,7 +4,7 @@
 
 <div class="epic-card" style="background-color: @(CardPainter.GetColor(Block)); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;">
     <div class="content">
-        <div class="summary">[TEST ME!] @(Block.Meta.Epic.Summary)</div>
+        <div class="summary">@(Block.Meta.Epic.Summary)</div>
         <div class="status">
             @foreach (var s in StatusVisualizer.GetStatusIcons(Block))
             {
