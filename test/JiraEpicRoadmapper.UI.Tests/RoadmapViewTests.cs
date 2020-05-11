@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Pages;
 using JiraEpicRoadmapper.UI.Repositories;
 using JiraEpicRoadmapper.UI.Shared;
@@ -70,6 +71,7 @@ namespace JiraEpicRoadmapper.UI.Tests
 
             public void Given_a_freshly_opened_page()
             {
+                Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicsRepository>(_repository.Object);
             }
 

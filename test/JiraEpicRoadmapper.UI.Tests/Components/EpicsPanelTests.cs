@@ -12,6 +12,7 @@ using LightBDD.Framework.Formatting;
 using LightBDD.Framework.Parameters;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace JiraEpicRoadmapper.UI.Tests.Components
@@ -94,6 +95,8 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_a_epics_panel()
             {
+                Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
+
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
             }
 
