@@ -1,0 +1,19 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+@inject IViewOptions ViewOptions;
+<div class="control-panel">
+    <div>
+        <ToggleButton CheckedText="|&lt;" UncheckedText="|>" OnClick="TogglePanel" Checked="@PanelVisible" />
+        <ToggleButton CheckedText="Show closed" UncheckedText="Hide closed" OnClick="@ViewOptions.ToggleClosed" Checked="@ViewOptions.ShowClosed" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Show unplanned" UncheckedText="Hide unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
+    </div>
+</div>
+
+@code {
+    //TODO: test the component!
+    private bool PanelVisible { get; set; }
+
+    void TogglePanel(bool visibility)
+    {
+        PanelVisible = visibility;
+    }
+}

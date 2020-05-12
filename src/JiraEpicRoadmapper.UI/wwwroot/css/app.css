@@ -128,3 +128,29 @@
         cursor: pointer;
         background-color: #cfefff;
     }
+
+.control-panel {
+    max-width: 600px;
+    margin: 0 1px 1px 0;
+    position: fixed;
+    border: 1px solid #222222;
+    z-index: 1;
+    background-color: #aaaaaa;
+}
+
+    .control-panel table {
+        width: 600px;
+        padding: 0.5em;
+        border-top: 1px solid #222222;
+    }
+
+    .control-panel tr td:first-child {
+        text-align: right;
+        vertical-align: top;
+        width: 110px;
+    }
+
+    .control-panel tr td:last-child {
+        font-weight: bolder;
+        vertical-align: top;
+    }

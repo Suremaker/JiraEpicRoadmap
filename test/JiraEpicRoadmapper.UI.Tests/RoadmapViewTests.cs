@@ -62,6 +62,7 @@ namespace JiraEpicRoadmapper.UI.Tests
                     x => x.Then_loading_bar_should_not_be_visible(),
                     x => x.Then_error_panel_should_not_be_visible(),
                     x => x.Then_epics_panel_should_be_visible_with_associated_epics(),
+                    x => x.Then_control_panel(),
                     x => x.Then_view_should_request_scroll_to_today_minus_1_day()
                     )
                 .RunAsync();
@@ -76,6 +77,7 @@ namespace JiraEpicRoadmapper.UI.Tests
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
+                Services.AddSingleton<IViewOptions>(Mock.Of<IViewOptions>());
                 Services.AddSingleton<IEpicsRepository>(_repository.Object);
                 Services.AddSingleton<IJSRuntime>(_jsRuntime.Object);
             }
@@ -129,6 +131,11 @@ namespace JiraEpicRoadmapper.UI.Tests
                 Component.FindComponent<EpicsPanel>().Instance.Epics.ShouldNotBeEmpty();
             }
 
+            public void Then_control_panel()
+            {
+                Component.FindComponents<ControlPanel>().ShouldNotBeEmpty();
+            }
+
             public void Then_epics_panel_should_not_be_visible()
             {
                 Component.FindComponents<EpicsPanel>().ShouldBeEmpty();
@@ -143,6 +150,6 @@ namespace JiraEpicRoadmapper.UI.Tests
                     0
                 }));
             }
+        }
     }
-}
 }
