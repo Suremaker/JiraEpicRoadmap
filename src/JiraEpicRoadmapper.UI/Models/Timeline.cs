@@ -28,7 +28,7 @@ namespace JiraEpicRoadmapper.UI.Models
 
         public static Timeline FromEpics(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
         {
-            var todayDate = today ?? DateTimeOffset.Now.Date;
+            var todayDate = today ?? DateTime.UtcNow.Date;
             var start = epics.Select(e => e.StartDate.GetValueOrDefault(e.DueDate.GetValueOrDefault(todayDate))).Append(todayDate).Min().AddDays(-WeekDays);
             var end = epics.Select(e => e.DueDate.GetValueOrDefault(e.StartDate.GetValueOrDefault(todayDate))).Append(todayDate).Max().AddDays(WeekDays);
 

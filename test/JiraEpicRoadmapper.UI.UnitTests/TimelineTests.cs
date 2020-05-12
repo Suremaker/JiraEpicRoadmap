@@ -44,7 +44,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void FromEpics_should_set_today()
         {
-            var today = DateTimeOffset.Now.Date;
+            DateTimeOffset today = DateTime.UtcNow.Date;
             var someDay = today.AddDays(-5);
 
             Timeline.FromEpics(new Epic[] { }, someDay).Today.ShouldBe(new IndexedDay(someDay, Timeline.WeekDays));
