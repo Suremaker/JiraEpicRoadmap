@@ -113,3 +113,18 @@
         padding: 3px;
         text-align: center;
     }
+
+.button {
+    font-size: smaller;
+    margin: 2px;
+    padding: 0.5em;
+    border: 1px solid #222222;
+    border-radius: 5px;
+    background-color: #afcfff;
+    display: inline-block;
+}
+
+    .button:hover {
+        cursor: pointer;
+        background-color: #cfefff;
+    }
