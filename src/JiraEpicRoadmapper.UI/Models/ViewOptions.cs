@@ -35,7 +35,9 @@ namespace JiraEpicRoadmapper.UI.Models
             ShowUnplanned = !ShowUnplanned;
             UpdateNavigation();
         }
-        
+
+        public event Action OptionsChanged;
+
         private void UpdateNavigation()
         {
             var options = new Dictionary<string, string>();
@@ -48,6 +50,7 @@ namespace JiraEpicRoadmapper.UI.Models
             };
 
             _manager.NavigateTo(builder.ToString());
+            OptionsChanged?.Invoke();
         }
 
         private void AddIfSet(Dictionary<string, string> options, string name, in bool value)

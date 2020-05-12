@@ -20,10 +20,10 @@ namespace JiraEpicRoadmapper.UI.Models
             Map = EpicMap.Create(epics, Timeline);
         }
 
-        public void UpdateLayout(ILayoutDesigner designer)
+        public void UpdateLayout(ILayoutDesigner designer, IViewOptions viewOptions)
         {
             var projects = new List<ProjectLayout>();
-            var projectGroups = Map.Epics.GroupBy(e => e.Epic.Project).OrderBy(p => p.Key);
+            var projectGroups = Map.Epics.Where(e => ApplyFilter(e, viewOptions)).GroupBy(e => e.Epic.Project).OrderBy(p => p.Key);
             int row = 1;
             foreach (var projectGroup in projectGroups)
             {
@@ -32,6 +32,15 @@ namespace JiraEpicRoadmapper.UI.Models
                 row = projectLayout.LastRowIndex;
             }
             Projects = projects;
+        }
+
+        private bool ApplyFilter(EpicMetadata epic, IViewOptions viewOptions)
+        {
+            if (!viewOptions.ShowUnplanned && !epic.Epic.StartDate.HasValue && !epic.Epic.DueDate.HasValue)
+                return false;
+            if (!viewOptions.ShowClosed && string.Equals(epic.Epic.StatusCategory, "done", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return true;
         }
     }
 }

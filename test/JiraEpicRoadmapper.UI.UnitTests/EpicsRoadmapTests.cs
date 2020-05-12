@@ -33,6 +33,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             roadmap.Projects.ShouldNotBeNull();
         }
 
+        //TODO: test options
         [Fact]
         public void UpdateLayout_should_layout_epics()
         {
@@ -45,19 +46,19 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 
             var roadmap = new EpicsRoadmap(epics);
 
-            
-            roadmap.UpdateLayout(_designer.Object);
+
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions { ShowUnplanned = true });
 
             roadmap.Projects.Count.ShouldBe(2);
             roadmap.Projects[0].Name.ShouldBe("PR");
             roadmap.Projects[0].ProjectRowIndex.ShouldBe(2);
             roadmap.Projects[0].LastRowIndex.ShouldBe(3);
-            roadmap.Projects[0].Epics.Select(e=>e.Meta.Epic.Id).ShouldBe(new[]{"PR-1","PR-2"});
+            roadmap.Projects[0].Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-1", "PR-2" });
 
             roadmap.Projects[1].Name.ShouldBe("XX");
             roadmap.Projects[1].ProjectRowIndex.ShouldBe(4);
             roadmap.Projects[1].LastRowIndex.ShouldBe(5);
-            roadmap.Projects[1].Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "XX-1"});
+            roadmap.Projects[1].Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "XX-1" });
 
             roadmap.TotalRows.ShouldBe(6);
         }

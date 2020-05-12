@@ -93,15 +93,19 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             private readonly List<Epic> _epics = new List<Epic>();
             private readonly List<int> _scrollToTodayRequests = new List<int>();
             private DateTimeOffset _today;
-
+            private Mock<IViewOptions> _viewOptions = new Mock<IViewOptions>();
             public IReadOnlyList<Epic> Epics => _epics;
             public EpicsRoadmap EpicsRoadmap => Component.Instance.Roadmap;
 
             public void Given_a_epics_panel()
             {
+                _viewOptions.SetupGet(x => x.ShowUnplanned).Returns(true);
+                _viewOptions.SetupGet(x => x.ShowClosed).Returns(true);
+
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
                 Services.AddSingleton<IEpicsRepository>(Mock.Of<IEpicsRepository>());
+                Services.AddSingleton<IViewOptions>(_viewOptions.Object);
 
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
                 WithComponentParameter(EventCallback<int>(nameof(EpicsPanel.OnScrollToTodayRequest), (position) => _scrollToTodayRequests.Add(position)));

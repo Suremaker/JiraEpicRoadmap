@@ -1,4 +1,6 @@
-﻿namespace JiraEpicRoadmapper.UI.Models
+﻿using System;
+
+namespace JiraEpicRoadmapper.UI.Models
 {
     public interface IViewOptions
     {
@@ -6,5 +8,6 @@
         bool ShowUnplanned { get; }
         void ToggleClosed();
         void ToggleUnplanned();
+        event Action OptionsChanged;
     }
 }
