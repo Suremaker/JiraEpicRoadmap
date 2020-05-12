@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
@@ -10,6 +11,7 @@ using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Moq;
 using Shouldly;
 
@@ -59,7 +61,8 @@ namespace JiraEpicRoadmapper.UI.Tests
                     x => x.When_I_render_it(),
                     x => x.Then_loading_bar_should_not_be_visible(),
                     x => x.Then_error_panel_should_not_be_visible(),
-                    x => x.Then_epics_panel_should_be_visible_with_associated_epics()
+                    x => x.Then_epics_panel_should_be_visible_with_associated_epics(),
+                    x => x.Then_view_should_request_scroll_to_today_minus_1_day()
                     )
                 .RunAsync();
         }
@@ -67,12 +70,14 @@ namespace JiraEpicRoadmapper.UI.Tests
         public class RoadmapViewFixture : ComponentFixture<RoadmapView>
         {
             private readonly Mock<IEpicsRepository> _repository = new Mock<IEpicsRepository>();
+            private readonly Mock<IJSRuntime> _jsRuntime = new Mock<IJSRuntime>();
 
             public void Given_a_freshly_opened_page()
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
                 Services.AddSingleton<IEpicsRepository>(_repository.Object);
+                Services.AddSingleton<IJSRuntime>(_jsRuntime.Object);
             }
 
             public void Then_I_should_see_loading_bar_with_text(string text)
@@ -128,6 +133,16 @@ namespace JiraEpicRoadmapper.UI.Tests
             {
                 Component.FindComponents<EpicsPanel>().ShouldBeEmpty();
             }
-        }
+
+            public void Then_view_should_request_scroll_to_today_minus_1_day()
+            {
+                var todayIndex = Component.FindComponent<EpicsPanel>().Instance.Roadmap.Timeline.Today.Index;
+                _jsRuntime.Verify(x => x.InvokeAsync<object>("scroll", CancellationToken.None, new object[]
+                {
+                    (todayIndex - 1) * LayoutSettings.DaySpan,
+                    0
+                }));
+            }
     }
+}
 }

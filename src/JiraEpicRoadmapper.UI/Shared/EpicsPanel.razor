@@ -23,6 +23,8 @@
 {
     private IReadOnlyList<Epic> _epics;
     private DateTimeOffset? _today;
+    private bool _triggerScrollToToday = true;
+
     public EpicsRoadmap Roadmap { get; private set; }
 
     [Parameter]
@@ -50,11 +52,22 @@
         }
     }
 
+    [Parameter]
+    public EventCallback<int> OnScrollToTodayRequest { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Roadmap == null || !_triggerScrollToToday)
+            return;
+
+        _triggerScrollToToday = false;
+        await OnScrollToTodayRequest.InvokeAsync(Roadmap.Timeline.Today.Index * LayoutSettings.DaySpan);
+    }
+
     protected override void OnParametersSet()
     {
         if (Roadmap == null)
             OnEpicsUpdate();
-        ;
     }
 
     private void OnEpicsUpdate()

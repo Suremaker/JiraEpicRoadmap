@@ -46,7 +46,8 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_the_day_indicators(x.EpicsRoadmap.Timeline.GetMondays()
                         .ToVerifiableDataTable(t => t.WithKey(c => c.Date).WithInferredColumns())),
-                    x => x.Then_I_should_see_the_today_indicator_with_valid_date()
+                    x => x.Then_I_should_see_the_today_indicator_with_valid_date(),
+                    x => x.Then_panel_should_request_scroll_to_today_position(x.EpicsRoadmap.Timeline.Today.Index * LayoutSettings.DaySpan)
                 )
                 .RunAsync();
         }
@@ -90,6 +91,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public class EpicsPanelFixture : ComponentFixture<EpicsPanel>
         {
             private readonly List<Epic> _epics = new List<Epic>();
+            private readonly List<int> _scrollToTodayRequests = new List<int>();
             private DateTimeOffset _today;
 
             public IReadOnlyList<Epic> Epics => _epics;
@@ -102,6 +104,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 Services.AddSingleton<IEpicsRepository>(Mock.Of<IEpicsRepository>());
 
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
+                WithComponentParameter(EventCallback<int>(nameof(EpicsPanel.OnScrollToTodayRequest), (position) => _scrollToTodayRequests.Add(position)));
             }
 
             public void Given_today_is_DATE(string date)
@@ -163,6 +166,11 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     .Select(v => v.Instance.Block.Meta.Epic)
                     .ToDictionary(x => x.Id);
                 epics.SetActual(input => actual.TryGetValue(input.Id, out var r) ? r : null);
+            }
+
+            public void Then_panel_should_request_scroll_to_today_position(Verifiable<int> position)
+            {
+                position.SetActual(() => _scrollToTodayRequests.Single());
             }
         }
 

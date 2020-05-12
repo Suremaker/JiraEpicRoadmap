@@ -1,7 +1,10 @@
 ﻿@page "/"
 @using JiraEpicRoadmapper.UI.Repositories
 @using JiraEpicRoadmapper.Contracts
+@using JiraEpicRoadmapper.UI.Models
+@using System.Threading
 @inject IEpicsRepository Repository;
+@inject IJSRuntime JsRuntime;
 
 @if (_errors == null && _epics == null)
 {
@@ -15,7 +18,7 @@
 
 @if (_epics != null)
 {
-    <EpicsPanel Epics="@_epics" />
+    <EpicsPanel Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" />
 }
 
 @code {
@@ -46,4 +49,8 @@
         _errors = $"Unable to load epics, here is panda instead: 🐼\n\nFailure reason:\n{error}";
     }
 
+    private async Task ScrollToToday(int xPosition)
+    {
+        await JsRuntime.InvokeVoidAsync("scroll", CancellationToken.None, xPosition - LayoutSettings.DaySpan, 0);
+    }
 }
