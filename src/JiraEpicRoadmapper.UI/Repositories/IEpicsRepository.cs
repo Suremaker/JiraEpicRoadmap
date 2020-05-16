@@ -7,5 +7,6 @@ namespace JiraEpicRoadmapper.UI.Repositories
     {
         Task<Epic[]> FetchEpics();
         Task<EpicStats> FetchEpicStats(string epicKey);
+        Task<Epic> UpdateEpicMetadata(string epicKey, EpicMeta meta);
     }
 }

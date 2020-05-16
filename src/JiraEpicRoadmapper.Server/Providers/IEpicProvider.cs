@@ -8,5 +8,6 @@ namespace JiraEpicRoadmapper.Server.Providers
     {
         Task<IEnumerable<Epic>> GetEpics();
         Task<EpicStats> GetEpicStats(string epicKey);
+        Task<Epic> UpdateEpic(string epicKey, EpicMeta meta);
     }
 }

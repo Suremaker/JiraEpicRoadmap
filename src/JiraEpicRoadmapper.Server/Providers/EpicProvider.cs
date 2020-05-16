@@ -56,6 +56,15 @@ namespace JiraEpicRoadmapper.Server.Providers
             return stats;
         }
 
+        public async Task<Epic> UpdateEpic(string epicKey, EpicMeta meta)
+        {
+            var fieldsNameToKeyMap = await GetFields();
+            var content = MapMetaToIssueContent(meta, fieldsNameToKeyMap);
+            await _client.UpdateIssue(epicKey, content);
+            var epics = await _client.QueryJql($"key={epicKey}");
+            return _mapper.MapEpic(epics.Single(), fieldsNameToKeyMap);
+        }
+
         private async Task<IReadOnlyDictionary<string, string[]>> GetFields()
         {
             if (_fieldsNameToKeysMap != null)
@@ -86,6 +95,21 @@ namespace JiraEpicRoadmapper.Server.Providers
         private Epic MapEpic(JsonElement e, IReadOnlyDictionary<string, string[]> fieldsNameToKeyMap)
         {
             return _mapper.MapEpic(e, fieldsNameToKeyMap);
+        }
+
+        private static IssueContent MapMetaToIssueContent(EpicMeta meta, IReadOnlyDictionary<string, string[]> map)
+        {
+            var content = new IssueContent
+            {
+                Fields =
+                {
+                    {"duedate", meta.DueDate?.ToString("yyyy-MM-dd")}
+                }
+            };
+
+            var startDateField = map.TryGetValue("Start date", out var values) ? values.FirstOrDefault() : null;
+            if (startDateField != null) content.Fields[startDateField] = meta.StartDate?.ToString("yyyy-MM-dd");
+            return content;
         }
     }
 }

@@ -23,5 +23,12 @@ namespace JiraEpicRoadmapper.UI.Repositories
         {
             return _client.GetFromJsonAsync<EpicStats>($"/api/epics/{epicKey}/stats");
         }
+
+        public async Task<Epic> UpdateEpicMetadata(string epicKey, EpicMeta meta)
+        {
+            using var response = await _client.PostAsJsonAsync($"/api/epics/{epicKey}/meta", meta);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<Epic>();
+        }
     }
 }

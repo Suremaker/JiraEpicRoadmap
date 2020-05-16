@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace JiraEpicRoadmapper.Server.Clients
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly SemaphoreSlim _requestThrottler;
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public JiraClient(IOptions<Config> config, IHttpClientFactory clientFactory)
         {
@@ -54,6 +56,21 @@ namespace JiraEpicRoadmapper.Server.Clients
                 ))
                 .GroupBy(x => x.name)
                 .ToDictionary(g => g.Key, g => g.Select(x => x.key).ToArray());
+        }
+
+        public async Task UpdateIssue(string issueKey, IssueContent issueContent)
+        {
+            try
+            {
+                await _requestThrottler.WaitAsync();
+                var stringContent = new StringContent(JsonSerializer.Serialize(issueContent, JsonSerializerOptions), Encoding.UTF8, "application/json");
+                using var response = await GetClient().PutAsync($"rest/api/2/issue/{issueKey}", stringContent);
+                response.EnsureSuccessStatusCode();
+            }
+            finally
+            {
+                _requestThrottler.Release();
+            }
         }
 
         private HttpClient GetClient() => _clientFactory.CreateClient(nameof(IJiraClient));

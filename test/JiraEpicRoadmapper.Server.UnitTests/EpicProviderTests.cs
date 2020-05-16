@@ -109,6 +109,33 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             result.Total.ShouldBe(6);
         }
 
+        [Fact]
+        public async Task UpdateEpics_should_update_epic_and_return_its_new_content()
+        {
+            var dueValue = "2020-01-15";
+            var startValue = "2020-01-02";
+            var epicKey = "KEY-11";
+            var epicJson = CreateJsonElement();
+            var updatedEpic = new Epic();
+            IReadOnlyDictionary<string, string[]> fields = new Dictionary<string, string[]> { { "Start date", new[] { "custom_1" } } };
+            _client.Setup(x => x.QueryFieldNameToKeysMap()).ReturnsAsync(fields);
+            _client.Setup(x => x.UpdateIssue(epicKey, It.IsAny<IssueContent>())).Returns(Task.CompletedTask);
+            _client.Setup(x => x.QueryJql("key=KEY-11")).ReturnsAsync(new[] { epicJson });
+            _mapper.Setup(x => x.MapEpic(epicJson, fields)).Returns(updatedEpic);
+            var epic = await _provider.UpdateEpic(epicKey, new EpicMeta { DueDate = DateTimeOffset.Parse(dueValue), StartDate = DateTimeOffset.Parse(startValue) });
+
+            epic.ShouldBeSameAs(updatedEpic);
+
+            var expectedFields = new Dictionary<string, string> { { "custom_1", startValue }, { "duedate", dueValue } };
+            _client.Verify(x => x.UpdateIssue(epicKey, It.Is<IssueContent>(c => AreFieldsEqual(c, expectedFields))));
+        }
+
+        private static bool AreFieldsEqual(IssueContent c, IDictionary<string, string> expectedFields)
+        {
+            c.Fields.ShouldBe(expectedFields, ignoreOrder: true);
+            return true;
+        }
+
         private Epic SetupEpicMapping(JsonElement element)
         {
             var epic = new Epic();

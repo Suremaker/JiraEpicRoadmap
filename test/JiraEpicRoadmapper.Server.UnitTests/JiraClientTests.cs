@@ -78,6 +78,24 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             map["Change risk"].ShouldBe(new[] { "customfield_10017" });
         }
 
+        [Fact]
+        public async Task UpdateIssue_should_request_issue_change()
+        {
+            var issueKey = "KEY-55";
+
+            _handler.Setup(x =>
+                    x.OnSendAsync(It.Is<HttpRequestMessage>(m =>
+                        m.RequestUri.PathAndQuery.Equals($"/rest/api/2/issue/{issueKey}")
+                        && m.Method == HttpMethod.Put)))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            await _client.UpdateIssue(issueKey, new IssueContent { Fields = { { "foo", "val1" } } });
+
+            var expectedPayload = "{\"fields\":{\"foo\":\"val1\"}}";
+
+            _handler.Verify(x => x.OnSendAsync(It.Is<HttpRequestMessage>(m => m.Content.ReadAsStringAsync().Result == expectedPayload)));
+        }
+
         private class MockableMessageHandler : HttpMessageHandler
         {
             private readonly IMockableMessageHandler _handler;
