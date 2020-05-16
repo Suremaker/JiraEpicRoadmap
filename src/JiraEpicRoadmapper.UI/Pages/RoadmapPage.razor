@@ -1,12 +1,15 @@
 ﻿@page "/"
 @using JiraEpicRoadmapper.UI.Repositories
-@using JiraEpicRoadmapper.Contracts
 @using JiraEpicRoadmapper.UI.Models
 @using System.Threading
+@using JiraEpicRoadmapper.UI.Domain
+@using JiraEpicRoadmapper.UI.Services
 @inject IEpicsRepository Repository;
 @inject IJSRuntime JsRuntime;
+@inject IViewOptions ViewOptions;
+@inject ILayoutDesigner LayoutDesigner;
 
-@if (_errors == null && _epics == null)
+@if (_errors == null && _roadmap == null)
 {
     <LoadingBar Id="mainLoadingBar" Label="Loading..." />
 }
@@ -16,36 +19,50 @@
     <ErrorPanel Errors="@_errors" />
 }
 
-@if (_epics != null)
+@if (_roadmap != null)
 {
-    <ControlPanel SelectedBlock="@SelectedBlock"/>
-    <RoadmapView Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" OnCardSelect="HandleCardSelect"/>
+    <ControlPanel SelectedEpic="@_selectedCard" />
+    <RoadmapView Roadmap="@_roadmap" OnScrollToTodayRequest="ScrollToToday" OnEpicSelect="HandleCardSelect" SelectedEpic="@_selectedCard" />
 }
 
 @code {
-    private Epic[] _epics;
+    private EpicsRoadmap _roadmap;
     private string _errors;
-    //TODO: test
-    public EpicCard SelectedBlock { get; private set; }
-
+    private EpicCard _selectedCard;
 
     protected override async Task OnInitializedAsync()
     {
+        ViewOptions.OptionsChanged += UpdateLayout;
+
         await RefreshEpics();
     }
 
     private async Task RefreshEpics()
     {
-        _epics = null;
+        _roadmap = null;
         _errors = null;
         try
         {
-            _epics = await Repository.FetchEpics();
+            var epics = await Repository.FetchEpics();
+            _roadmap = new EpicsRoadmap(epics);
+            UpdateLayout();
+            await Task.WhenAll(_roadmap.Map.Epics.Select(FetchStats));
         }
         catch (Exception e)
         {
             SetError(e.Message);
         }
+    }
+
+    private async Task FetchStats(EpicMetadata epic)
+    {
+        epic.Stats = await Repository.FetchEpicStats(epic.Epic.Key);
+    }
+
+    private void UpdateLayout()
+    {
+        _roadmap.UpdateLayout(LayoutDesigner, ViewOptions);
+        StateHasChanged();
     }
 
     private void SetError(string error)
@@ -60,7 +77,7 @@
 
     private void HandleCardSelect(EpicCard card)
     {
-        SelectedBlock = card;
+        _selectedCard = card;
     }
 
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using JiraEpicRoadmapper.UI.Models;
 
-namespace JiraEpicRoadmapper.UI.UnitTests
+namespace JiraEpicRoadmapper.UI.Tests.Scaffolding
 {
     class TestableViewOptions : IViewOptions
     {

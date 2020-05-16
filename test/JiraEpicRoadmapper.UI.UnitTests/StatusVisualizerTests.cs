@@ -17,8 +17,8 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [InlineData("Something", "❔")]
         public void It_should_visualize_status_category(string statusCategory, string expected)
         {
-            var block = new EpicCard(new EpicMetadata(new Epic { StatusCategory = statusCategory }, new IndexedDay(), new IndexedDay()), 1);
-            _visualizer.GetStatusIcons(block).ShouldContain(expected);
+            var card = new EpicCard(new EpicMetadata(new Epic { StatusCategory = statusCategory }, new IndexedDay(), new IndexedDay()), 1);
+            _visualizer.GetStatusIcons(card).ShouldContain(expected);
         }
     }
 }

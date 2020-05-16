@@ -1,12 +1,7 @@
-﻿@using JiraEpicRoadmapper.Contracts
-@using JiraEpicRoadmapper.UI.Domain
+﻿@using JiraEpicRoadmapper.UI.Domain
 @using JiraEpicRoadmapper.UI.Models
-@using JiraEpicRoadmapper.UI.Repositories
-@using JiraEpicRoadmapper.UI.Services
-@inject IViewOptions ViewOptions;
-@inject IEpicsRepository Repository;
 @implements IDisposable;
-<div class="epics-panel" style="width: @(Roadmap.TotalDays * LayoutSettings.DaySpan)px; height: @(Roadmap.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => HandleCardSelection(null))">
+<div class="epics-panel" style="width: @(Roadmap.TotalDays * LayoutSettings.DaySpan)px; height: @(Roadmap.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => OnEpicSelect.InvokeAsync(null))">
     @foreach (var m in Roadmap.Timeline.GetMondays())
     {
         <DayIndicator Day="@m" />
@@ -19,47 +14,24 @@
         }
     }
     <TodayIndicator Day="@Roadmap.Timeline.Today" />
-    @foreach (var e in Roadmap.EpicBlocks)
+    @foreach (var e in Roadmap.EpicCards)
     {
-        <EpicCardView Card="@e" Selected="@(SelectedBlock==e)" OnCardSelect="HandleCardSelection" />
+        <EpicCardView Card="@e" Selected="@(SelectedEpic==e)" OnCardSelect="OnEpicSelect" />
     }
 </div>
 
 @code
 {
-    private IReadOnlyList<Epic> _epics;
-    private DateTimeOffset? _today;
     private bool _triggerScrollToToday = true;
-    public EpicCard SelectedBlock { get; private set; }
-    public EpicsRoadmap Roadmap { get; private set; }
 
     [Parameter]
-    public EventCallback<EpicCard> OnCardSelect { get; set; }
+    public EpicCard SelectedEpic { get; set; }
 
     [Parameter]
-    public DateTimeOffset? Today
-    {
-        get => _today;
-        set
-        {
-            _today = value;
-            Roadmap = null;
-        }
-    }
+    public EpicsRoadmap Roadmap { get; set; }
 
     [Parameter]
-    public IReadOnlyList<Epic> Epics
-    {
-        get => _epics;
-        set
-        {
-            if (_epics != value)
-            {
-                _epics = value;
-                Roadmap = null;
-            }
-        }
-    }
+    public EventCallback<EpicCard> OnEpicSelect { get; set; }
 
     [Parameter]
     public EventCallback<int> OnScrollToTodayRequest { get; set; }
@@ -73,41 +45,14 @@
         await OnScrollToTodayRequest.InvokeAsync(Roadmap.Timeline.Today.Index * LayoutSettings.DaySpan);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        ViewOptions.OptionsChanged += UpdateRoadmap;
-
-        if (Roadmap == null)
-            await OnEpicsUpdate();
-    }
-
-
-    private async Task OnEpicsUpdate()
-    {
-        Roadmap = new EpicsRoadmap(Epics, Today);
-        UpdateRoadmap();
-        await Task.WhenAll(Roadmap.Map.Epics.Select(FetchStats));
-    }
-
-    private async Task FetchStats(EpicMetadata epic)
-    {
-        epic.Stats = await Repository.FetchEpicStats(epic.Epic.Key);
-    }
-
-    private async Task HandleCardSelection(EpicCard card)
-    {
-        SelectedBlock = card;
-        await OnCardSelect.InvokeAsync(card);
-    }
-
-    private void UpdateRoadmap()
-    {
-        Roadmap.UpdateLayout(new LayoutDesigner(), ViewOptions);
-        StateHasChanged();
+        Roadmap.OnLayoutUpdate += StateHasChanged;
     }
 
     public void Dispose()
     {
-        ViewOptions.OptionsChanged -= UpdateRoadmap;
+        if (Roadmap != null)
+            Roadmap.OnLayoutUpdate -= StateHasChanged;
     }
 }

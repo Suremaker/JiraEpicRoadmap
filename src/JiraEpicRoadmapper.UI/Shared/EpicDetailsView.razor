@@ -5,33 +5,33 @@
 
 <EditForm Model="this">
     <table style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"table")">
-        <tr><td>Project</td><td>@(Block.Meta.Epic.Project)</td></tr>
-        <tr><td>Key</td><td><a href="@(Block.Meta.Epic.Url)" target="_blank">@(Block.Meta.Epic.Key)</a></td></tr>
-        <tr><td>Summary</td><td><a href="@(Block.Meta.Epic.Url)" target="_blank">@(Block.Meta.Epic.Summary)</a></td></tr>
-        <tr><td>Status</td><td>@(Block.Meta.Epic.Status)</td></tr>
+        <tr><td>Project</td><td>@(Card.Meta.Epic.Project)</td></tr>
+        <tr><td>Key</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Key)</a></td></tr>
+        <tr><td>Summary</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Summary)</a></td></tr>
+        <tr><td>Status</td><td>@(Card.Meta.Epic.Status)</td></tr>
         <tr><td>Start</td><td><input type="date" @bind="this.StartDate" @bind:format="yyyy-MM-dd" /></td></tr>
         <tr><td>Due</td><td><input type="date" @bind="this.DueDate" @bind:format="yyyy-MM-dd" /></td></tr>
         <tr>
             <td>Tickets</td>
             <td>
-                @foreach (var s in GetTicketDetails(Block.Meta.Stats))
+                @foreach (var s in GetTicketDetails(Card.Meta.Stats))
                 {
                     <div>@s</div>
                 }
             </td>
         </tr>
     </table>
-    <Button Text="Update epic" OnClick="@(async()=>await UpdateEpic(Block))" Collapsed="@(!EpicChanged)" />
+    <Button Text="Update epic" OnClick="@(async()=>await UpdateEpic(Card))" Collapsed="@(!EpicChanged)" />
 </EditForm>
 @code {
     //TODO: test
     [Parameter]
-    public EpicCard Block
+    public EpicCard Card
     {
-        get => _block;
+        get => _card;
         set
         {
-            _block = value;
+            _card = value;
             StartDate = value.Meta.Epic.StartDate;
             DueDate = value.Meta.Epic.DueDate;
             EpicChanged = false;
@@ -44,7 +44,7 @@
 
     private DateTimeOffset? _startDate;
     private DateTimeOffset? _dueDate;
-    private EpicCard _block;
+    private EpicCard _card;
 
     public DateTimeOffset? StartDate
     {

@@ -14,7 +14,8 @@ namespace JiraEpicRoadmapper.UI.Domain
         public int TotalDays => Timeline.TotalDays;
         public int TotalRows => Projects.LastOrDefault()?.LastRowIndex + 1 ?? 1;
         public IReadOnlyList<ProjectLayout> Projects { get; private set; } = Array.Empty<ProjectLayout>();
-        public IEnumerable<EpicCard> EpicBlocks => Projects.SelectMany(p => p.Epics);
+        public IEnumerable<EpicCard> EpicCards => Projects.SelectMany(p => p.Epics);
+        public event Action OnLayoutUpdate;
 
         public EpicsRoadmap(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
         {
@@ -34,6 +35,8 @@ namespace JiraEpicRoadmapper.UI.Domain
                 row = projectLayout.LastRowIndex;
             }
             Projects = projects;
+
+            OnLayoutUpdate?.Invoke();
         }
 
         private bool ApplyFilter(EpicMetadata epic, IViewOptions viewOptions)

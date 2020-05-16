@@ -6,26 +6,26 @@
         <ToggleButton CheckedText="Show closed" UncheckedText="Hide closed" OnClick="@ViewOptions.ToggleClosed" Checked="@ViewOptions.ShowClosed" Collapsed="@(!PanelVisible)" />
         <ToggleButton CheckedText="Show unplanned" UncheckedText="Hide unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
     </div>
-    @if (SelectedBlock != null && PanelVisible)
+    @if (SelectedEpic != null && PanelVisible)
     {
-        <EpicDetailsView Block="@SelectedBlock" />
+        <EpicDetailsView Card="@SelectedEpic" />
     }
 </div>
 
 @code {
     //TODO: test the component!
-    private EpicCard _selectedBlock;
+    private EpicCard _selectedEpic;
     private bool PanelVisible { get; set; }
 
 
     [Parameter]
-    public EpicCard SelectedBlock
+    public EpicCard SelectedEpic
     {
-        get => _selectedBlock;
+        get => _selectedEpic;
         set
         {
-            _selectedBlock = value;
-            if (_selectedBlock != null)
+            _selectedEpic = value;
+            if (_selectedEpic != null)
                 PanelVisible = true;
         }
     }

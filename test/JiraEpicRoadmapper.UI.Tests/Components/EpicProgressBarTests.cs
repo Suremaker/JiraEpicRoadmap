@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
-using JiraEpicRoadmapper.UI.Shared;
+using JiraEpicRoadmapper.UI.Shared.Components;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Parameters;
 using LightBDD.Framework.Scenarios;

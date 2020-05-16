@@ -25,10 +25,10 @@ namespace JiraEpicRoadmapper.UI.Domain
             int projectRowIndex, ILayoutDesigner designer)
         {
             var rows = designer.Layout(epics);
-            var blocks = rows
+            var cards = rows
                 .SelectMany((row, index) => row.Select(m => new EpicCard(m, index + projectRowIndex + 1)))
                 .ToArray();
-            return new ProjectLayout(name, blocks, projectRowIndex, projectRowIndex + rows.Count);
+            return new ProjectLayout(name, cards, projectRowIndex, projectRowIndex + rows.Count);
         }
     }
 }

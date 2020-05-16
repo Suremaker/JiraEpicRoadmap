@@ -135,5 +135,15 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             roadmap.UpdateLayout(_designer.Object, new TestableViewOptions { ShowClosed = true });
             roadmap.Projects.Single().Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-1", "PR-2", "PR-3", "PR-4" }, ignoreOrder: true);
         }
+
+        [Fact]
+        public void UpdateLayout_should_trigger_OnLayoutUpdated()
+        {
+            var roadmap = new EpicsRoadmap(new Epic[0]);
+            var updated = false;
+            roadmap.OnLayoutUpdate += () => updated = true;
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions { ShowClosed = true });
+            updated.ShouldBe(true);
+        }
     }
 }
