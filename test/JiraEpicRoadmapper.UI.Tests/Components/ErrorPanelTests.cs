@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using JiraEpicRoadmapper.UI.Shared;
+using JiraEpicRoadmapper.UI.Shared.Components;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;

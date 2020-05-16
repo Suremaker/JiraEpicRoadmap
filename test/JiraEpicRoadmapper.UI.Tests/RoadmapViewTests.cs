@@ -8,6 +8,7 @@ using JiraEpicRoadmapper.UI.Pages;
 using JiraEpicRoadmapper.UI.Repositories;
 using JiraEpicRoadmapper.UI.Services;
 using JiraEpicRoadmapper.UI.Shared;
+using JiraEpicRoadmapper.UI.Shared.Components;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;

@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using AngleSharp.Css.Dom;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Shared;
