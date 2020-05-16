@@ -8,7 +8,6 @@ using Microsoft.Extensions.Primitives;
 
 namespace JiraEpicRoadmapper.UI.Models
 {
-    //TODO: test
     public class ViewOptions : IViewOptions
     {
         private readonly NavigationManager _manager;
