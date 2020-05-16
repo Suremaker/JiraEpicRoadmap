@@ -4,7 +4,7 @@
 @inject IEpicCardPainter CardPainter;
 @inject IEpicsRepository Repository;
 
-<div class="epic-card" style="background-color: @(CardPainter.GetColor(Block)); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;">
+<div class="epic-card @(Selected?"selected":"")" style="background-color: @(CardPainter.GetColor(Block)); left: @(Block.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Block.EndIndex - Block.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Block))" @onclick:stopPropagation="true">
     <div class="content">
         <div class="summary">@(Block.Meta.Epic.Summary)</div>
         <div class="status">
@@ -20,6 +20,11 @@
 @code {
     [Parameter]
     public EpicVisualBlock Block { get; set; }
+    //TODO: test
+    [Parameter]
+    public bool Selected { get; set; }
+    [Parameter]
+    public EventCallback<EpicVisualBlock> OnCardSelect { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

@@ -18,13 +18,16 @@
 
 @if (_epics != null)
 {
-    <ControlPanel />
-    <EpicsPanel Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" />
+    <ControlPanel SelectedBlock="@SelectedBlock"/>
+    <EpicsPanel Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" OnCardSelect="HandleCardSelect"/>
 }
 
 @code {
     private Epic[] _epics;
     private string _errors;
+    //TODO: test
+    public EpicVisualBlock SelectedBlock { get; private set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,4 +57,10 @@
     {
         await JsRuntime.InvokeVoidAsync("scroll", CancellationToken.None, xPosition - LayoutSettings.DaySpan, 0);
     }
+
+    private void HandleCardSelect(EpicVisualBlock card)
+    {
+        SelectedBlock = card;
+    }
+
 }

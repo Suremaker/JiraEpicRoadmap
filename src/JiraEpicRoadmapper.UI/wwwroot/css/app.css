@@ -114,6 +114,20 @@
         text-align: center;
     }
 
+    .epic-card.selected:after {
+        background: none;
+        border: 3px solid #ff8000;
+        border-radius: 10px;
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
 .button {
     font-size: smaller;
     margin: 2px;
@@ -154,3 +168,8 @@
         font-weight: bolder;
         vertical-align: top;
     }
+
+a, a:hover, a:visited {
+    color: #111166;
+    text-decoration: none;
+}
