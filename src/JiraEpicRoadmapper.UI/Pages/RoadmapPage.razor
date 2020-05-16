@@ -19,7 +19,7 @@
 @if (_epics != null)
 {
     <ControlPanel SelectedBlock="@SelectedBlock"/>
-    <EpicsPanel Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" OnCardSelect="HandleCardSelect"/>
+    <RoadmapView Epics="@_epics" OnScrollToTodayRequest="ScrollToToday" OnCardSelect="HandleCardSelect"/>
 }
 
 @code {

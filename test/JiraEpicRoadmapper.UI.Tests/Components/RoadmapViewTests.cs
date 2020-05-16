@@ -22,15 +22,15 @@ using Shouldly;
 
 namespace JiraEpicRoadmapper.UI.Tests.Components
 {
-    public class EpicsPanelTests : FeatureFixture
+    public class RoadmapViewTests : FeatureFixture
     {
         [Scenario]
         public async Task Panel_should_resize_to_fit_the_timeline()
         {
             await Runner
-                .WithContext<EpicsPanelFixture>()
+                .WithContext<RoadmapViewFixture>()
                 .AddSteps(
-                    x => x.Given_a_epics_panel(),
+                    x => x.Given_a_roadmap_view(),
                     x => x.When_I_render_it(),
                     x => x.Then_it_should_have_specified_timeline(),
                     x => x.Then_it_should_have_width_and_height(x.EpicsRoadmap.TotalDays * LayoutSettings.DaySpan, x.EpicsRoadmap.TotalRows * LayoutSettings.RowHeight))
@@ -41,9 +41,9 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public async Task Panel_should_display_the_timeline()
         {
             await Runner
-                .WithContext<EpicsPanelFixture>()
+                .WithContext<RoadmapViewFixture>()
                 .AddSteps(
-                    x => x.Given_a_epics_panel(),
+                    x => x.Given_a_roadmap_view(),
                     x => x.Given_epics_covering_time_from_to("2020-03-04", "2020-03-25"),
                     x => x.Given_today_is_DATE("2020-03-15"),
                     x => x.When_I_render_it(),
@@ -59,9 +59,9 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public async Task Panel_should_display_project_names()
         {
             await Runner
-                .WithContext<EpicsPanelFixture>()
+                .WithContext<RoadmapViewFixture>()
                 .AddSteps(
-                    x => x.Given_a_epics_panel(),
+                    x => x.Given_a_roadmap_view(),
                     x => x.Given_epics_covering_time_from_to_for_projects("2020-03-04", "2020-03-25", "Project X", "Project Y", "Project Z"),
                     x => x.Given_today_is_DATE("2020-03-15"),
                     x => x.When_I_render_it(),
@@ -77,9 +77,9 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public async Task Panel_should_display_epics()
         {
             await Runner
-                .WithContext<EpicsPanelFixture>()
+                .WithContext<RoadmapViewFixture>()
                 .AddSteps(
-                    x => x.Given_a_epics_panel(),
+                    x => x.Given_a_roadmap_view(),
                     x => x.Given_epics(Table.For(
                         new Epic { Id = "EP-1", Project = "EP", Summary = "Hello world" },
                         new Epic { Id = "EP-2", Project = "EP", Summary = "Something done" },
@@ -91,7 +91,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .RunAsync();
         }
 
-        public class EpicsPanelFixture : ComponentFixture<EpicsPanel>
+        public class RoadmapViewFixture : ComponentFixture<RoadmapView>
         {
             private readonly List<Epic> _epics = new List<Epic>();
             private readonly List<int> _scrollToTodayRequests = new List<int>();
@@ -100,7 +100,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             public IReadOnlyList<Epic> Epics => _epics;
             public EpicsRoadmap EpicsRoadmap => Component.Instance.Roadmap;
 
-            public void Given_a_epics_panel()
+            public void Given_a_roadmap_view()
             {
                 _viewOptions.SetupGet(x => x.ShowUnplanned).Returns(true);
                 _viewOptions.SetupGet(x => x.ShowClosed).Returns(true);
@@ -110,14 +110,14 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 Services.AddSingleton<IEpicsRepository>(Mock.Of<IEpicsRepository>());
                 Services.AddSingleton<IViewOptions>(_viewOptions.Object);
 
-                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Epics), _epics));
-                WithComponentParameter(EventCallback<int>(nameof(EpicsPanel.OnScrollToTodayRequest), (position) => _scrollToTodayRequests.Add(position)));
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(RoadmapView.Epics), _epics));
+                WithComponentParameter(EventCallback<int>(nameof(RoadmapView.OnScrollToTodayRequest), (position) => _scrollToTodayRequests.Add(position)));
             }
 
             public void Given_today_is_DATE(string date)
             {
                 _today = DateTimeOffset.Parse(date);
-                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicsPanel.Today), _today));
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(RoadmapView.Today), _today));
             }
 
             public void Then_it_should_have_specified_timeline()
