@@ -1,8 +1,10 @@
 ﻿@using JiraEpicRoadmapper.Contracts
 @using JiraEpicRoadmapper.UI.Domain
 @using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.UI.Repositories
 @using JiraEpicRoadmapper.UI.Services
 @inject IViewOptions ViewOptions;
+@inject IEpicsRepository Repository;
 @implements IDisposable;
 <div class="epics-panel" style="width: @(Roadmap.TotalDays * LayoutSettings.DaySpan)px; height: @(Roadmap.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => HandleCardSelection(null))">
     @foreach (var m in Roadmap.Timeline.GetMondays())
@@ -70,19 +72,25 @@
         await OnScrollToTodayRequest.InvokeAsync(Roadmap.Timeline.Today.Index * LayoutSettings.DaySpan);
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        if (Roadmap == null)
-            OnEpicsUpdate();
-
         ViewOptions.OptionsChanged += UpdateRoadmap;
+
+        if (Roadmap == null)
+            await OnEpicsUpdate();
     }
 
 
-    private void OnEpicsUpdate()
+    private async Task OnEpicsUpdate()
     {
         Roadmap = new EpicsRoadmap(Epics, Today);
         UpdateRoadmap();
+        await Task.WhenAll(Roadmap.Map.Epics.Select(FetchStats));
+    }
+
+    private async Task FetchStats(EpicMetadata epic)
+    {
+        epic.Stats = await Repository.FetchEpicStats(epic.Epic.Key);
     }
 
     private async Task HandleCardSelection(EpicCard card)

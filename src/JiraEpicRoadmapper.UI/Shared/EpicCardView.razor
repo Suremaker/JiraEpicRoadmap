@@ -1,9 +1,8 @@
 ﻿@using JiraEpicRoadmapper.UI.Models
-@using JiraEpicRoadmapper.UI.Repositories
 @using JiraEpicRoadmapper.UI.Services
 @inject IStatusVisualizer StatusVisualizer;
 @inject IEpicCardPainter CardPainter;
-@inject IEpicsRepository Repository;
+@implements IDisposable;
 
 <div class="epic-card @(Selected?"selected":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
     <div class="content">
@@ -19,15 +18,35 @@
 </div>
 
 @code {
+
+    private EpicCard _card;
+
     [Parameter]
-    public EpicCard Card { get; set; }
+    public EpicCard Card
+    {
+        get => _card;
+        set
+        {
+            if (_card == value)
+                return;
+            DetachCard();
+            _card = value;
+            _card.Meta.OnStatsChange += StateHasChanged;
+        }
+    }
     [Parameter]
     public bool Selected { get; set; }
     [Parameter]
     public EventCallback<EpicCard> OnCardSelect { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    public void Dispose()
     {
-        Card.Meta.Stats ??= await Repository.FetchEpicStats(Card.Meta.Epic.Key);
+        DetachCard();
+    }
+
+    private void DetachCard()
+    {
+        if (_card != null)
+            _card.Meta.OnStatsChange -= StateHasChanged;
     }
 }

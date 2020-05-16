@@ -4,7 +4,6 @@ using AngleSharp.Css.Dom;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
-using JiraEpicRoadmapper.UI.Repositories;
 using JiraEpicRoadmapper.UI.Services;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
@@ -13,7 +12,6 @@ using LightBDD.Framework.Formatting;
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Shouldly;
 
 namespace JiraEpicRoadmapper.UI.Tests.Components
@@ -29,24 +27,52 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_a_epic_card_view(),
                     x => x.Given_epic_has_summary("Hello world"),
                     x => x.Given_epic_has_status_category("in progress"),
-                    x => x.Given_epic_repository_has_available_statistics_for_the_epic(),
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_card_of_width_height_located_at_x_y(
-                        (x.Block.EndIndex - x.Block.StartIndex) * LayoutSettings.DaySpan - 2 * LayoutSettings.CellMargin,
+                        (x.Card.EndIndex - x.Card.StartIndex) * LayoutSettings.DaySpan - 2 * LayoutSettings.CellMargin,
                         LayoutSettings.CardHeight,
-                        x.Block.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin,
-                        x.Block.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin),
+                        x.Card.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin,
+                        x.Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin),
                     x => x.Then_I_should_see_card_summary("Hello world"),
                     x => x.Then_I_should_see_card_status("⚙️"),
+                    x => x.Then_I_should_see_card_details_progress_bar_with_no_stats())
+                .AddAsyncSteps(
+                    x => x.When_epic_stats_becomes_available())
+                .AddSteps(
                     x => x.Then_I_should_see_card_details_progress_bar_with_loaded_stats())
+                .RunAsync();
+        }
+
+        [Scenario]
+        public async Task Selecting_card()
+        {
+            await Runner
+                .WithContext<EpicCardViewFixture>()
+                .AddSteps(
+                    x => x.Given_a_epic_card_view(),
+                    x => x.When_I_render_it(),
+                    x => x.When_I_click_on_the_card(),
+                    x => x.Then_OnCardSelect_event_should_get_raised())
+                .RunAsync();
+        }
+
+        [Scenario]
+        public async Task Selected_card()
+        {
+            await Runner
+                .WithContext<EpicCardViewFixture>()
+                .AddSteps(
+                    x => x.Given_a_epic_card_view(),
+                    x => x.Given_it_has_parameter_value(nameof(EpicCardView.Selected), true),
+                    x => x.When_I_render_it(),
+                    x => x.When_I_should_see_the_selected_status())
                 .RunAsync();
         }
 
         public class EpicCardViewFixture : ComponentFixture<EpicCardView>
         {
-            private readonly Mock<IEpicsRepository> _repository = new Mock<IEpicsRepository>();
-            public EpicCard Block { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
-            public EpicMetadata Meta => Block.Meta;
+            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
+            public EpicMetadata Meta => Card.Meta;
             public Epic Epic => Meta.Epic;
             private State<EpicStats> _stats;
             public EpicStats Stats
@@ -54,13 +80,19 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 get => _stats;
                 set => _stats = new State<EpicStats>(value);
             }
+            private State<EpicCard> _cardClicked;
+            public EpicCard CardClicked
+            {
+                get => _cardClicked;
+                set => _cardClicked = new State<EpicCard>(value);
+            }
 
             public void Given_a_epic_card_view()
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
-                Services.AddSingleton<IEpicsRepository>(_repository.Object);
-                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicCardView.Card), Block));
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicCardView.Card), Card));
+                WithComponentParameter(EventCallback<EpicCard>(nameof(EpicCardView.OnCardSelect), c => CardClicked = c));
             }
 
             public void Given_epic_has_summary(string summary)
@@ -92,14 +124,37 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 Component.Find("div.status").TextContent.Trim().ShouldBe(status);
             }
 
+            public void Then_I_should_see_card_details_progress_bar_with_no_stats()
+            {
+                Component.FindComponent<EpicProgressBar>().Instance.Stats.ShouldBeNull();
+            }
+
+            public async Task When_epic_stats_becomes_available()
+            {
+                await Renderer.Dispatcher.InvokeAsync(() =>
+                {
+                    Meta.Stats = Stats = new EpicStats { Done = 1, InProgress = 2, NotStarted = 3 };
+                });
+            }
+
             public void Then_I_should_see_card_details_progress_bar_with_loaded_stats()
             {
                 Component.FindComponent<EpicProgressBar>().Instance.Stats.ShouldBeSameAs(Stats);
             }
 
-            public void Given_epic_repository_has_available_statistics_for_the_epic()
+            public void When_I_click_on_the_card()
             {
-                _repository.Setup(r => r.FetchEpicStats(Epic.Key)).ReturnsAsync(Stats = new EpicStats { Done = 1, InProgress = 2, NotStarted = 3 });
+                Component.Find("div.epic-card").Click();
+            }
+
+            public void Then_OnCardSelect_event_should_get_raised()
+            {
+                CardClicked.ShouldBe(Card);
+            }
+
+            public void When_I_should_see_the_selected_status()
+            {
+                Component.FindAll("div.epic-card.selected").ShouldNotBeEmpty();
             }
         }
     }
