@@ -108,6 +108,8 @@ namespace JiraEpicRoadmapper.UI.Tests
                 .RunAsync();
         }
 
+        //TODO: add test for updating epic
+
         public class RoadmapPageFixture : ComponentFixture<RoadmapPage>
         {
             private readonly Mock<IEpicsRepository> _repository = new Mock<IEpicsRepository>();

@@ -23,12 +23,25 @@
 @code
 {
     private bool _triggerScrollToToday = true;
+    private EpicsRoadmap _roadmap;
 
     [Parameter]
     public EpicCard SelectedEpic { get; set; }
 
     [Parameter]
-    public EpicsRoadmap Roadmap { get; set; }
+    public EpicsRoadmap Roadmap
+    {
+        get => _roadmap;
+        set
+        {
+            if (_roadmap == value)
+                return;
+            if (_roadmap != null)
+                _roadmap.OnLayoutUpdate -= StateHasChanged;
+            _roadmap = value;
+            _roadmap.OnLayoutUpdate += StateHasChanged;
+        }
+    }
 
     [Parameter]
     public EventCallback<EpicCard> OnEpicSelect { get; set; }
@@ -44,15 +57,9 @@
         _triggerScrollToToday = false;
         await OnScrollToTodayRequest.InvokeAsync(Roadmap.Timeline.Today.Index * LayoutSettings.DaySpan);
     }
-
-    protected override void OnInitialized()
-    {
-        Roadmap.OnLayoutUpdate += StateHasChanged;
-    }
-
     public void Dispose()
     {
-        if (Roadmap != null)
-            Roadmap.OnLayoutUpdate -= StateHasChanged;
+        if (_roadmap != null)
+            _roadmap.OnLayoutUpdate -= StateHasChanged;
     }
 }

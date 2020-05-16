@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using JiraEpicRoadmapper.UI.Models;
 using Microsoft.AspNetCore.Components;
 using Shouldly;

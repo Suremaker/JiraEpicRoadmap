@@ -4,7 +4,7 @@
 @inject IEpicsRepository Repository;
 
 <EditForm Model="this">
-    <table style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"table")">
+    <table>
         <tr><td>Project</td><td>@(Card.Meta.Epic.Project)</td></tr>
         <tr><td>Key</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Key)</a></td></tr>
         <tr><td>Summary</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Summary)</a></td></tr>
@@ -22,9 +22,12 @@
         </tr>
     </table>
     <Button Text="Update epic" OnClick="@(async()=>await UpdateEpic(Card))" Collapsed="@(!EpicChanged)" />
+    @if (_error != null)
+    {
+        <ErrorPanel Errors="@_error" />
+    }
 </EditForm>
 @code {
-    //TODO: test
     [Parameter]
     public EpicCard Card
     {
@@ -37,11 +40,11 @@
             EpicChanged = false;
         }
     }
-
     [Parameter]
-    public bool Collapsed { get; set; }
-    private bool EpicChanged { get; set; }
+    public EventCallback<Epic> OnEpicUpdate { get; set; }
 
+    private bool EpicChanged { get; set; }
+    private string _error;
     private DateTimeOffset? _startDate;
     private DateTimeOffset? _dueDate;
     private EpicCard _card;
@@ -85,7 +88,16 @@
 
     private async Task UpdateEpic(EpicCard block)
     {
-        await Repository.UpdateEpicMetadata(block.Meta.Epic.Key, new EpicMeta { StartDate = StartDate, DueDate = DueDate });
+        _error = null;
+        try
+        {
+            var epic = await Repository.UpdateEpicMetadata(block.Meta.Epic.Key, new EpicMeta { StartDate = StartDate, DueDate = DueDate });
+            await OnEpicUpdate.InvokeAsync(epic);
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
     }
 
 }

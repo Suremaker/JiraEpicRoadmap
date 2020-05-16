@@ -2,6 +2,7 @@
 @using JiraEpicRoadmapper.UI.Repositories
 @using JiraEpicRoadmapper.UI.Models
 @using System.Threading
+@using JiraEpicRoadmapper.Contracts
 @using JiraEpicRoadmapper.UI.Domain
 @using JiraEpicRoadmapper.UI.Services
 @inject IEpicsRepository Repository;
@@ -21,7 +22,7 @@
 
 @if (_roadmap != null)
 {
-    <ControlPanel SelectedEpic="@_selectedCard" />
+    <ControlPanel SelectedEpic="@_selectedCard" OnEpicUpdate="HandleEpicUpdate" />
     <RoadmapView Roadmap="@_roadmap" OnScrollToTodayRequest="ScrollToToday" OnEpicSelect="HandleCardSelect" SelectedEpic="@_selectedCard" />
 }
 
@@ -44,9 +45,7 @@
         try
         {
             var epics = await Repository.FetchEpics();
-            _roadmap = new EpicsRoadmap(epics);
-            UpdateLayout();
-            await Task.WhenAll(_roadmap.Map.Epics.Select(FetchStats));
+            await UpdateRoadmap(epics);
         }
         catch (Exception e)
         {
@@ -78,6 +77,19 @@
     private void HandleCardSelect(EpicCard card)
     {
         _selectedCard = card;
+    }
+
+    private async Task HandleEpicUpdate(Epic epic)
+    {
+        var epics = _roadmap.Map.Epics.Select(m => m.Epic).Where(e => e.Id != epic.Id).Append(epic).ToArray();
+        await UpdateRoadmap(epics);
+    }
+
+    private async Task UpdateRoadmap(Epic[] epics)
+    {
+        _roadmap = new EpicsRoadmap(epics);
+        UpdateLayout();
+        await Task.WhenAll(_roadmap.Map.Epics.Select(FetchStats));
     }
 
 }

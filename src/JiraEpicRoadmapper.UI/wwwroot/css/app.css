@@ -44,9 +44,7 @@
     margin: 2em;
     border: 1px solid #880000;
     padding: 1em;
-    font-size: larger;
-    font-weight: bolder;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 .epics-panel {

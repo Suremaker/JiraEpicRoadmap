@@ -1,4 +1,5 @@
 ﻿@using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.Contracts
 @inject IViewOptions ViewOptions;
 <div class="control-panel">
     <div>
@@ -8,7 +9,7 @@
     </div>
     @if (SelectedEpic != null && PanelVisible)
     {
-        <EpicDetailsView Card="@SelectedEpic" />
+        <EpicDetailsView Card="@SelectedEpic" OnEpicUpdate="OnEpicUpdate"/>
     }
 </div>
 
@@ -29,6 +30,9 @@
                 PanelVisible = true;
         }
     }
+
+    [Parameter]
+    public EventCallback<Epic> OnEpicUpdate { get; set; }
 
     void TogglePanel(bool visibility)
     {
