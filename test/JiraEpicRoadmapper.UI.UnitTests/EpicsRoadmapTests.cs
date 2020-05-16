@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
@@ -33,7 +34,6 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             roadmap.Projects.ShouldNotBeNull();
         }
 
-        //TODO: test options
         [Fact]
         public void UpdateLayout_should_layout_epics()
         {
@@ -61,6 +61,77 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             roadmap.Projects[1].Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "XX-1" });
 
             roadmap.TotalRows.ShouldBe(6);
+        }
+
+        [Fact]
+        public void UpdateLayout_should_exclude_unplanned()
+        {
+            var epics = new[]
+            {
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-4", Project = "PR"},
+                new Epic {Id = "XX-1", Project = "XX"},
+            };
+
+            var roadmap = new EpicsRoadmap(epics);
+
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions());
+            roadmap.Projects.Count.ShouldBe(1);
+            roadmap.Projects.Single().Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-1", "PR-2", "PR-3" }, ignoreOrder: true);
+        }
+
+        [Fact]
+        public void UpdateLayout_should_include_unplanned_when_requested()
+        {
+            var epics = new[]
+            {
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-4", Project = "PR"},
+                new Epic {Id = "XX-1", Project = "XX"},
+            };
+
+            var roadmap = new EpicsRoadmap(epics);
+
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions { ShowUnplanned = true });
+            roadmap.Projects.SelectMany(p => p.Epics).Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-1", "PR-2", "PR-3", "PR-4", "XX-1" }, ignoreOrder: true);
+        }
+
+        [Fact]
+        public void UpdateLayout_should_exclude_closed()
+        {
+            var epics = new[]
+            {
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "done"},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "in progress"},
+                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "DONE"}
+            };
+
+            var roadmap = new EpicsRoadmap(epics);
+
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions());
+            roadmap.Projects.Single().Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-2", "PR-3" }, ignoreOrder: true);
+        }
+
+        [Fact]
+        public void UpdateLayout_should_include_closed_when_requested()
+        {
+            var epics = new[]
+            {
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "done"},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "in progress"},
+                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "DONE"},
+            };
+
+            var roadmap = new EpicsRoadmap(epics);
+
+            roadmap.UpdateLayout(_designer.Object, new TestableViewOptions { ShowClosed = true });
+            roadmap.Projects.Single().Epics.Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "PR-1", "PR-2", "PR-3", "PR-4" }, ignoreOrder: true);
         }
     }
 }
