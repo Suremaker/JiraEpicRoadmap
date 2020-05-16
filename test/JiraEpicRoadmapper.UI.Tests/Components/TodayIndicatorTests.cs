@@ -17,7 +17,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .WithContext<TodayIndicatorFixture>()
                 .AddSteps(
                     x => x.Given_a_today_indicator(),
-                    x => x.Given_it_has_parameter_value(nameof(DayIndicator.Day), new IndexedDay(DateTimeOffset.Parse("2020-05-03"), 5)),
+                    x => x.Given_it_has_parameter_value(nameof(DayIndicator.Day), new IndexedDay(DateTime.Parse("2020-05-03"), 5)),
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_content($"<div class=\"today-indicator\" style=\"left:{5 * LayoutSettings.DaySpan}px\"><br/>03/05 (today)</div>"))
                 .RunAsync();

@@ -9,12 +9,12 @@ namespace JiraEpicRoadmapper.UI.Domain
     public class Timeline
     {
         public const int WeekDays = 7;
-        public DateTimeOffset Start { get; }
-        public DateTimeOffset End { get; }
+        public DateTime Start { get; }
+        public DateTime End { get; }
         public int TotalDays { get; }
         public IndexedDay Today { get; }
 
-        public Timeline(DateTimeOffset start, DateTimeOffset end, DateTimeOffset today)
+        public Timeline(DateTime start, DateTime end, DateTime today)
         {
             if (start > today)
                 throw new ArgumentOutOfRangeException(nameof(start), "Start cannot be greater than today");
@@ -27,7 +27,7 @@ namespace JiraEpicRoadmapper.UI.Domain
             TotalDays = GetDayIndex(End);
         }
 
-        public static Timeline FromEpics(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
+        public static Timeline FromEpics(IReadOnlyList<Epic> epics, DateTime? today = null)
         {
             var todayDate = today ?? DateTime.UtcNow.Date;
             var start = epics.Select(e => e.StartDate.GetValueOrDefault(e.DueDate.GetValueOrDefault(todayDate))).Append(todayDate).Min().AddDays(-WeekDays);
@@ -48,7 +48,7 @@ namespace JiraEpicRoadmapper.UI.Domain
             }
         }
 
-        public IndexedDay GetDayWithIndex(in DateTimeOffset day) => new IndexedDay(day, GetDayIndex(day));
-        private int GetDayIndex(DateTimeOffset day) => (int)(day - Start).TotalDays;
+        public IndexedDay GetDayWithIndex(in DateTime day) => new IndexedDay(day, GetDayIndex(day));
+        private int GetDayIndex(DateTime day) => (int)(day - Start).TotalDays;
     }
 }

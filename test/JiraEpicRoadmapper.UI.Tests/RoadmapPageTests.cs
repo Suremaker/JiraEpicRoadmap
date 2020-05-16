@@ -161,8 +161,8 @@ namespace JiraEpicRoadmapper.UI.Tests
 
             public void Given_api_successfully_returns_epics()
             {
-                _epics.Add(new Epic { Id = "foo", Key = "PR-foo", StartDate = DateTimeOffset.Now });
-                _epics.Add(new Epic { Id = "bar", Key = "PR-bar", StartDate = DateTimeOffset.Now });
+                _epics.Add(new Epic { Id = "foo", Key = "PR-foo", StartDate = DateTime.Now });
+                _epics.Add(new Epic { Id = "bar", Key = "PR-bar", StartDate = DateTime.Now });
                 _repository.Setup(r => r.FetchEpics()).ReturnsAsync(_epics.ToArray());
             }
 

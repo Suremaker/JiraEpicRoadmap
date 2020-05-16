@@ -17,7 +17,7 @@ namespace JiraEpicRoadmapper.UI.Domain
         public IEnumerable<EpicCard> EpicCards => Projects.SelectMany(p => p.Epics);
         public event Action OnLayoutUpdate;
 
-        public EpicsRoadmap(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
+        public EpicsRoadmap(IReadOnlyList<Epic> epics, DateTime? today = null)
         {
             Timeline = Timeline.FromEpics(epics, today);
             Map = EpicMap.Create(epics, Timeline);

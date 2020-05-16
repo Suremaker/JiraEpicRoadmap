@@ -39,7 +39,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
         public class EpicDetailsViewFixture : ComponentFixture<EpicDetailsView>
         {
-            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic(), new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
+            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic(), new IndexedDay(DateTime.MinValue, 3), new IndexedDay(DateTime.MinValue, 5)), 1);
             public EpicMetadata Meta => Card.Meta;
             public Epic Epic => Meta.Epic;
 
@@ -71,12 +71,12 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_epic_has_start_date(string date)
             {
-                Epic.StartDate = DateTimeOffset.Parse(date);
+                Epic.StartDate = DateTime.Parse(date);
             }
 
             public void Given_epic_has_due_date(string date)
             {
-                Epic.DueDate = DateTimeOffset.Parse(date);
+                Epic.DueDate = DateTime.Parse(date);
             }
 
             public void Given_epic_has_stats(EpicStats stats)

@@ -134,7 +134,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             private readonly Mock<IViewOptions> _viewOptions = new Mock<IViewOptions>();
             private readonly List<Epic> _epics = new List<Epic>();
             private readonly List<int> _scrollToTodayRequests = new List<int>();
-            private DateTimeOffset? _today;
+            private DateTime? _today;
             private State<EpicsRoadmap> _roadmap;
             private State<EpicCard> _onEpicSelected;
             private EpicCard OnEpicSelected
@@ -168,7 +168,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_today_is_DATE(string date)
             {
-                _today = DateTimeOffset.Parse(date);
+                _today = DateTime.Parse(date);
             }
 
             public void Then_it_should_have_specified_timeline()
@@ -185,14 +185,14 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_epics_covering_time_from_to(string from, string to)
             {
-                _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to), Id = "foo" });
+                _epics.Add(new Epic { StartDate = DateTime.Parse(from), DueDate = DateTime.Parse(to), Id = "foo" });
             }
 
             public void Given_epics_covering_time_from_to_for_projects(string from, string to, params string[] projects)
             {
                 foreach (var project in projects)
                 {
-                    _epics.Add(new Epic { StartDate = DateTimeOffset.Parse(from), DueDate = DateTimeOffset.Parse(to), Id = $"{project}-1", Project = project });
+                    _epics.Add(new Epic { StartDate = DateTime.Parse(from), DueDate = DateTime.Parse(to), Id = $"{project}-1", Project = project });
                 }
             }
 

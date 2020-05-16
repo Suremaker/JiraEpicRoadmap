@@ -28,15 +28,15 @@ namespace JiraEpicRoadmapper.UI.UnitTests
                 new Epic{StartDate = Utils.ToNullableDateTime(start2),DueDate = Utils.ToNullableDateTime(end2)}
             }, Utils.ToNullableDateTime(today));
 
-            timeline.Start.ShouldBe(DateTimeOffset.Parse(expectedStart));
-            timeline.End.ShouldBe(DateTimeOffset.Parse(expectedEnd));
+            timeline.Start.ShouldBe(DateTime.Parse(expectedStart));
+            timeline.End.ShouldBe(DateTime.Parse(expectedEnd));
             timeline.TotalDays.ShouldBe(expectedTotalDays);
         }
 
         [Fact]
         public void FromEpics_should_use_allow_building_timeline_for_no_epics()
         {
-            var today = DateTimeOffset.Now.Date;
+            var today = DateTime.Now.Date;
             var timeline = Timeline.FromEpics(new Epic[] { }, today);
             timeline.Start.ShouldBe(today.AddDays(-7));
             timeline.End.ShouldBe(today.AddDays(7));
@@ -45,7 +45,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void FromEpics_should_set_today()
         {
-            DateTimeOffset today = DateTime.UtcNow.Date;
+            DateTime today = DateTime.UtcNow.Date;
             var someDay = today.AddDays(-5);
 
             Timeline.FromEpics(new Epic[] { }, someDay).Today.ShouldBe(new IndexedDay(someDay, Timeline.WeekDays));
@@ -55,7 +55,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void It_should_not_allow_today_parameter_being_outside_of_start_end_range()
         {
-            var date = DateTimeOffset.Now.Date;
+            var date = DateTime.Now.Date;
             Assert.Throws<ArgumentOutOfRangeException>(() => new Timeline(date.AddDays(-1), date.AddDays(+1), date.AddDays(-2))).Message.ShouldContain("Start cannot be greater than today");
             Assert.Throws<ArgumentOutOfRangeException>(() => new Timeline(date.AddDays(-1), date.AddDays(+1), date.AddDays(+2))).Message.ShouldContain("End cannot be less than today");
         }
@@ -65,8 +65,8 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [InlineData("2020-05-03", "2020-05-26", "1:2020-05-04", "8:2020-05-11", "15:2020-05-18", "22:2020-05-25")]
         public void GetMondays_returns_all_Mondays_with_index_within_the_Start_End_range(string start, string end, params string[] expected)
         {
-            var startDate = DateTimeOffset.Parse(start);
-            var endDate = DateTimeOffset.Parse(end);
+            var startDate = DateTime.Parse(start);
+            var endDate = DateTime.Parse(end);
             var timeline = new Timeline(startDate, endDate, endDate);
             timeline.GetMondays().Select(x => x.ToString()).ShouldBe(expected);
         }
@@ -74,7 +74,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void GetDayWithIndex_should_return_indexed_day()
         {
-            var today = DateTimeOffset.Now.Date;
+            var today = DateTime.Now.Date;
             var timeline = Timeline.FromEpics(new Epic[0], today);
             var date = timeline.Start;
             for (int i = 0; i < 14; ++i)

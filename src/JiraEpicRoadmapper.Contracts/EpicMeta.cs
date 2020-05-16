@@ -4,7 +4,7 @@ namespace JiraEpicRoadmapper.Contracts
 {
     public class EpicMeta
     {
-        public DateTimeOffset? DueDate { get; set; }
-        public DateTimeOffset? StartDate { get; set; }
+        public DateTime? DueDate { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }

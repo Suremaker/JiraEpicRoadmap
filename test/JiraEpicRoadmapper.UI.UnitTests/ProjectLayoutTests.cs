@@ -38,7 +38,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 
         private static EpicMetadata CreateMeta(string id)
         {
-            return new EpicMetadata(new Epic { Id = id }, new IndexedDay(DateTimeOffset.MinValue, 1), new IndexedDay(DateTimeOffset.MinValue, 5));
+            return new EpicMetadata(new Epic { Id = id }, new IndexedDay(DateTime.MinValue, 1), new IndexedDay(DateTime.MinValue, 5));
         }
     }
 }

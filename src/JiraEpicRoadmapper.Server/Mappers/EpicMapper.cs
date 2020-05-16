@@ -34,8 +34,8 @@ namespace JiraEpicRoadmapper.Server.Mappers
             };
             epic.Url = $"{_config.Value.JiraUri}/browse/{epic.Key}";
 
-            epic.DueDate = GetDateTimeOffsetIfSet(fields, "duedate");
-            epic.StartDate = GetFirstNotNullCustomFieldDateTimeOffset(fields, fieldsNameToKeyMap, "Start date");
+            epic.DueDate = GetDateTimeIfSet(fields, "duedate");
+            epic.StartDate = GetFirstNotNullCustomFieldDateTime(fields, fieldsNameToKeyMap, "Start date");
             return epic;
         }
 
@@ -48,13 +48,13 @@ namespace JiraEpicRoadmapper.Server.Mappers
             };
         }
 
-        private DateTimeOffset? GetFirstNotNullCustomFieldDateTimeOffset(in JsonElement fields, IReadOnlyDictionary<string, string[]> fieldsNameToKeyMap, string propName)
+        private DateTime? GetFirstNotNullCustomFieldDateTime(in JsonElement fields, IReadOnlyDictionary<string, string[]> fieldsNameToKeyMap, string propName)
         {
             if (!fieldsNameToKeyMap.TryGetValue(propName, out var propKeys))
                 return null;
             foreach (var propKey in propKeys)
             {
-                var date = GetDateTimeOffsetIfSet(fields, propKey);
+                var date = GetDateTimeIfSet(fields, propKey);
                 if (date != null)
                     return date;
             }
@@ -62,10 +62,10 @@ namespace JiraEpicRoadmapper.Server.Mappers
             return null;
         }
 
-        private DateTimeOffset? GetDateTimeOffsetIfSet(in JsonElement fields, string propKey)
+        private DateTime? GetDateTimeIfSet(in JsonElement fields, string propKey)
         {
             if (fields.TryGetProperty(propKey, out var prop) && prop.ValueKind != JsonValueKind.Null)
-                return prop.GetDateTimeOffset();
+                return prop.GetDateTime();
             return null;
         }
     }

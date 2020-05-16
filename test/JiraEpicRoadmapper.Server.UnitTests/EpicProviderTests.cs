@@ -122,7 +122,7 @@ namespace JiraEpicRoadmapper.Server.UnitTests
             _client.Setup(x => x.UpdateIssue(epicKey, It.IsAny<IssueContent>())).Returns(Task.CompletedTask);
             _client.Setup(x => x.QueryJql("key=KEY-11")).ReturnsAsync(new[] { epicJson });
             _mapper.Setup(x => x.MapEpic(epicJson, fields)).Returns(updatedEpic);
-            var epic = await _provider.UpdateEpic(epicKey, new EpicMeta { DueDate = DateTimeOffset.Parse(dueValue), StartDate = DateTimeOffset.Parse(startValue) });
+            var epic = await _provider.UpdateEpic(epicKey, new EpicMeta { DueDate = DateTime.Parse(dueValue), StartDate = DateTime.Parse(startValue) });
 
             epic.ShouldBeSameAs(updatedEpic);
 

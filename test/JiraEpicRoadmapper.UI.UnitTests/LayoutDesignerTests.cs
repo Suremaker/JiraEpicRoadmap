@@ -35,7 +35,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 
         private IndexedDay ToDay(string date)
         {
-            var o = DateTimeOffset.Parse(date);
+            var o = DateTime.Parse(date);
             return new IndexedDay(o, o.DayOfYear);
         }
     }

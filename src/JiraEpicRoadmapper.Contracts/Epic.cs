@@ -12,8 +12,8 @@ namespace JiraEpicRoadmapper.Contracts
         public string Summary { get; set; }
         public string Url { get; set; }
         public string StatusCategory { get; set; }
-        public DateTimeOffset? StartDate { get; set; }
-        public DateTimeOffset? DueDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public IReadOnlyList<Link> Links { get; set; } = Array.Empty<Link>();
     }
 }

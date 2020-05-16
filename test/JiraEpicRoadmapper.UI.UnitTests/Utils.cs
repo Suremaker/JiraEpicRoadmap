@@ -4,10 +4,10 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 {
     static class Utils
     {
-        public static DateTimeOffset? ToNullableDateTime(string date)
+        public static DateTime? ToNullableDateTime(string date)
         {
-            return DateTimeOffset.TryParse(date, out var result)
-                ? (DateTimeOffset?)result
+            return DateTime.TryParse(date, out var result)
+                ? (DateTime?)result
                 : null;
         }
     }

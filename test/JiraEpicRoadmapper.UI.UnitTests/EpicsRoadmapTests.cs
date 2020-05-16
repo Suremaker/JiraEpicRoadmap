@@ -70,9 +70,9 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var epics = new[]
             {
-                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTime.Now},
+                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTime.Now},
                 new Epic {Id = "PR-4", Project = "PR"},
                 new Epic {Id = "XX-1", Project = "XX"},
             };
@@ -89,9 +89,9 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var epics = new[]
             {
-                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTimeOffset.Now},
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTime.Now},
+                new Epic {Id = "PR-3", Project = "PR", StartDate = DateTime.Now},
                 new Epic {Id = "PR-4", Project = "PR"},
                 new Epic {Id = "XX-1", Project = "XX"},
             };
@@ -107,10 +107,10 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var epics = new[]
             {
-                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "done"},
-                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "in progress"},
-                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "DONE"}
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "done"},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "in progress"},
+                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "DONE"}
             };
 
             var roadmap = new EpicsRoadmap(epics);
@@ -124,10 +124,10 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             var epics = new[]
             {
-                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "done"},
-                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "in progress"},
-                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now},
-                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTimeOffset.Now, StartDate = DateTimeOffset.Now, StatusCategory = "DONE"},
+                new Epic {Id = "PR-1", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "done"},
+                new Epic {Id = "PR-2", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "in progress"},
+                new Epic {Id = "PR-3", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "PR-4", Project = "PR", DueDate = DateTime.Now, StartDate = DateTime.Now, StatusCategory = "DONE"},
             };
 
             var roadmap = new EpicsRoadmap(epics);

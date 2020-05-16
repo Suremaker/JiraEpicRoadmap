@@ -9,7 +9,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
 {
     public class EpicMapTests
     {
-        private readonly Timeline _timeline = new Timeline(DateTimeOffset.Parse("2020-03-01"), DateTimeOffset.Parse("2020-03-31"), DateTimeOffset.Parse("2020-03-03"));
+        private readonly Timeline _timeline = new Timeline(DateTime.Parse("2020-03-01"), DateTime.Parse("2020-03-31"), DateTime.Parse("2020-03-03"));
 
         [Theory]
         [InlineData("2020-03-04", "2020-03-14", "3:2020-03-04", "13:2020-03-14")]

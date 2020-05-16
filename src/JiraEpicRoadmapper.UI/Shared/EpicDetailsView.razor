@@ -45,11 +45,11 @@
 
     private bool EpicChanged { get; set; }
     private string _error;
-    private DateTimeOffset? _startDate;
-    private DateTimeOffset? _dueDate;
+    private DateTime? _startDate;
+    private DateTime? _dueDate;
     private EpicCard _card;
 
-    public DateTimeOffset? StartDate
+    public DateTime? StartDate
     {
         get => _startDate;
         set
@@ -59,7 +59,7 @@
         }
     }
 
-    public DateTimeOffset? DueDate
+    public DateTime? DueDate
     {
         get => _dueDate;
         set

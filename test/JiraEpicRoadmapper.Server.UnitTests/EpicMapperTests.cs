@@ -85,8 +85,8 @@ namespace JiraEpicRoadmapper.Server.UnitTests
 
             var epic = _mapper.MapEpic(ToJsonElement(epicJson), fieldsNameToKeyMap);
 
-            epic.StartDate.ShouldBe(new DateTimeOffset(new DateTime(2020, 04, 18, 0, 0, 0)));
-            epic.DueDate.ShouldBe(new DateTimeOffset(new DateTime(2020, 04, 21, 0, 0, 0)));
+            epic.StartDate.ShouldBe(new DateTime(2020, 04, 18, 0, 0, 0));
+            epic.DueDate.ShouldBe(new DateTime(2020, 04, 21, 0, 0, 0));
         }
 
         [Fact]

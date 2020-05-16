@@ -72,7 +72,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
         public class EpicCardViewFixture : ComponentFixture<EpicCardView>
         {
-            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
+            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTime.MinValue, 3), new IndexedDay(DateTime.MinValue, 5)), 1);
             public EpicMetadata Meta => Card.Meta;
             public Epic Epic => Meta.Epic;
             private State<EpicStats> _stats;
