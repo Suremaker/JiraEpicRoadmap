@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Models;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Domain
 {
     public class EpicMap
     {

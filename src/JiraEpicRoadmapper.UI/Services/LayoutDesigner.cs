@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JiraEpicRoadmapper.UI.Models;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Services
 {
     public class LayoutDesigner : ILayoutDesigner
     {

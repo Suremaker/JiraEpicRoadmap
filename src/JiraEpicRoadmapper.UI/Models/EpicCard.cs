@@ -1,9 +1,9 @@
 ﻿namespace JiraEpicRoadmapper.UI.Models
 {
-    public class EpicVisualBlock
+    public class EpicCard
     {
 
-        public EpicVisualBlock(EpicMetadata meta, int rowIndex)
+        public EpicCard(EpicMetadata meta, int rowIndex)
         {
             RowIndex = rowIndex;
             Meta = meta;

@@ -1,5 +1,7 @@
 ﻿@using JiraEpicRoadmapper.Contracts
+@using JiraEpicRoadmapper.UI.Domain
 @using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.UI.Services
 @inject IViewOptions ViewOptions;
 @implements IDisposable;
 <div class="epics-panel" style="width: @(Roadmap.TotalDays * LayoutSettings.DaySpan)px; height: @(Roadmap.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => HandleCardSelection(null))">
@@ -17,7 +19,7 @@
     <TodayIndicator Day="@Roadmap.Timeline.Today" />
     @foreach (var e in Roadmap.EpicBlocks)
     {
-        <EpicCardView Block="@e" Selected="@(SelectedBlock==e)" OnCardSelect="HandleCardSelection" />
+        <EpicCardView Card="@e" Selected="@(SelectedBlock==e)" OnCardSelect="HandleCardSelection" />
     }
 </div>
 
@@ -26,10 +28,10 @@
     private IReadOnlyList<Epic> _epics;
     private DateTimeOffset? _today;
     private bool _triggerScrollToToday = true;
-    public EpicVisualBlock SelectedBlock { get; private set; }
+    public EpicCard SelectedBlock { get; private set; }
     public EpicsRoadmap Roadmap { get; private set; }
     [Parameter]
-    public EventCallback<EpicVisualBlock> OnCardSelect { get; set; }
+    public EventCallback<EpicCard> OnCardSelect { get; set; }
 
     [Parameter]
     public DateTimeOffset? Today
@@ -83,7 +85,7 @@
         UpdateRoadmap();
     }
 
-    private async Task HandleCardSelection(EpicVisualBlock card)
+    private async Task HandleCardSelection(EpicCard card)
     {
         SelectedBlock = card;
         await OnCardSelect.InvokeAsync(card);

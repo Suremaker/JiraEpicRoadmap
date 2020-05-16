@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using JiraEpicRoadmapper.UI.Models;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Services
 {
     public class StatusVisualizer : IStatusVisualizer
     {
-        public IEnumerable<string> GetStatusIcons(EpicVisualBlock block)
+        public IEnumerable<string> GetStatusIcons(EpicCard block)
         {
             var status = new List<string>();
 

@@ -26,7 +26,7 @@
 @code {
     //TODO: test
     [Parameter]
-    public EpicVisualBlock Block
+    public EpicCard Block
     {
         get => _block;
         set
@@ -44,7 +44,7 @@
 
     private DateTimeOffset? _startDate;
     private DateTimeOffset? _dueDate;
-    private EpicVisualBlock _block;
+    private EpicCard _block;
 
     public DateTimeOffset? StartDate
     {
@@ -83,7 +83,7 @@
             yield return $"{stats.NotStarted} not started";
     }
 
-    private async Task UpdateEpic(EpicVisualBlock block)
+    private async Task UpdateEpic(EpicCard block)
     {
         await Repository.UpdateEpicMetadata(block.Meta.Epic.Key, new EpicMeta { StartDate = StartDate, DueDate = DueDate });
     }

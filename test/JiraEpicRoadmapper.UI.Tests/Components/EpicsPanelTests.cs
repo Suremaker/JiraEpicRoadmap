@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Domain;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Repositories;
+using JiraEpicRoadmapper.UI.Services;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Formatting;
@@ -167,7 +169,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             {
                 var actual = Component
                     .FindComponents<EpicCardView>()
-                    .Select(v => v.Instance.Block.Meta.Epic)
+                    .Select(v => v.Instance.Card.Meta.Epic)
                     .ToDictionary(x => x.Id);
                 epics.SetActual(input => actual.TryGetValue(input.Id, out var r) ? r : null);
             }

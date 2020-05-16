@@ -5,6 +5,7 @@ using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Repositories;
+using JiraEpicRoadmapper.UI.Services;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework;
@@ -44,7 +45,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
         public class EpicCardViewFixture : ComponentFixture<EpicCardView>
         {
             private readonly Mock<IEpicsRepository> _repository = new Mock<IEpicsRepository>();
-            public EpicVisualBlock Block { get; } = new EpicVisualBlock(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
+            public EpicCard Block { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTimeOffset.MinValue, 3), new IndexedDay(DateTimeOffset.MinValue, 5)), 1);
             public EpicMetadata Meta => Block.Meta;
             public Epic Epic => Meta.Epic;
             private State<EpicStats> _stats;
@@ -59,7 +60,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
                 Services.AddSingleton<IEpicsRepository>(_repository.Object);
-                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicCardView.Block), Block));
+                WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicCardView.Card), Block));
             }
 
             public void Given_epic_has_summary(string summary)

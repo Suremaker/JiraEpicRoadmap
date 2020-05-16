@@ -1,5 +1,6 @@
 ﻿using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [InlineData("Something", "❔")]
         public void It_should_visualize_status_category(string statusCategory, string expected)
         {
-            var block = new EpicVisualBlock(new EpicMetadata(new Epic { StatusCategory = statusCategory }, new IndexedDay(), new IndexedDay()), 1);
+            var block = new EpicCard(new EpicMetadata(new Epic { StatusCategory = statusCategory }, new IndexedDay(), new IndexedDay()), 1);
             _visualizer.GetStatusIcons(block).ShouldContain(expected);
         }
     }

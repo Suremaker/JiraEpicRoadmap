@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Domain;
 using JiraEpicRoadmapper.UI.Models;
 using Shouldly;
 using Xunit;

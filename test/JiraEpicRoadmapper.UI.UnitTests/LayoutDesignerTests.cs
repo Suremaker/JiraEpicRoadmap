@@ -2,6 +2,7 @@
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 using Shouldly;
 using Xunit;
 

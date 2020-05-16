@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Domain;
 
 namespace JiraEpicRoadmapper.UI.Models
 {

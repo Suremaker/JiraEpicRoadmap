@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Domain
 {
     public class ProjectLayout
     {
         public string Name { get; }
         public int ProjectRowIndex { get; }
-        public IReadOnlyList<EpicVisualBlock> Epics { get; }
+        public IReadOnlyList<EpicCard> Epics { get; }
         public int LastRowIndex { get; }
 
-        private ProjectLayout(string name, IReadOnlyList<EpicVisualBlock> epics, int projectRowIndex, int lastRowIndex)
+        private ProjectLayout(string name, IReadOnlyList<EpicCard> epics, int projectRowIndex, int lastRowIndex)
         {
             Name = name;
             Epics = epics;
@@ -24,7 +26,7 @@ namespace JiraEpicRoadmapper.UI.Models
         {
             var rows = designer.Layout(epics);
             var blocks = rows
-                .SelectMany((row, index) => row.Select(m => new EpicVisualBlock(m, index + projectRowIndex + 1)))
+                .SelectMany((row, index) => row.Select(m => new EpicCard(m, index + projectRowIndex + 1)))
                 .ToArray();
             return new ProjectLayout(name, blocks, projectRowIndex, projectRowIndex + rows.Count);
         }

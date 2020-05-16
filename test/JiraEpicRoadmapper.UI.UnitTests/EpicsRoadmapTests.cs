@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Domain;
 using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 using Moq;
 using Shouldly;
 using Xunit;

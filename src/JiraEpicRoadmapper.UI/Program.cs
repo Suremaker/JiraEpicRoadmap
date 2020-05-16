@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Repositories;
+using JiraEpicRoadmapper.UI.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 

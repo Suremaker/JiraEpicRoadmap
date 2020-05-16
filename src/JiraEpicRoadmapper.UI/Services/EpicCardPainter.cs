@@ -2,15 +2,16 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using JiraEpicRoadmapper.UI.Models;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Services
 {
     public class EpicCardPainter : IEpicCardPainter
     {
         private byte MinColorValue = 100;
         private readonly ConcurrentDictionary<string, string> _codes = new ConcurrentDictionary<string, string>();
 
-        public string GetColor(EpicVisualBlock block) => _codes.GetOrAdd(block.Meta.Epic.Project ?? string.Empty, GenerateColor);
+        public string GetColor(EpicCard block) => _codes.GetOrAdd(block.Meta.Epic.Project ?? string.Empty, GenerateColor);
 
         private string GenerateColor(string key)
         {

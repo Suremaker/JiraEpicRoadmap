@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using JiraEpicRoadmapper.Contracts;
+using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 
-namespace JiraEpicRoadmapper.UI.Models
+namespace JiraEpicRoadmapper.UI.Domain
 {
     public class EpicsRoadmap
     {
@@ -12,7 +14,7 @@ namespace JiraEpicRoadmapper.UI.Models
         public int TotalDays => Timeline.TotalDays;
         public int TotalRows => Projects.LastOrDefault()?.LastRowIndex + 1 ?? 1;
         public IReadOnlyList<ProjectLayout> Projects { get; private set; } = Array.Empty<ProjectLayout>();
-        public IEnumerable<EpicVisualBlock> EpicBlocks => Projects.SelectMany(p => p.Epics);
+        public IEnumerable<EpicCard> EpicBlocks => Projects.SelectMany(p => p.Epics);
 
         public EpicsRoadmap(IReadOnlyList<Epic> epics, DateTimeOffset? today = null)
         {

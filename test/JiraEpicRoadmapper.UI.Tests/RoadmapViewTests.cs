@@ -6,6 +6,7 @@ using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
 using JiraEpicRoadmapper.UI.Pages;
 using JiraEpicRoadmapper.UI.Repositories;
+using JiraEpicRoadmapper.UI.Services;
 using JiraEpicRoadmapper.UI.Shared;
 using JiraEpicRoadmapper.UI.Tests.Scaffolding;
 using LightBDD.Framework.Scenarios;

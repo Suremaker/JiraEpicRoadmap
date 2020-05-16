@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
+using JiraEpicRoadmapper.UI.Services;
 using Shouldly;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         {
             for (int i = 0; i < 100; ++i)
             {
-                var color = _painter.GetColor(CreateVisualBlock(i.ToString()));
+                var color = _painter.GetColor(CreateCard(i.ToString()));
                 var r = byte.Parse(color.Substring(1,2),NumberStyles.HexNumber);
                 var g = byte.Parse(color.Substring(3,2), NumberStyles.HexNumber);
                 var b = byte.Parse(color.Substring(5,2), NumberStyles.HexNumber);
@@ -29,15 +30,15 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         [Fact]
         public void It_should_allow_calculating_color_for_null_project()
         {
-            _painter.GetColor(CreateVisualBlock(null)).ShouldNotBeNull();
+            _painter.GetColor(CreateCard(null)).ShouldNotBeNull();
         }
 
         [Fact]
         public void It_should_return_html_style_color()
         {
-            _painter.GetColor(CreateVisualBlock("PR1")).ShouldMatch("^#[0-9a-f]{6}$");
+            _painter.GetColor(CreateCard("PR1")).ShouldMatch("^#[0-9a-f]{6}$");
         }
 
-        private EpicVisualBlock CreateVisualBlock(string projectName) => new EpicVisualBlock(new EpicMetadata(new Epic{Project = projectName},new IndexedDay(), new IndexedDay() ),1 );
+        private EpicCard CreateCard(string projectName) => new EpicCard(new EpicMetadata(new Epic{Project = projectName},new IndexedDay(), new IndexedDay() ),1 );
     }
 }
