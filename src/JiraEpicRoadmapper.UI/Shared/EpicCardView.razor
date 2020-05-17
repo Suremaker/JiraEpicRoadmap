@@ -2,19 +2,32 @@
 @using JiraEpicRoadmapper.UI.Services
 @inject IStatusVisualizer StatusVisualizer;
 @inject IEpicCardPainter CardPainter;
+@inject IViewOptions ViewOptions;
 @implements IDisposable;
 
-<div class="epic-card @(Selected?"selected":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex + 1) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
+<div class="epic-card @(Selected?"selected":"") @(ViewOptions.HideCardDetails?"simple":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex + 1) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
     <div class="content">
-        <div class="summary"><a href="@(Card.Meta.Epic.Url)" target="_blank" @onclick:stopPropagation="true">@(Card.Meta.Epic.Key)</a> @(Card.Meta.Epic.Summary)</div>
-        <div class="status">
-            @foreach (var s in StatusVisualizer.GetStatusIcons(Card))
+        <div class="summary">
+            @if (!ViewOptions.HideCardDetails)
             {
-                @s<br />
+                <a href="@(Card.Meta.Epic.Url)" target="_blank" @onclick:stopPropagation="true">@(Card.Meta.Epic.Key)</a>
             }
+            @(Card.Meta.Epic.Summary)
         </div>
+        @if (!ViewOptions.HideCardDetails)
+        {
+            <div class="status">
+                @foreach (var s in StatusVisualizer.GetStatusIcons(Card))
+                {
+                    @s<br />
+                }
+            </div>
+        }
     </div>
-    <EpicProgressBar Stats="@Card.Meta.Stats" />
+    @if (!ViewOptions.HideCardDetails)
+    {
+        <EpicProgressBar Stats="@Card.Meta.Stats" />
+    }
 </div>
 
 @code {

@@ -28,13 +28,21 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             _navigator.LastUri.ShouldBe("http://localhost:80/?showunplanned=y");
             options.ToggleUnplanned();
             _navigator.LastUri.ShouldBe("http://localhost:80/");
+            options.ToggleTodayIndicator();
+            _navigator.LastUri.ShouldBe("http://localhost:80/?hidetodayindicator=y");
+            options.ToggleCardDetails();
+            _navigator.LastUri.ShouldBe("http://localhost:80/?hidetodayindicator=y&hidecarddetails=y");
+            options.ToggleCardDetails();
+            options.ToggleTodayIndicator();
+            _navigator.LastUri.ShouldBe("http://localhost:80/");
         }
 
         [Theory]
-        [InlineData("http://localhost/?showclosed=y&showunplanned=y", true, true)]
-        [InlineData("http://localhost/?showclosed=y", true, false)]
-        [InlineData("http://localhost/", false, false)]
-        public void It_should_preset_fields(string uri, bool showClosed, bool showUnplanned)
+        [InlineData("http://localhost/?showclosed=y&showunplanned=y&hidetodayindicator=y&hidecarddetails=y", true, true, true, true)]
+        [InlineData("http://localhost/?showclosed=y&showunplanned=y", true, true, false, false)]
+        [InlineData("http://localhost/?showclosed=y", true, false, false, false)]
+        [InlineData("http://localhost/", false, false, false, false)]
+        public void It_should_preset_fields(string uri, bool showClosed, bool showUnplanned, bool hideToday, bool hideDetails)
         {
             _navigator.Initialize(uri);
             var options = new ViewOptions(_navigator);
@@ -54,6 +62,10 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             counter.ShouldBe(1);
             options.ToggleClosed();
             counter.ShouldBe(2);
+            options.ToggleTodayIndicator();
+            counter.ShouldBe(3);
+            options.ToggleCardDetails();
+            counter.ShouldBe(4);
         }
 
         private class TestableNavigator : NavigationManager

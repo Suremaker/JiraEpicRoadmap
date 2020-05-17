@@ -4,8 +4,10 @@
 <div class="control-panel">
     <div>
         <ToggleButton CheckedText="|&lt;" UncheckedText="|>" OnClick="TogglePanel" Checked="@PanelVisible" />
-        <ToggleButton CheckedText="Show closed" UncheckedText="Hide closed" OnClick="@ViewOptions.ToggleClosed" Checked="@ViewOptions.ShowClosed" Collapsed="@(!PanelVisible)" />
-        <ToggleButton CheckedText="Show unplanned" UncheckedText="Hide unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Hide closed" UncheckedText="Show closed" OnClick="@ViewOptions.ToggleClosed" Checked="@ViewOptions.ShowClosed" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Hide unplanned" UncheckedText="Show unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Show today" UncheckedText="Hide today" OnClick="@ViewOptions.ToggleTodayIndicator" Checked="@ViewOptions.HideTodayIndicator" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Show details" UncheckedText="Hide details" OnClick="@ViewOptions.ToggleCardDetails" Checked="@ViewOptions.HideCardDetails" Collapsed="@(!PanelVisible)" />
     </div>
     @if (SelectedEpic != null && PanelVisible)
     {

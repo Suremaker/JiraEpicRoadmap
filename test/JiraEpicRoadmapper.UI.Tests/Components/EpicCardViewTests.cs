@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Css.Dom;
+using AngleSharp.Dom;
 using Bunit;
 using JiraEpicRoadmapper.Contracts;
 using JiraEpicRoadmapper.UI.Models;
@@ -73,16 +75,20 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
         public class EpicCardViewFixture : ComponentFixture<EpicCardView>
         {
+            private readonly TestableViewOptions _viewOptions = new TestableViewOptions();
             public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic(), new IndexedDay(DateTime.MinValue, 3), new IndexedDay(DateTime.MinValue, 5)), 1);
             public EpicMetadata Meta => Card.Meta;
             public Epic Epic => Meta.Epic;
             private State<EpicStats> _stats;
+
             public EpicStats Stats
             {
                 get => _stats;
                 set => _stats = new State<EpicStats>(value);
             }
+
             private State<EpicCard> _cardClicked;
+
             public EpicCard CardClicked
             {
                 get => _cardClicked;
@@ -93,6 +99,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             {
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
+                Services.AddSingleton<IViewOptions>(_viewOptions);
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(EpicCardView.Card), Card));
                 WithComponentParameter(EventCallback<EpicCard>(nameof(EpicCardView.OnCardSelect), c => CardClicked = c));
             }
@@ -123,7 +130,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Then_I_should_see_card_summary(string summary)
             {
-                Component.Find("div.summary").TextContent.ShouldBe(summary);
+                Component.Find("div.summary").GetInnerText().ShouldBe(summary);
             }
 
             public void Then_I_should_see_card_status(string status)

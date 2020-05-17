@@ -18,10 +18,14 @@ namespace JiraEpicRoadmapper.UI.Models
             var query = QueryHelpers.ParseQuery(manager.ToAbsoluteUri(manager.Uri).Query);
             ShowClosed = IsSet(query, nameof(ShowClosed));
             ShowUnplanned = IsSet(query, nameof(ShowUnplanned));
+            HideTodayIndicator = IsSet(query, nameof(HideTodayIndicator));
+            HideCardDetails = IsSet(query, nameof(HideCardDetails));
         }
 
         public bool ShowClosed { get; private set; }
         public bool ShowUnplanned { get; private set; }
+        public bool HideTodayIndicator { get; private set; }
+        public bool HideCardDetails { get; private set; }
 
         public void ToggleClosed()
         {
@@ -35,6 +39,18 @@ namespace JiraEpicRoadmapper.UI.Models
             UpdateNavigation();
         }
 
+        public void ToggleCardDetails()
+        {
+            HideCardDetails = !HideCardDetails;
+            UpdateNavigation();
+        }
+
+        public void ToggleTodayIndicator()
+        {
+            HideTodayIndicator = !HideTodayIndicator;
+            UpdateNavigation();
+        }
+
         public event Action OptionsChanged;
 
         private void UpdateNavigation()
@@ -42,6 +58,8 @@ namespace JiraEpicRoadmapper.UI.Models
             var options = new Dictionary<string, string>();
             AddIfSet(options, nameof(ShowClosed), ShowClosed);
             AddIfSet(options, nameof(ShowUnplanned), ShowUnplanned);
+            AddIfSet(options, nameof(HideTodayIndicator), HideTodayIndicator);
+            AddIfSet(options, nameof(HideCardDetails), HideCardDetails);
 
             var builder = new UriBuilder(_manager.ToAbsoluteUri(_manager.Uri))
             {

@@ -131,7 +131,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
         public class RoadmapViewFixture : ComponentFixture<RoadmapView>
         {
-            private readonly Mock<IViewOptions> _viewOptions = new Mock<IViewOptions>();
+            private readonly IViewOptions _viewOptions = new TestableViewOptions { ShowUnplanned = true, ShowClosed = true };
             private readonly List<Epic> _epics = new List<Epic>();
             private readonly List<int> _scrollToTodayRequests = new List<int>();
             private DateTime? _today;
@@ -153,13 +153,12 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
             public void Given_a_roadmap_view()
             {
-                _viewOptions.SetupGet(x => x.ShowUnplanned).Returns(true);
-                _viewOptions.SetupGet(x => x.ShowClosed).Returns(true);
                 Roadmap = new EpicsRoadmap(_epics, _today);
-                Roadmap.UpdateLayout(new LayoutDesigner(), _viewOptions.Object);
+                Roadmap.UpdateLayout(new LayoutDesigner(), _viewOptions);
 
                 Services.AddSingleton<IStatusVisualizer>(new StatusVisualizer());
                 Services.AddSingleton<IEpicCardPainter>(new EpicCardPainter());
+                Services.AddSingleton<IViewOptions>(_viewOptions);
 
                 WithComponentParameter(ComponentParameter.CreateParameter(nameof(RoadmapView.Roadmap), Roadmap));
                 WithComponentParameter(EventCallback<int>(nameof(RoadmapView.OnScrollToTodayRequest), (position) => _scrollToTodayRequests.Add(position)));
