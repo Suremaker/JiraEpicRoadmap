@@ -1,0 +1,1 @@
+dotnet publish src\JiraEpicRoadmapper.Server\JiraEpicRoadmapper.Server.csproj -c Release -r linux-x64 --self-contained -o publish
