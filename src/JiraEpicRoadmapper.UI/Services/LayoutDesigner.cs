@@ -11,7 +11,7 @@ namespace JiraEpicRoadmapper.UI.Services
             var result = new List<List<EpicMetadata>>();
             foreach (var e in epics.OrderBy(e => e.Start.Index).ThenBy(e => e.Epic.Id))
             {
-                var row = result.FirstOrDefault(r => r.Last().End.Index <= e.Start.Index);
+                var row = result.FirstOrDefault(r => r.Last().End.Index < e.Start.Index);
                 if (row != null) { row.Add(e); }
                 else
                 {

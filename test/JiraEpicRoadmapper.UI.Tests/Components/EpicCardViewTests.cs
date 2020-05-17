@@ -30,7 +30,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                     x => x.Given_epic_has_status_category("in progress"),
                     x => x.When_I_render_it(),
                     x => x.Then_I_should_see_card_of_width_height_located_at_x_y(
-                        (x.Card.EndIndex - x.Card.StartIndex) * LayoutSettings.DaySpan - 2 * LayoutSettings.CellMargin,
+                        (x.Card.EndIndex - x.Card.StartIndex + 1) * LayoutSettings.DaySpan - 2 * LayoutSettings.CellMargin,
                         LayoutSettings.CardHeight,
                         x.Card.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin,
                         x.Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin),

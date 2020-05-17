@@ -17,9 +17,9 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             {
                 CreateMeta("5", "2020-05-06", "2020-05-15"),
                 CreateMeta("4", "2020-05-06", "2020-05-10"),
-                CreateMeta("3", "2020-05-10", "2020-05-16"),
+                CreateMeta("3", "2020-05-11", "2020-05-16"),
                 CreateMeta("2", "2020-05-16", "2020-05-18"),
-                CreateMeta("1", "2020-05-16", "2020-05-19")
+                CreateMeta("1", "2020-05-17", "2020-05-19")
             };
             var designer = new LayoutDesigner();
 

@@ -4,7 +4,7 @@
 @inject IEpicCardPainter CardPainter;
 @implements IDisposable;
 
-<div class="epic-card @(Selected?"selected":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
+<div class="epic-card @(Selected?"selected":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex + 1) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
     <div class="content">
         <div class="summary">@(Card.Meta.Epic.Summary)</div>
         <div class="status">
