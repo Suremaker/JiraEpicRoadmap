@@ -1,0 +1,44 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.Contracts
+@inject IViewOptions ViewOptions;
+<div class="control-panel">
+    <div>
+        <ToggleButton CheckedText="|&lt;" UncheckedText="|>" OnClick="TogglePanel" Checked="@PanelVisible" />
+        <ToggleButton CheckedText="Hide closed" UncheckedText="Show closed" OnClick="@ViewOptions.ToggleClosed" Checked="@ViewOptions.ShowClosed" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Hide unplanned" UncheckedText="Show unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Show today" UncheckedText="Hide today" OnClick="@ViewOptions.ToggleTodayIndicator" Checked="@ViewOptions.HideTodayIndicator" Collapsed="@(!PanelVisible)" />
+        <ToggleButton CheckedText="Show details" UncheckedText="Hide details" OnClick="@ViewOptions.ToggleCardDetails" Checked="@ViewOptions.HideCardDetails" Collapsed="@(!PanelVisible)" />
+    </div>
+    @if (SelectedEpic != null && PanelVisible)
+    {
+        <EpicDetailsView Card="@SelectedEpic" OnEpicUpdate="OnEpicUpdate"/>
+    }
+</div>
+
+@code {
+    //TODO: test the component!
+    private EpicCard _selectedEpic;
+    private bool PanelVisible { get; set; }
+
+
+    [Parameter]
+    public EpicCard SelectedEpic
+    {
+        get => _selectedEpic;
+        set
+        {
+            _selectedEpic = value;
+            if (_selectedEpic != null)
+                PanelVisible = true;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<Epic> OnEpicUpdate { get; set; }
+
+    void TogglePanel(bool visibility)
+    {
+        PanelVisible = visibility;
+    }
+
+}

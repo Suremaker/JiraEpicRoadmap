@@ -1,0 +1,103 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.Contracts
+@using JiraEpicRoadmapper.UI.Repositories
+@inject IEpicsRepository Repository;
+
+<EditForm Model="this">
+    <table>
+        <tr><td>Project</td><td>@(Card.Meta.Epic.Project)</td></tr>
+        <tr><td>Key</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Key)</a></td></tr>
+        <tr><td>Summary</td><td><a href="@(Card.Meta.Epic.Url)" target="_blank">@(Card.Meta.Epic.Summary)</a></td></tr>
+        <tr><td>Status</td><td>@(Card.Meta.Epic.Status)</td></tr>
+        <tr><td>Start</td><td><input type="date" @bind="this.StartDate" @bind:format="yyyy-MM-dd" /></td></tr>
+        <tr><td>Due</td><td><input type="date" @bind="this.DueDate" @bind:format="yyyy-MM-dd" /></td></tr>
+        <tr>
+            <td>Tickets</td>
+            <td>
+                @foreach (var s in GetTicketDetails(Card.Meta.Stats))
+                {
+                    <div>@s</div>
+                }
+            </td>
+        </tr>
+    </table>
+    <Button Text="Update epic" OnClick="@(async()=>await UpdateEpic(Card))" Collapsed="@(!EpicChanged)" />
+    @if (_error != null)
+    {
+        <ErrorPanel Errors="@_error" />
+    }
+</EditForm>
+@code {
+    [Parameter]
+    public EpicCard Card
+    {
+        get => _card;
+        set
+        {
+            _card = value;
+            StartDate = value.Meta.Epic.StartDate;
+            DueDate = value.Meta.Epic.DueDate;
+            EpicChanged = false;
+        }
+    }
+    [Parameter]
+    public EventCallback<Epic> OnEpicUpdate { get; set; }
+
+    private bool EpicChanged { get; set; }
+    private string _error;
+    private DateTime? _startDate;
+    private DateTime? _dueDate;
+    private EpicCard _card;
+
+    public DateTime? StartDate
+    {
+        get => _startDate;
+        set
+        {
+            _startDate = value;
+            EpicChanged = true;
+        }
+    }
+
+    public DateTime? DueDate
+    {
+        get => _dueDate;
+        set
+        {
+            _dueDate = value;
+            EpicChanged = true;
+        }
+    }
+
+    private IEnumerable<string> GetTicketDetails(EpicStats stats)
+    {
+        if (stats == null)
+        {
+            yield return "data not available";
+            yield break;
+        }
+        if (stats.Total == 0)
+            yield return "no tickets are present";
+        if (stats.Done > 0)
+            yield return $"{stats.Done} done";
+        if (stats.InProgress > 0)
+            yield return $"{stats.InProgress} in progress";
+        if (stats.NotStarted > 0)
+            yield return $"{stats.NotStarted} not started";
+    }
+
+    private async Task UpdateEpic(EpicCard block)
+    {
+        _error = null;
+        try
+        {
+            var epic = await Repository.UpdateEpicMetadata(block.Meta.Epic.Key, new EpicMeta { StartDate = StartDate, DueDate = DueDate });
+            await OnEpicUpdate.InvokeAsync(epic);
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
+    }
+
+}

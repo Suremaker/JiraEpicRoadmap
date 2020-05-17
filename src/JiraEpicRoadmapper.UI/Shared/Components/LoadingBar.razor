@@ -1,0 +1,12 @@
+﻿<div id="@Id" class="loading-bar @(Inline?"":"panel")">@Label</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public bool Inline { get; set; }
+}

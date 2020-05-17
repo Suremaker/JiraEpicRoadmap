@@ -1,0 +1,14 @@
+﻿<div class="button" @onclick="@(()=>OnClick.InvokeAsync(!Checked))" style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"inline-block")">@(Checked ? CheckedText : UncheckedText)</div>
+
+@code {
+    [Parameter]
+    public string CheckedText { get; set; }
+    [Parameter]
+    public string UncheckedText { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClick { get; set; }
+    [Parameter]
+    public bool Checked { get; set; }
+    [Parameter]
+    public bool Collapsed { get; set; }
+}

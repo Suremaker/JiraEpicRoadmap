@@ -1,0 +1,33 @@
+﻿@using JiraEpicRoadmapper.Contracts
+@using System.Text
+<div class="epic-progress-bar @(Stats==null?"loading-bar":"")" style="@(GetProgressBar(Stats))">&nbsp;</div>
+
+@code {
+    [Parameter]
+    public EpicStats Stats { get; set; }
+
+    private string GetProgressBar(EpicStats s)
+    {
+        if (s == null)
+            return "";
+        if (s.Total <= 0)
+            return "background-color: #f0f0f0";
+
+        var sb = new StringBuilder();
+        sb.Append("background:linear-gradient(to right");
+        var done = (int)(s.Done * 100.0 / s.Total);
+        var progress = (int)((s.InProgress + s.Done) * 100.0 / s.Total); ;
+
+        if (done > 0)
+            sb.Append($", #50ff50 0% {done}%");
+
+        if (progress > done)
+            sb.Append($", #5050ff {done}% {progress}%");
+
+        if (progress < 100)
+            sb.Append($", #505050 {progress}% 100%");
+
+        sb.Append(");");
+        return sb.ToString();
+    }
+}

@@ -1,0 +1,95 @@
+﻿@page "/"
+@using JiraEpicRoadmapper.UI.Repositories
+@using JiraEpicRoadmapper.UI.Models
+@using System.Threading
+@using JiraEpicRoadmapper.Contracts
+@using JiraEpicRoadmapper.UI.Domain
+@using JiraEpicRoadmapper.UI.Services
+@inject IEpicsRepository Repository;
+@inject IJSRuntime JsRuntime;
+@inject IViewOptions ViewOptions;
+@inject ILayoutDesigner LayoutDesigner;
+
+@if (_errors == null && _roadmap == null)
+{
+    <LoadingBar Id="mainLoadingBar" Label="Loading..." />
+}
+
+@if (_errors != null)
+{
+    <ErrorPanel Errors="@_errors" />
+}
+
+@if (_roadmap != null)
+{
+    <ControlPanel SelectedEpic="@_selectedCard" OnEpicUpdate="HandleEpicUpdate" />
+    <RoadmapView Roadmap="@_roadmap" OnScrollToTodayRequest="ScrollToToday" OnEpicSelect="HandleCardSelect" SelectedEpic="@_selectedCard" />
+}
+
+@code {
+    private EpicsRoadmap _roadmap;
+    private string _errors;
+    private EpicCard _selectedCard;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewOptions.OptionsChanged += UpdateLayout;
+
+        await RefreshEpics();
+    }
+
+    private async Task RefreshEpics()
+    {
+        _roadmap = null;
+        _errors = null;
+        try
+        {
+            var epics = await Repository.FetchEpics();
+            await UpdateRoadmap(epics);
+        }
+        catch (Exception e)
+        {
+            SetError(e.Message);
+        }
+    }
+
+    private async Task FetchStats(EpicMetadata epic)
+    {
+        epic.Stats = await Repository.FetchEpicStats(epic.Epic.Key);
+    }
+
+    private void UpdateLayout()
+    {
+        _roadmap.UpdateLayout(LayoutDesigner, ViewOptions);
+        StateHasChanged();
+    }
+
+    private void SetError(string error)
+    {
+        _errors = $"Unable to load epics, here is panda instead: 🐼\n\nFailure reason:\n{error}";
+    }
+
+    private async Task ScrollToToday(int xPosition)
+    {
+        await JsRuntime.InvokeVoidAsync("scroll", CancellationToken.None, xPosition - LayoutSettings.DaySpan, 0);
+    }
+
+    private void HandleCardSelect(EpicCard card)
+    {
+        _selectedCard = card;
+    }
+
+    private async Task HandleEpicUpdate(Epic epic)
+    {
+        var epics = _roadmap.Map.Epics.Select(m => m.Epic).Where(e => e.Id != epic.Id).Append(epic).ToArray();
+        await UpdateRoadmap(epics);
+    }
+
+    private async Task UpdateRoadmap(Epic[] epics)
+    {
+        _roadmap = new EpicsRoadmap(epics);
+        UpdateLayout();
+        await Task.WhenAll(_roadmap.Map.Epics.Select(FetchStats));
+    }
+
+}

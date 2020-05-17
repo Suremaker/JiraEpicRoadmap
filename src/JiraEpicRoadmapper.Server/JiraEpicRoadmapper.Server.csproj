@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>1b47edb6-90b6-44d3-8848-21af6e45397d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0-rc1.20223.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JiraEpicRoadmapper.Contracts\JiraEpicRoadmapper.Contracts.csproj" />
+    <ProjectReference Include="..\JiraEpicRoadmapper.UI\JiraEpicRoadmapper.UI.csproj" />
+  </ItemGroup>
+
+
+</Project>

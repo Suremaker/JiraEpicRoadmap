@@ -1,0 +1,65 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+@using JiraEpicRoadmapper.UI.Services
+@inject IStatusVisualizer StatusVisualizer;
+@inject IEpicCardPainter CardPainter;
+@inject IViewOptions ViewOptions;
+@implements IDisposable;
+
+<div class="epic-card @(Selected?"selected":"") @(ViewOptions.HideCardDetails?"simple":"")" style="background-color: @(CardPainter.GetColor(Card)); left: @(Card.StartIndex *LayoutSettings. DaySpan + LayoutSettings.CellMargin)px; width: @((Card.EndIndex - Card.StartIndex + 1) * LayoutSettings.DaySpan - 2 *LayoutSettings. CellMargin)px; top: @(Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin)px; height: @(LayoutSettings.CardHeight)px;" @onclick="@(()=>OnCardSelect.InvokeAsync(Card))" @onclick:stopPropagation="true">
+    <div class="content">
+        <div class="summary">
+            @if (!ViewOptions.HideCardDetails)
+            {
+                <a href="@(Card.Meta.Epic.Url)" target="_blank" @onclick:stopPropagation="true">@(Card.Meta.Epic.Key)</a>
+            }
+            @(Card.Meta.Epic.Summary)
+        </div>
+        @if (!ViewOptions.HideCardDetails)
+        {
+            <div class="status">
+                @foreach (var s in StatusVisualizer.GetStatusIcons(Card))
+                {
+                    @s<br />
+                }
+            </div>
+        }
+    </div>
+    @if (!ViewOptions.HideCardDetails)
+    {
+        <EpicProgressBar Stats="@Card.Meta.Stats" />
+    }
+</div>
+
+@code {
+
+    private EpicCard _card;
+
+    [Parameter]
+    public EpicCard Card
+    {
+        get => _card;
+        set
+        {
+            if (_card == value)
+                return;
+            DetachCard();
+            _card = value;
+            _card.Meta.OnStatsChange += StateHasChanged;
+        }
+    }
+    [Parameter]
+    public bool Selected { get; set; }
+    [Parameter]
+    public EventCallback<EpicCard> OnCardSelect { get; set; }
+
+    public void Dispose()
+    {
+        DetachCard();
+    }
+
+    private void DetachCard()
+    {
+        if (_card != null)
+            _card.Meta.OnStatsChange -= StateHasChanged;
+    }
+}

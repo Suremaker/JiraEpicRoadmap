@@ -1,0 +1,8 @@
+﻿@using JiraEpicRoadmapper.UI.Models
+<div class="day-indicator" style="left: @(Day.Index * LayoutSettings.DaySpan)px;">@(Day.Date.ToString("dd/MM"))</div>
+
+@code
+{
+    [Parameter]
+    public IndexedDay Day { get; set; }
+}

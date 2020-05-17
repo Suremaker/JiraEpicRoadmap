@@ -1,0 +1,69 @@
+﻿@using JiraEpicRoadmapper.UI.Domain
+@using JiraEpicRoadmapper.UI.Models
+@implements IDisposable;
+@inject IViewOptions ViewOptions;
+<div class="epics-panel" style="width: @(Roadmap.TotalDays * LayoutSettings.DaySpan)px; height: @(Roadmap.TotalRows * LayoutSettings.RowHeight)px" @onclick="@(() => OnEpicSelect.InvokeAsync(null))">
+    @foreach (var m in Roadmap.Timeline.GetMondays())
+    {
+        <DayIndicator Day="@m" />
+        @if (m.Date.Day < 8)
+        {
+            @foreach (var p in Roadmap.Projects)
+            {
+                <ProjectHeader DayIndex="@m.Index" RowIndex="@p.ProjectRowIndex" Name="@p.Name" />
+            }
+        }
+    }
+    @if (!ViewOptions.HideTodayIndicator)
+    {
+        <TodayIndicator Day="@Roadmap.Timeline.Today"/>
+    }
+    @foreach (var e in Roadmap.EpicCards)
+    {
+        <EpicCardView Card="@e" Selected="@(SelectedEpic==e)" OnCardSelect="OnEpicSelect" />
+    }
+</div>
+
+@code
+{
+    private bool _triggerScrollToToday = true;
+    private EpicsRoadmap _roadmap;
+
+    [Parameter]
+    public EpicCard SelectedEpic { get; set; }
+
+    [Parameter]
+    public EpicsRoadmap Roadmap
+    {
+        get => _roadmap;
+        set
+        {
+            if (_roadmap == value)
+                return;
+            if (_roadmap != null)
+                _roadmap.OnLayoutUpdate -= StateHasChanged;
+            _roadmap = value;
+            _roadmap.OnLayoutUpdate += StateHasChanged;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<EpicCard> OnEpicSelect { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnScrollToTodayRequest { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Roadmap == null || !_triggerScrollToToday)
+            return;
+
+        _triggerScrollToToday = false;
+        await OnScrollToTodayRequest.InvokeAsync(Roadmap.Timeline.Today.Index * LayoutSettings.DaySpan);
+    }
+    public void Dispose()
+    {
+        if (_roadmap != null)
+            _roadmap.OnLayoutUpdate -= StateHasChanged;
+    }
+}
