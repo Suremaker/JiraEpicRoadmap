@@ -26,6 +26,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                 .WithContext<EpicCardViewFixture>()
                 .AddSteps(
                     x => x.Given_a_epic_card_view(),
+                    x => x.Given_epic_has_key("FOO-1"),
                     x => x.Given_epic_has_summary("Hello world"),
                     x => x.Given_epic_has_status_category("in progress"),
                     x => x.When_I_render_it(),
@@ -34,7 +35,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
                         LayoutSettings.CardHeight,
                         x.Card.StartIndex * LayoutSettings.DaySpan + LayoutSettings.CellMargin,
                         x.Card.RowIndex * LayoutSettings.RowHeight + LayoutSettings.RowMargin),
-                    x => x.Then_I_should_see_card_summary("Hello world"),
+                    x => x.Then_I_should_see_card_summary("FOO-1 Hello world"),
                     x => x.Then_I_should_see_card_status("⚙️"),
                     x => x.Then_I_should_see_card_details_progress_bar_with_no_stats())
                 .AddAsyncSteps(
@@ -72,7 +73,7 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
 
         public class EpicCardViewFixture : ComponentFixture<EpicCardView>
         {
-            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic { Key = "FOO" }, new IndexedDay(DateTime.MinValue, 3), new IndexedDay(DateTime.MinValue, 5)), 1);
+            public EpicCard Card { get; } = new EpicCard(new EpicMetadata(new Epic(), new IndexedDay(DateTime.MinValue, 3), new IndexedDay(DateTime.MinValue, 5)), 1);
             public EpicMetadata Meta => Card.Meta;
             public Epic Epic => Meta.Epic;
             private State<EpicStats> _stats;
@@ -104,6 +105,11 @@ namespace JiraEpicRoadmapper.UI.Tests.Components
             public void Given_epic_has_status_category(string category)
             {
                 Epic.StatusCategory = category;
+            }
+
+            public void Given_epic_has_key(string key)
+            {
+                Epic.Key = key;
             }
 
             public void Then_I_should_see_card_of_width_height_located_at_x_y([Format("{0}px")]int width, [Format("{0}px")]int height, [Format("{0}px")]int x, [Format("{0}px")]int y)
