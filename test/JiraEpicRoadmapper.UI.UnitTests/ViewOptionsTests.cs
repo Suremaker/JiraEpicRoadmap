@@ -35,6 +35,12 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             options.ToggleCardDetails();
             options.ToggleTodayIndicator();
             _navigator.LastUri.ShouldBe("http://localhost:80/");
+            options.ToggleSelectedProjects("P1");
+            options.ToggleSelectedProjects("P2");
+            _navigator.LastUri.ShouldBe("http://localhost:80/?selectedprojects=p1;p2");
+            options.ToggleSelectedProjects("p1");
+            options.ToggleSelectedProjects("p2");
+            _navigator.LastUri.ShouldBe("http://localhost:80/");
         }
 
         [Theory]
@@ -48,10 +54,20 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             var options = new ViewOptions(_navigator);
             options.ShowUnplanned.ShouldBe(showUnplanned);
             options.ShowClosed.ShouldBe(showClosed);
+            options.HideTodayIndicator.ShouldBe(hideToday);
+            options.HideCardDetails.ShouldBe(hideDetails);
         }
 
         [Fact]
-        public void Toggle_should_trigger()
+        public void It_should_load_selected_projects()
+        {
+            _navigator.Initialize("http://localhost/?selectedprojects=p1;p2");
+            var options = new ViewOptions(_navigator);
+            options.SelectedProjects.ShouldBe(new[] { "p1", "p2" });
+        }
+
+        [Fact]
+        public void Toggle_should_trigger_options_changed()
         {
             _navigator.Initialize("http://localhost/");
             var options = new ViewOptions(_navigator);
@@ -66,6 +82,8 @@ namespace JiraEpicRoadmapper.UI.UnitTests
             counter.ShouldBe(3);
             options.ToggleCardDetails();
             counter.ShouldBe(4);
+            options.ToggleSelectedProjects("px");
+            counter.ShouldBe(5);
         }
 
         private class TestableNavigator : NavigationManager

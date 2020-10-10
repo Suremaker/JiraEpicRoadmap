@@ -66,7 +66,7 @@ namespace JiraEpicRoadmapper.UI.Tests
                     x => x.Then_loading_bar_should_not_be_visible(),
                     x => x.Then_error_panel_should_not_be_visible(),
                     x => x.Then_roadmap_view_should_be_visible_with_associated_epics(),
-                    x => x.Then_control_panel_should_be_visible(),
+                    x => x.Then_control_panel_should_be_visible_with_available_project_filters(),
                     x => x.Then_view_should_request_scroll_to_today_minus_1_day(),
                     x => x.Then_every_epic_stats_should_be_requested_and_updated()
                     )
@@ -195,9 +195,10 @@ namespace JiraEpicRoadmapper.UI.Tests
                 Component.FindComponent<RoadmapView>().Instance.Roadmap.ShouldNotBeNull();
             }
 
-            public void Then_control_panel_should_be_visible()
+            public void Then_control_panel_should_be_visible_with_available_project_filters()
             {
                 Component.FindComponents<ControlPanel>().ShouldNotBeEmpty();
+                Component.FindComponent<ControlPanel>().Instance.ProjectNames.ShouldNotBeEmpty();
             }
 
             public void Then_roadmap_view_should_not_be_visible()

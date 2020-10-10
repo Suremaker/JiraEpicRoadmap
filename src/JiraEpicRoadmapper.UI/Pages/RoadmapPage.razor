@@ -22,7 +22,7 @@
 
 @if (_roadmap != null)
 {
-    <ControlPanel SelectedEpic="@_selectedCard" OnEpicUpdate="HandleEpicUpdate" />
+    <ControlPanel SelectedEpic="@_selectedCard" OnEpicUpdate="HandleEpicUpdate" ProjectNames="@_projectNames" />
     <RoadmapView Roadmap="@_roadmap" OnScrollToTodayRequest="ScrollToToday" OnEpicSelect="HandleCardSelect" SelectedEpic="@_selectedCard" />
 }
 
@@ -30,6 +30,7 @@
     private EpicsRoadmap _roadmap;
     private string _errors;
     private EpicCard _selectedCard;
+    private string[] _projectNames;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,9 +43,11 @@
     {
         _roadmap = null;
         _errors = null;
+        _projectNames = null;
         try
         {
             var epics = await Repository.FetchEpics();
+            _projectNames = epics.Select(e => e.Project).Distinct().OrderBy(x => x).ToArray();
             await UpdateRoadmap(epics);
         }
         catch (Exception e)

@@ -145,6 +145,19 @@
         background-color: #cfefff;
     }
 
+.toggle-option {
+    font-size: smaller;
+    margin: 0;
+    padding: 0.5em;
+    background-color: #afcfff;
+    display: block;
+}
+
+.toggle-option:hover {
+    cursor: pointer;
+    background-color: #cfefff;
+}
+
 .control-panel {
     max-width: 600px;
     margin: 0 1px 1px 0;
@@ -170,6 +183,12 @@
         font-weight: bolder;
         vertical-align: top;
     }
+
+.multi-select-list {
+    position: fixed;
+    z-index: 1;
+    border: 1px solid #222222;
+}
 
 a, a:hover, a:visited {
     color: #111166;

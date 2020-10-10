@@ -8,6 +8,7 @@
         <ToggleButton CheckedText="Hide unplanned" UncheckedText="Show unplanned" OnClick="@ViewOptions.ToggleUnplanned" Checked="@ViewOptions.ShowUnplanned" Collapsed="@(!PanelVisible)" />
         <ToggleButton CheckedText="Show today" UncheckedText="Hide today" OnClick="@ViewOptions.ToggleTodayIndicator" Checked="@ViewOptions.HideTodayIndicator" Collapsed="@(!PanelVisible)" />
         <ToggleButton CheckedText="Show details" UncheckedText="Hide details" OnClick="@ViewOptions.ToggleCardDetails" Checked="@ViewOptions.HideCardDetails" Collapsed="@(!PanelVisible)" />
+        <MultiSelect ToggleSelection="@ViewOptions.ToggleSelectedProjects" Items="@ProjectNames" Text="Filter Projects" Selected="@ViewOptions.SelectedProjects" Collapsed="@(!PanelVisible)"/>
     </div>
     @if (SelectedEpic != null && PanelVisible)
     {
@@ -20,6 +21,9 @@
     private EpicCard _selectedEpic;
     private bool PanelVisible { get; set; }
 
+
+    [Parameter]
+    public IReadOnlyList<string> ProjectNames { get; set; }
 
     [Parameter]
     public EpicCard SelectedEpic
