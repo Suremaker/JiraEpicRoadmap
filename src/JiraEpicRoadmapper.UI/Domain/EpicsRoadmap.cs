@@ -45,6 +45,8 @@ namespace JiraEpicRoadmapper.UI.Domain
                 return false;
             if (!viewOptions.ShowClosed && string.Equals(epic.Epic.StatusCategory, "done", StringComparison.OrdinalIgnoreCase))
                 return false;
+            if (viewOptions.SelectedProjects.Any() && !viewOptions.SelectedProjects.Contains(epic.Epic.Project.ToLowerInvariant()))
+                return false;
             return true;
         }
     }

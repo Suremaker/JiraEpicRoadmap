@@ -1,0 +1,48 @@
+﻿<div style="visibility: @(Collapsed?"collapsed":"visible"); display: @(Collapsed?"none":"inline-block")">
+    <ToggleButton CheckedText="@Text" UncheckedText="@Text" OnClick="@ToggleChecked" Checked="@Checked" Collapsed="@Collapsed" />
+    @if (Checked)
+    {
+        <div class="multi-select-list">
+            @foreach (var item in Items)
+            {
+                var isSelected = Selected.Contains(item.ToLowerInvariant());
+                var unselected = Selected.Any() ? "❌" : " ";
+                <div>
+                    <ToggleOption Text="@item" UncheckedSymbol="@unselected" OnClick="@(async ()=>await OnToggleSelection(item))" Checked="@isSelected" Collapsed="@Collapsed" />
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool Checked { get; set; }
+    [Parameter]
+    public IReadOnlyList<string> Items { get; set; }
+    [Parameter]
+    public IReadOnlyList<string> Selected { get; set; }
+    [Parameter]
+    public string Text { get; set; }
+    [Parameter]
+    public bool Collapsed { get; set; }
+    [Parameter]
+    public EventCallback<string> ToggleSelection { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Items ??= Array.Empty<string>();
+        Selected ??= Array.Empty<string>();
+    }
+
+    private void ToggleChecked()
+    {
+        Checked = !Checked;
+    }
+
+    private async Task OnToggleSelection(string item)
+    {
+        await ToggleSelection.InvokeAsync(item);
+        StateHasChanged();
+    }
+
+}

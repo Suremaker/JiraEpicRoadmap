@@ -137,6 +137,28 @@ namespace JiraEpicRoadmapper.UI.UnitTests
         }
 
         [Fact]
+        public void UpdateLayout_should_filter_projects_when_requested()
+        {
+            var epics = new[]
+            {
+                new Epic {Id = "E-1", Project = "PR1", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "E-2", Project = "PR1", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "E-3", Project = "PR2", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "E-4", Project = "PR2", DueDate = DateTime.Now, StartDate = DateTime.Now},
+                new Epic {Id = "E-5", Project = "PR3", DueDate = DateTime.Now, StartDate = DateTime.Now}
+            };
+
+            var roadmap = new EpicsRoadmap(epics);
+
+            var options = new TestableViewOptions();
+            options.ToggleSelectedProjects("PR2");
+            options.ToggleSelectedProjects("pr3");
+
+            roadmap.UpdateLayout(_designer.Object, options);
+            roadmap.Projects.SelectMany(p => p.Epics).Select(e => e.Meta.Epic.Id).ShouldBe(new[] { "E-3", "E-4", "E-5" }, ignoreOrder: true);
+        }
+
+        [Fact]
         public void UpdateLayout_should_trigger_OnLayoutUpdated()
         {
             var roadmap = new EpicsRoadmap(new Epic[0]);

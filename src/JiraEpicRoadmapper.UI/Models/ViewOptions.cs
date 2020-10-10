@@ -11,6 +11,7 @@ namespace JiraEpicRoadmapper.UI.Models
     public class ViewOptions : IViewOptions
     {
         private readonly NavigationManager _manager;
+        private readonly List<string> _selectedProjects = new List<string>();
 
         public ViewOptions(NavigationManager manager)
         {
@@ -20,12 +21,22 @@ namespace JiraEpicRoadmapper.UI.Models
             ShowUnplanned = IsSet(query, nameof(ShowUnplanned));
             HideTodayIndicator = IsSet(query, nameof(HideTodayIndicator));
             HideCardDetails = IsSet(query, nameof(HideCardDetails));
+            _selectedProjects.AddRange(GetList(query, nameof(SelectedProjects)));
         }
 
         public bool ShowClosed { get; private set; }
         public bool ShowUnplanned { get; private set; }
         public bool HideTodayIndicator { get; private set; }
         public bool HideCardDetails { get; private set; }
+        public IReadOnlyList<string> SelectedProjects => _selectedProjects;
+
+        public void ToggleSelectedProjects(string project)
+        {
+            project = project.ToLowerInvariant();
+            if (!_selectedProjects.Remove(project))
+                _selectedProjects.Add(project);
+            UpdateNavigation();
+        }
 
         public void ToggleClosed()
         {
@@ -61,6 +72,9 @@ namespace JiraEpicRoadmapper.UI.Models
             AddIfSet(options, nameof(HideTodayIndicator), HideTodayIndicator);
             AddIfSet(options, nameof(HideCardDetails), HideCardDetails);
 
+            if (SelectedProjects.Any())
+                options[nameof(SelectedProjects).ToLowerInvariant()] = string.Join(';', SelectedProjects.OrderBy(name => name));
+
             var builder = new UriBuilder(_manager.ToAbsoluteUri(_manager.Uri))
             {
                 Query = string.Join('&', options.Select(o => $"{UrlEncoder.Default.Encode(o.Key)}={UrlEncoder.Default.Encode(o.Value)}"))
@@ -80,6 +94,12 @@ namespace JiraEpicRoadmapper.UI.Models
         {
             return (query.TryGetValue(name.ToLowerInvariant(), out var values)) &&
                    string.Equals(values.FirstOrDefault(), "y", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private IEnumerable<string> GetList(Dictionary<string, StringValues> query, string name)
+        {
+            return (query.TryGetValue(name.ToLowerInvariant(), out var values))
+                ? values.SelectMany(v => v.Split(';')) : Enumerable.Empty<string>();
         }
     }
 }

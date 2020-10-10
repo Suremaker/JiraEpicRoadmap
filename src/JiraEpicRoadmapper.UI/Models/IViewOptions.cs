@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JiraEpicRoadmapper.UI.Models
 {
@@ -8,6 +9,8 @@ namespace JiraEpicRoadmapper.UI.Models
         bool ShowUnplanned { get; }
         bool HideTodayIndicator { get; }
         bool HideCardDetails { get; }
+        IReadOnlyList<string> SelectedProjects { get; }
+        void ToggleSelectedProjects(string project);
         void ToggleClosed();
         void ToggleUnplanned();
         void ToggleCardDetails();

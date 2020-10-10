@@ -1,14 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using JiraEpicRoadmapper.UI.Models;
 
 namespace JiraEpicRoadmapper.UI.UnitTests
 {
     class TestableViewOptions : IViewOptions
     {
+        private readonly List<string> _selectedProjects = new List<string>();
         public bool ShowClosed { get; set; }
         public bool ShowUnplanned { get; set; }
         public bool HideTodayIndicator { get; set; }
         public bool HideCardDetails { get; set; }
+        public IReadOnlyList<string> SelectedProjects => _selectedProjects;
+
+        public void ToggleSelectedProjects(string project)
+        {
+            project = project.ToLowerInvariant();
+            if (!_selectedProjects.Remove(project))
+                _selectedProjects.Add(project);
+            OptionsChanged?.Invoke();
+        }
 
         public void ToggleClosed()
         {
